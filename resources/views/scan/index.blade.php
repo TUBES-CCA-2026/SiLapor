@@ -16,38 +16,49 @@
 
         <h1 class="text-white font-display font-semibold text-lg mb-1">Scan QR Fasilitas</h1>
         <p class="text-gray-400 text-sm mb-5">
-            Arahkan kamera ke QR Code yang tertempel di alat/fasilitas lab.
+            Arahkan kamera ke QR Code yang tertempel pada alat atau fasilitas laboratorium.
         </p>
 
         <div id="reader" class="rounded-2xl overflow-hidden bg-black"></div>
 
         <p id="scan-status" class="text-gray-400 text-xs mt-4">Meminta izin kamera…</p>
 
-        <p class="text-gray-500 text-xs mt-8">
-            Tidak punya kamera? Masukkan kode fasilitas secara manual:
-        </p>
-        <form id="manual-form" class="mt-2 flex gap-2">
-            <input id="manual-code" type="text" placeholder="Kode fasilitas"
-                   class="flex-1 rounded-xl border border-gray-700 bg-gray-800 text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-silapor-500">
-            <button type="submit" class="bg-silapor-500 hover:bg-silapor-600 text-white text-sm font-semibold rounded-xl px-4">Buka</button>
-        </form>
+        <div class="mt-8 pt-6 border-t border-gray-800">
+            <p class="text-gray-400 text-sm mb-3">Tidak dapat memindai QR?</p>
+            <a href="{{ route('pengaduan.manual.create') }}"
+               class="inline-flex items-center justify-center w-full rounded-xl border border-gray-700 bg-gray-800 hover:bg-gray-700 text-white text-sm font-semibold px-4 py-3 transition">
+                Buat Pengaduan Manual
+            </a>
+        </div>
     </div>
 </div>
 
 <script>
     const statusEl = document.getElementById('scan-status');
+    const qrReportBaseUrl = @json(url('/lapor/qr'));
 
-    function goToReport(decodedText) {
-        statusEl.textContent = 'QR terdeteksi, membuka halaman lapor…';
-        // decodedText DIHARAPKAN berisi URL lengkap hasil FasilitasLab::scanUrl(),
-        // contoh: https://silapor.test/lapor/<qr_code>
+    function extractQrCode(decodedText) {
+        const value = decodedText.trim();
+
         try {
-            const url = new URL(decodedText);
-            window.location.href = url.toString();
-        } catch (e) {
-            // fallback kalau QR cuma berisi token, bukan URL penuh
-            window.location.href = '{{ url('/lapor') }}/' + decodedText;
+            const parsedUrl = new URL(value, window.location.origin);
+            const segments = parsedUrl.pathname.split('/').filter(Boolean);
+            return decodeURIComponent(segments[segments.length - 1] || '');
+        } catch (error) {
+            return value;
         }
+    }
+
+    function goToQrReport(decodedText) {
+        const qrCode = extractQrCode(decodedText);
+
+        if (!qrCode) {
+            statusEl.textContent = 'QR Code tidak memuat kode fasilitas yang valid.';
+            return;
+        }
+
+        statusEl.textContent = 'QR terdeteksi, membuka formulir pengaduan…';
+        window.location.href = `${qrReportBaseUrl}/${encodeURIComponent(qrCode)}`;
     }
 
     const html5QrCode = new Html5Qrcode('reader');
@@ -56,20 +67,14 @@
         { fps: 10, qrbox: 230 },
         (decodedText) => {
             html5QrCode.stop().catch(() => {});
-            goToReport(decodedText);
+            goToQrReport(decodedText);
         },
-        (errorMessage) => { /* frame tanpa QR, diamkan */ }
+        () => {}
     ).then(() => {
         statusEl.textContent = 'Arahkan kamera ke QR Code…';
-    }).catch((err) => {
-        statusEl.textContent = 'Kamera tidak dapat diakses. Gunakan input manual di bawah.';
-        console.error(err);
-    });
-
-    document.getElementById('manual-form').addEventListener('submit', function (e) {
-        e.preventDefault();
-        const code = document.getElementById('manual-code').value.trim();
-        if (code) window.location.href = '{{ url('/lapor') }}/' + encodeURIComponent(code);
+    }).catch((error) => {
+        statusEl.textContent = 'Kamera tidak dapat diakses. Gunakan pengaduan manual.';
+        console.error(error);
     });
 </script>
 @endsection

@@ -31,6 +31,6 @@ class FasilitasLab extends Model
     // URL unik yang akan di-encode ke dalam gambar QR
     public function scanUrl(): string
     {
-        return route('scan.show', ['qr_code' => $this->qr_code]);
+        return route('pengaduan.qr.create', ['qr_code' => $this->qr_code]);
     }
 }
