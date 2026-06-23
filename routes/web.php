@@ -73,10 +73,30 @@ Route::middleware('auth')->group(function () {
             Route::post('/', [PengaduanController::class, 'store'])->name('store');
         });
 
+<<<<<<< HEAD
         Route::get('/tindak-lanjut', [TindakLanjutController::class, 'index'])->name('tindak-lanjut.index');
         Route::patch('/tindak-lanjut/{tindakLanjut}', [TindakLanjutController::class, 'update'])->name('tindak-lanjut.update');
         Route::get('/teknisi', [TeknisiController::class, 'index'])->name('teknisi.index');
     });
+=======
+    Route::get('/fasilitas', [FasilitasController::class, 'index'])
+        ->middleware('role:admin')
+        ->name('fasilitas.index');
+    Route::post('/fasilitas', [FasilitasController::class, 'store'])
+        ->middleware('role:admin')
+        ->name('fasilitas.store');
+    Route::post('/fasilitas/{fasilitas}/regenerate-qr', [FasilitasController::class, 'regenerateQr'])
+        ->middleware('role:admin')
+        ->name('fasilitas.regenerate-qr');
+        Route::middleware(['auth'])->group(function () {
+            // Pastikan baris ini ada dan memiliki ->name('pengaduan')
+            Route::get('/pengaduan', [PengaduanController::class, 'index'])->name('pengaduan');
+            
+            // Jika Anda ingin membuat pengaduan baru (form create), tambahkan juga:
+            Route::get('/pengaduan/create', [PengaduanController::class, 'create'])->name('pengaduan.create');
+            Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store');
+        });
+>>>>>>> b342d8f (dashboard-pengaduan)
 
     Route::get('/riwayat', [RiwayatController::class, 'index'])
         ->middleware('role:asisten,laboran')
