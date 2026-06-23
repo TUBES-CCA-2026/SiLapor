@@ -29,8 +29,20 @@
 
         <p id="scan-status" class="text-gray-400 text-xs mt-4">Meminta izin kamera…</p>
 
-        <div class="mt-8 pt-6 border-t border-gray-800">
-            <p class="text-gray-400 text-sm mb-3">Tidak dapat memindai QR?</p>
+        {{-- Hidden div, dipakai library buat decode gambar yg di-upload, bukan kamera --}}
+        <div id="reader-file-preview" class="hidden"></div>
+
+        <div class="mt-6">
+            <p class="text-gray-400 text-sm mb-3">Kamera tidak bisa membaca QR-nya?</p>
+            <label for="qr-file-input"
+                   class="inline-flex items-center justify-center w-full rounded-xl border border-gray-700 bg-gray-800 hover:bg-gray-700 text-white text-sm font-semibold px-4 py-3 transition cursor-pointer">
+                📷 Upload Foto QR
+            </label>
+            <input type="file" id="qr-file-input" accept="image/*" capture="environment" class="hidden">
+        </div>
+
+        <div class="mt-4 pt-6 border-t border-gray-800">
+            <p class="text-gray-400 text-sm mb-3">Atau, kalau masih tidak bisa juga:</p>
             <a href="{{ route('pengaduan.manual.create') }}"
                class="inline-flex items-center justify-center w-full rounded-xl border border-gray-700 bg-gray-800 hover:bg-gray-700 text-white text-sm font-semibold px-4 py-3 transition">
                 Buat Pengaduan Manual
@@ -102,8 +114,6 @@
                 statusEl.textContent = 'QR tidak terbaca dari foto ini. Coba foto lain, atau gunakan pengaduan manual.';
                 console.error(error);
             });
-        statusEl.textContent = 'Kamera tidak dapat diakses. Gunakan pengaduan manual.';
-        console.error(error);
     });
 </script>
 @endsection
