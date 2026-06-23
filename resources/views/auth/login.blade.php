@@ -3,7 +3,7 @@
 @section('title', 'Login - SiLapor')
 
 @section('content')
-<div class="min-h-screen grid lg:grid-cols-[60%_40%]">
+<div class="min-h-screen grid lg:grid-cols-2">
 
     {{-- Panel kiri: branding --}}
     {{-- BACKGROUND: ganti file di public/images/lab-background.jpg dengan foto lab kamu --}}
@@ -12,12 +12,12 @@
         <div class="flex items-center gap-3">
             {{-- LOGO: ganti file di public/images/logo-silapor.png --}}
             <img src="{{ asset('images/logo-silapor.png') }}" alt="SiLapor"
-                 class="w-99 h-99 p-1.5">
-            <span class="font-display font-extrabold text-4xl tracking-tight">SiLapor</span>
+                 class="w-12 h-12 rounded-xl object-contain bg-white/15 p-1.5">
+            <span class="font-display font-extrabold text-2xl tracking-tight">SiLapor</span>
         </div>
 
-        <div class="mb-32">
-            <h1 class="font-display font-extrabold text-4xl leading-tight">
+        <div>
+            <h1 class="font-display font-extrabold text-4xl leading-tight mb-4">
                 Integrated Computer<br>Laboratory System
             </h1>
             <p class="text-white/80 max-w-md">
@@ -44,13 +44,10 @@
                 @csrf
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-at absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    <input type="email" name="email" value="{{ old('email') }}" autofocus
-                           placeholder="Email"
-                           class="w-full rounded-xl border border-gray-300 pl-10 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-silapor-500">
-                    </div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">User</label>
+                    <input type="text" name="email" value="{{ old('email') }}" autofocus
+                           placeholder="Nama Pengguna"
+                           class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-silapor-500">
                 </div>
 
                 <div>
@@ -58,11 +55,8 @@
                         <label class="block text-sm font-medium text-gray-700">Password</label>
                         <a href="{{ route('password.request') }}" class="text-sm text-silapor-600 hover:underline">Forgot Password?</a>
                     </div>
-                    <div class="relative">
-                        <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                     <input type="password" name="password" placeholder="Password"
-                           class="w-full rounded-xl border border-gray-300 pl-10 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-silapor-500">
-                    </div>
+                           class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-silapor-500">
                 </div>
 
                 <label class="flex items-center gap-2 text-sm text-gray-600">
@@ -82,10 +76,14 @@
                 Need help? <a href="#" class="text-silapor-600 hover:underline">Contact Laboratory Support</a>
             </p>
 
-            <p class="text-center text-sm text-gray-400 mt-6">
-                Mau lapor kerusakan fasilitas tanpa login?
-                <a href="{{ route('scan.index') }}" class="text-silapor-600 hover:underline">Scan QR di sini</a>
-            </p>
+            <div class="text-center text-sm text-gray-400 mt-6">
+                <p class="mb-2">Mau lapor kerusakan fasilitas tanpa login?</p>
+                <div class="flex items-center justify-center gap-3">
+                    <a href="{{ route('scan.index') }}" class="text-silapor-600 hover:underline">Scan QR</a>
+                    <span class="text-gray-300">|</span>
+                    <a href="{{ route('pengaduan.manual.create') }}" class="text-silapor-600 hover:underline">Lapor Manual</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

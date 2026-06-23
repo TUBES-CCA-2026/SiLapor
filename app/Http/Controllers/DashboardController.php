@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notifikasi;
+use App\Models\Pengaduan;
 use App\Models\TindakLanjut;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -17,13 +19,40 @@ class DashboardController extends Controller
             return $this->dashboardAsisten($user);
         }
 
+        if ($user->isKoordinatorLab()) {
+            return $this->dashboardKoordinator($user);
+        }
+
         if ($user->isAdmin()) {
             return view('dashboard.admin');
         }
 
-        // Role lain (laboran, koordinator_lab, kepala_lab) bisa diarahkan
+        // Role lain (laboran, kepala_lab) bisa diarahkan
         // ke view dashboard masing-masing yang sudah ada di project kamu.
         return view('dashboard.default', compact('user'));
+    }
+
+    /**
+     * Dashboard koordinator_lab: lihat pengaduan masuk & berikan tugas
+     * perbaikan ke asisten (inilah fitur "koordinator memberi asisten tugas
+     * perbaikan" yang memicu notifikasi email, lihat TindakLanjutController@assign).
+     */
+    protected function dashboardKoordinator($user)
+    {
+        $pengaduanBaru = Pengaduan::with(['fasilitas.laboratorium', 'pelapor'])
+            ->where('status_pengaduan', 'NEW')
+            ->orderByDesc('id_pengaduan')
+            ->get();
+
+        $pengaduanDitangani = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten'])
+            ->whereIn('status_pengaduan', ['HANDLED', 'DONE'])
+            ->orderByDesc('id_pengaduan')
+            ->take(20)
+            ->get();
+
+        $asisten = User::where('role', 'asisten')->orderBy('nama')->get();
+
+        return view('dashboard.koordinator', compact('pengaduanBaru', 'pengaduanDitangani', 'asisten'));
     }
 
     protected function dashboardAsisten($user)

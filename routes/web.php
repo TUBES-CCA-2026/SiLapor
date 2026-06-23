@@ -1,9 +1,4 @@
 <?php
-/**
- * ============================================================
- *  TAMBAHKAN BLOK INI KE routes/web.php KAMU YANG SUDAH ADA
- * ============================================================
- */
 
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -18,8 +13,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| 0) ROOT '/' -> langsung ke login (atau dashboard kalau sudah login)
-|    Ini yang membuat `php artisan serve` langsung mengarah ke halaman login.
+| 0) ROOT
 |--------------------------------------------------------------------------
 */
 Route::get('/', function () {
@@ -28,7 +22,7 @@ Route::get('/', function () {
 
 /*
 |--------------------------------------------------------------------------
-| 1) LOGIN  (publik)
+| 1) AUTENTIKASI (PUBLIK)
 |--------------------------------------------------------------------------
 */
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -37,11 +31,6 @@ Route::post('/logout', [LoginController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
-/*
-|--------------------------------------------------------------------------
-| 1b) FORGOT PASSWORD via OTP  (publik)
-|--------------------------------------------------------------------------
-*/
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showEmailForm'])->name('password.request');
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendOtp'])->name('password.email');
 Route::get('/forgot-password/otp', [ForgotPasswordController::class, 'showOtpForm'])->name('password.otp.form');
@@ -52,45 +41,53 @@ Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'
 
 /*
 |--------------------------------------------------------------------------
-| 2) SCAN QR + LAPOR  (PUBLIK / GUEST — sengaja TANPA middleware auth,
-|    supaya bisa diakses tanpa login sesuai requirement)
+| 2) PENGADUAN PUBLIK
 |--------------------------------------------------------------------------
+| Alur QR dan manual memakai URL serta handler yang berbeda.
+| QR     : fasilitas ditentukan oleh token QR.
+| Manual : pelapor memilih fasilitas dari formulir.
 */
 Route::get('/scan', [ScanController::class, 'index'])->name('scan.index');
 
-// Hasil decode QR mengarah ke sini. Kalau user sudah login, sistem otomatis
-// mengenali dia (lihat PengaduanController). Kalau belum, tetap bisa lanjut
-// sebagai guest, ATAU pilih "Login dulu" (lihat tombol di view).
-Route::get('/lapor/{qr_code}', [PengaduanController::class, 'create'])->name('scan.show');
-Route::post('/lapor/{qr_code}', [PengaduanController::class, 'store'])->name('pengaduan.store');
-Route::get('/lapor/sukses/{pengaduan}', [PengaduanController::class, 'success'])->name('pengaduan.success');
+Route::prefix('lapor')->name('pengaduan.')->group(function () {
+    Route::get('/qr/{qr_code}', [PengaduanController::class, 'createQr'])
+        ->name('qr.create');
+    Route::post('/qr/{qr_code}', [PengaduanController::class, 'storeQr'])
+        ->name('qr.store');
+
+    Route::get('/manual', [PengaduanController::class, 'createManual'])
+        ->name('manual.create');
+    Route::post('/manual', [PengaduanController::class, 'storeManual'])
+        ->name('manual.store');
+
+    Route::get('/sukses/{pengaduan}', [PengaduanController::class, 'success'])
+        ->name('success');
+
+    // Kompatibilitas QR lama yang masih menyimpan URL /lapor/{qr_code}.
+    Route::get('/{qr_code}', [PengaduanController::class, 'redirectLegacyQr'])
+        ->name('qr.legacy');
+});
 
 /*
 |--------------------------------------------------------------------------
-| 3) AREA YANG WAJIB LOGIN
+| 3) AREA WAJIB LOGIN
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Koordinator Lab menugaskan asisten -> trigger notifikasi email
     Route::post('/pengaduan/{pengaduan}/assign', [TindakLanjutController::class, 'assign'])
         ->middleware('role:koordinator_lab')
         ->name('tindak-lanjut.assign');
 
-    // Kirim ulang notifikasi yang gagal (status_pengiriman = failed)
     Route::post('/notifikasi/{notifikasi}/kirim-ulang', [TindakLanjutController::class, 'kirimUlang'])
         ->middleware('role:koordinator_lab')
         ->name('notifikasi.kirim-ulang');
 
-    // Asisten update progres perbaikan
     Route::patch('/tindak-lanjut/{tindakLanjut}', [TindakLanjutController::class, 'update'])
         ->middleware('role:asisten')
         ->name('tindak-lanjut.update');
 
-    // Kelola fasilitas & cetak QR — KHUSUS admin (koordinator_lab & kepala_lab
-    // sudah tidak punya akses bikin/regenerasi QR lagi)
     Route::get('/fasilitas', [FasilitasController::class, 'index'])
         ->middleware('role:admin')
         ->name('fasilitas.index');
@@ -100,8 +97,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/fasilitas/{fasilitas}/regenerate-qr', [FasilitasController::class, 'regenerateQr'])
         ->middleware('role:admin')
         ->name('fasilitas.regenerate-qr');
+        Route::middleware(['auth'])->group(function () {
+            // Pastikan baris ini ada dan memiliki ->name('pengaduan')
+            Route::get('/pengaduan', [PengaduanController::class, 'index'])->name('pengaduan');
+            
+            // Jika Anda ingin membuat pengaduan baru (form create), tambahkan juga:
+            Route::get('/pengaduan/create', [PengaduanController::class, 'create'])->name('pengaduan.create');
+            Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store');
+        });
 
-    // Kelola data laboratorium — KHUSUS admin
     Route::get('/laboratorium', [LaboratoriumController::class, 'index'])
         ->middleware('role:admin')
         ->name('laboratorium.index');
@@ -112,8 +116,6 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:admin')
         ->name('laboratorium.update');
 
-    // Kelola user — KHUSUS admin (tambah akun, edit profil, reset password
-    // langsung tanpa OTP, hapus user)
     Route::prefix('admin')->middleware('role:admin')->name('admin.')->group(function () {
         Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
         Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');

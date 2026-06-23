@@ -6,7 +6,6 @@
     <title>@yield('title', 'SiLapor')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -29,22 +28,7 @@
 <body class="bg-gray-50 text-gray-800">
 
     @auth
-    <nav class="bg-white border-b border-gray-100 px-6 py-3 flex items-center justify-between">
-        <a href="{{ route('dashboard') }}" class="flex items-center gap-2 font-display font-bold text-silapor-700">
-            <img src="{{ asset('images/logo-silapor.png') }}" alt="SiLapor" class="w-8 h-8 rounded-lg object-contain">
-            SiLapor
-        </a>
-        <div class="flex items-center gap-4 text-sm">
-            @if (auth()->user()->isAdmin())
-                <a href="{{ route('admin.users.index') }}" class="text-silapor-600 font-medium hover:underline">Panel Admin</a>
-            @endif
-            <span class="text-gray-500">{{ auth()->user()->nama }} <span class="text-xs uppercase text-silapor-600">({{ auth()->user()->role }})</span></span>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button class="text-gray-500 hover:text-red-600">Keluar</button>
-            </form>
-        </div>
-    </nav>
+   
     @endauth
 
     <main>
