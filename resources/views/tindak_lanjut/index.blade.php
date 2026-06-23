@@ -144,7 +144,7 @@
                 </div>
                 <div class="text-left flex flex-col justify-center leading-tight min-w-[100px]">
                     <span class="text-sm font-extrabold block tracking-wide">
-                        {{ Auth::user()->name ?? 'Nurul' }}
+                        {{ Auth::user()->nama ?? 'Nurul' }}
                     </span>
                     <span class="text-[11px] font-light opacity-90 block">Asisten Lab</span>
                 </div>
@@ -184,11 +184,11 @@
                                 </td>
                                 <!-- Pelapor -->
                                 <td class="py-5 px-6 text-gray-700 font-medium">
-                                    {{ $t->pengaduan?->user?->name ?? 'Ray' }}
+                                    {{ $t->pengaduan?->user?->nama ?? 'Tidak diketahui' }}
                                 </td>
                                 <!-- PJ (Asisten yang ditugaskan) -->
                                 <td class="py-5 px-6 text-gray-700 font-semibold">
-                                    {{ $t->asisten?->name ?? 'Aan' }}
+                                    {{ $t->asisten?->nama ?? 'Belum ditugaskan' }}
                                 </td>
                                 <!-- Lokasi Masalah -->
                                 <td class="py-5 px-6 text-gray-600">

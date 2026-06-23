@@ -2,70 +2,200 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\FasilitasLab;
 use App\Models\Pengaduan;
-use App\Models\TindakLanjut;
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
+use Throwable;
 
 class PengaduanController extends Controller
 {
     /**
-     * Menampilkan daftar pengaduan (Tampilan utama yang konsisten).
-     * Gunakan ini sebagai satu-satunya rute tujuan untuk menu Pengaduan.
+     * Halaman pengaduan untuk user yang sudah login.
+     * Nama pelapor otomatis memakai user login, sedangkan detail fasilitas
+     * otomatis terisi setelah fasilitas dipilih.
      */
-    public function index()
+    public function index(): View
     {
-        try {
-            $tugas = TindakLanjut::with(['pengaduan' => function($query) {
-                        $query->with(['user', 'fasilitas.laboratorium']);
-                    }])
-                    ->latest()
-                    ->get();
-                    
-            // Semua akses sekarang mengarah ke view yang sama
-            return view('pengaduan.index', compact('tugas'));
-        } catch (\Exception $e) {
-            Log::error('Error Halaman Pengaduan: ' . $e->getMessage());
-            return view('pengaduan.index', ['tugas' => collect([])]);
+        return view('pengaduan.index', $this->formData('manual'));
+    }
+
+    /**
+     * Kompatibilitas tombol/route lama /pengaduan/create.
+     */
+    public function create(): View
+    {
+        return $this->createManual();
+    }
+
+    /**
+     * Kompatibilitas submit lama /pengaduan.
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        return $this->storeManual($request);
+    }
+
+    /**
+     * Form pengaduan dari QR. Fasilitas dikunci berdasarkan token QR.
+     */
+    public function createQr(string $qr_code): View
+    {
+        $fasilitas = FasilitasLab::with('laboratorium')
+            ->where('qr_code', $qr_code)
+            ->firstOrFail();
+
+        return view('pengaduan.create', $this->formData('qr', $fasilitas));
+    }
+
+    /**
+     * Simpan pengaduan dari QR.
+     */
+    public function storeQr(Request $request, string $qr_code): RedirectResponse
+    {
+        $fasilitas = FasilitasLab::with('laboratorium')
+            ->where('qr_code', $qr_code)
+            ->firstOrFail();
+
+        $validated = $this->validateReport($request, false);
+
+        return $this->persistReport($request, $validated, $fasilitas);
+    }
+
+    /**
+     * Form pengaduan manual publik. Bisa dibuka tanpa login.
+     */
+    public function createManual(): View
+    {
+        return view('pengaduan.create', $this->formData('manual'));
+    }
+
+    /**
+     * Simpan pengaduan manual berdasarkan fasilitas yang dipilih.
+     */
+    public function storeManual(Request $request): RedirectResponse
+    {
+        $validated = $this->validateReport($request, true);
+
+        $fasilitas = FasilitasLab::with('laboratorium')
+            ->findOrFail($validated['id_fasilitas']);
+
+        return $this->persistReport($request, $validated, $fasilitas);
+    }
+
+    /**
+     * QR lama yang masih menyimpan URL /lapor/{qr_code} tetap diarahkan ke route baru.
+     */
+    public function redirectLegacyQr(string $qr_code): RedirectResponse
+    {
+        return redirect()->route('pengaduan.qr.create', ['qr_code' => $qr_code]);
+    }
+
+    public function success(Pengaduan $pengaduan): View
+    {
+        $pengaduan->load(['fasilitas.laboratorium', 'pelapor']);
+
+        return view('pengaduan.success', compact('pengaduan'));
+    }
+
+    /**
+     * Data standar untuk form QR dan manual.
+     */
+    private function formData(string $mode, ?FasilitasLab $fasilitas = null): array
+    {
+        $facilities = FasilitasLab::with('laboratorium')
+            ->orderBy('nama_fasilitas')
+            ->get();
+
+        $facilitySource = $mode === 'qr' && $fasilitas !== null
+            ? collect([$fasilitas])
+            : $facilities;
+
+        return [
+            'mode' => $mode,
+            'fasilitas' => $fasilitas,
+            'facilities' => $facilities,
+            'facilityPayload' => $facilitySource->map(fn (FasilitasLab $item) => [
+                'id' => (string) $item->id_fasilitas,
+                'kode_barang' => $item->no_fasilitas ?: '-',
+                'nama_fasilitas' => $item->nama_fasilitas,
+                'lokasi_lab' => $this->formatLokasiLab($item),
+            ])->values(),
+            'isGuest' => !Auth::check(),
+            'users' => User::orderBy('nama')->get(['id_user', 'nama', 'role']),
+        ];
+    }
+
+    private function formatLokasiLab(FasilitasLab $fasilitas): string
+    {
+        $laboratorium = $fasilitas->laboratorium;
+
+        if (!$laboratorium) {
+            return '-';
         }
+
+        $nama = $laboratorium->nama_laboratorium ?: '-';
+        $lokasi = $laboratorium->lokasi;
+
+        return $lokasi ? $nama . ' - ' . $lokasi : $nama;
     }
 
-    /**
-     * Jika Anda ingin fitur "Buat Pengaduan" muncul di halaman yang sama,
-     * Anda bisa menggunakan modal di pengaduan.index atau mengarahkan ke sini.
-     * Pastikan view 'pengaduan.create' menggunakan layout yang sama dengan 'pengaduan.index'.
-     */
-    public function create()
+    private function validateReport(Request $request, bool $isManual): array
     {
-        return view('pengaduan.create');
-    }
+        $isGuest = !Auth::check();
 
-    /**
-     * Menyimpan data pengaduan baru.
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'id_fasilitas' => 'required',
-            'deskripsi'    => 'required',
-            'foto'         => 'required|image|mimes:jpeg,png,jpg|max:2048'
+        return $request->validate([
+            'id_fasilitas' => $isManual
+                ? ['required', 'integer', 'exists:fasilitas_lab,id_fasilitas']
+                : ['prohibited'],
+            'deskripsi_kerusakan' => ['required', 'string', 'max:2000'],
+            'foto_kerusakan' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'id_user' => $isGuest
+                ? ['required', 'integer', 'exists:users,id_user']
+                : ['prohibited'],
+        ], [
+            'id_fasilitas.required' => 'Fasilitas yang dilaporkan wajib dipilih.',
+            'id_fasilitas.exists' => 'Fasilitas yang dipilih tidak valid.',
+            'deskripsi_kerusakan.required' => 'Deskripsi kerusakan wajib diisi.',
+            'foto_kerusakan.required' => 'Foto kerusakan wajib diunggah.',
+            'foto_kerusakan.image' => 'File yang diunggah harus berupa gambar.',
+            'foto_kerusakan.mimes' => 'Foto kerusakan harus berformat JPG, JPEG, PNG, atau WEBP.',
+            'foto_kerusakan.max' => 'Ukuran foto maksimal 4 MB.',
+            'id_user.required' => 'Nama pelapor wajib dipilih dari user yang sudah terdaftar.',
+            'id_user.exists' => 'Nama pelapor yang dipilih tidak valid.',
+            'id_user.prohibited' => 'Nama pelapor otomatis memakai akun yang sedang login.',
         ]);
+    }
+
+    private function persistReport(
+        Request $request,
+        array $validated,
+        FasilitasLab $fasilitas
+    ): RedirectResponse {
+        $path = $request->file('foto_kerusakan')->store('pengaduan', 'public');
 
         try {
-            $fotoPath = $request->file('foto')->store('uploads', 'public');
-
-            Pengaduan::create([
-                'id_user'             => auth()->id(), 
-                'id_fasilitas'        => $request->id_fasilitas,
-                'deskripsi_kerusakan' => $request->deskripsi,
-                'foto_kerusakan'      => $fotoPath,
-                'status'              => 'PENDING'
+            $pengaduan = Pengaduan::create([
+                'foto_kerusakan' => $path,
+                'deskripsi_kerusakan' => $validated['deskripsi_kerusakan'],
+                'tanggal_lapor' => now()->toDateString(),
+                'status_pengaduan' => 'NEW',
+                'id_user' => Auth::check() ? Auth::id() : $validated['id_user'],
+                'id_fasilitas' => $fasilitas->id_fasilitas,
             ]);
-
-            return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil dikirim!');
-        } catch (\Exception $e) {
-            Log::error('Gagal simpan pengaduan: ' . $e->getMessage());
-            return back()->with('error', 'Terjadi kesalahan saat menyimpan data.');
+        } catch (Throwable $exception) {
+            Storage::disk('public')->delete($path);
+            Log::error('Gagal menyimpan pengaduan: ' . $exception->getMessage());
+            throw $exception;
         }
+
+        return redirect()
+            ->route('pengaduan.success', $pengaduan)
+            ->with('success', 'Pengaduan berhasil dikirim.');
     }
 }

@@ -134,7 +134,7 @@
                 <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#0090F5] shrink-0"><i class="fa-solid fa-user text-xl"></i></div>
                 <div class="text-left flex flex-col justify-center leading-tight">
                     <span class="text-[11px] font-light opacity-90 block">Selamat datang,</span>
-                    <span class="text-sm font-extrabold block tracking-wide">{{ Auth::user()->name ?? 'Asisten Lab' }}</span>
+                    <span class="text-sm font-extrabold block tracking-wide">{{ Auth::user()->nama ?? 'Asisten Lab' }}</span>
                 </div>
             </div>
         </header>
@@ -167,7 +167,7 @@
             <div class="px-8 py-6 border-b flex flex-col sm:flex-row justify-between items-center gap-4">
                 <h2 class="font-bold text-xl text-gray-800">Pengaduan Terbaru</h2>
                 @if($buatPengaduanRoute !== '#')
-                <a href="{{ route('pengaduan.create') }}"class="bg-[#0090F5] hover:bg-blue-600 transition-colors text-white px-6 py-3 rounded-xl font-bold text-sm w-full sm:w-auto text-center">+ Buat Pengaduan</a>
+                <a href="{{ $buatPengaduanRoute }}" class="bg-[#0090F5] hover:bg-blue-600 transition-colors text-white px-6 py-3 rounded-xl font-bold text-sm w-full sm:w-auto text-center">+ Buat Pengaduan</a>
                 @endif
             </div>
             <div class="overflow-x-auto custom-scrollbar">
@@ -200,7 +200,7 @@
                             @endphp
                             <tr class="hover:bg-slate-50 cursor-pointer" onclick="toggleDetails('row-{{ $idTugas }}')">
                                 <td class="py-5 px-6 text-sm font-semibold text-[#64748B]">PGD-{{ str_pad($t->id_pengaduan ?? $t->pengaduan?->id ?? $idTugas, 3, '0', STR_PAD_LEFT) }}</td>
-                                <td class="py-5 px-6 text-sm text-gray-700 font-medium">{{ $t->pengaduan?->user?->name ?? 'Ray' }}</td>
+                                <td class="py-5 px-6 text-sm text-gray-700 font-medium">{{ $t->pengaduan?->user?->nama ?? 'Tidak diketahui' }}</td>
                                 <td class="py-5 px-6 text-sm text-gray-500">{{ $t->pengaduan?->fasilitas?->laboratorium?->nama_laboratorium ?? 'Lab. Computer Network' }}</td>
                                 <td class="py-5 px-6 text-sm text-gray-800 font-semibold">{{ $t->pengaduan?->fasilitas?->nama_fasilitas ?? 'Komputer 01' }}</td>
                                 <td class="py-5 px-6 text-sm text-gray-500">{{ $t->pengaduan?->created_at ? $t->pengaduan->created_at->format('d/m/Y') : '13/06/2026' }}</td>

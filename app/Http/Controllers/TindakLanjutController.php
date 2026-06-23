@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\TindakLanjutController;
 use App\Mail\TugasPerbaikanMail;
 use App\Models\Notifikasi;
 use App\Models\Pengaduan;
@@ -15,12 +14,14 @@ use Illuminate\Support\Facades\Log;
 
 class TindakLanjutController extends Controller
 {
-    // Tambahkan ini di dalam class TindakLanjutController
-public function index()
-{
-    $tugas = TindakLanjut::all(); 
-    return view('tindak_lanjut.index', compact('tugas'));
-}
+    public function index()
+    {
+        $tugas = TindakLanjut::with(['pengaduan.user', 'pengaduan.fasilitas.laboratorium', 'asisten'])
+            ->latest('id_tindak_lanjut')
+            ->get();
+
+        return view('tindak_lanjut.index', compact('tugas'));
+    }
 
     /**
      * Dipanggil oleh koordinator_lab: menugaskan satu pengaduan ke seorang asisten.
@@ -98,9 +99,13 @@ public function index()
         $this->authorizeAsisten($tindakLanjut);
 
         $validated = $request->validate([
-            'catatan_perbaikan' => ['required', 'string'],
+            'catatan_perbaikan' => ['nullable', 'string'],
             'status_penanganan' => ['required', 'in:ON PROGRES,DONE'],
         ]);
+
+        if (!array_key_exists('catatan_perbaikan', $validated) || $validated['catatan_perbaikan'] === null) {
+            unset($validated['catatan_perbaikan']);
+        }
 
         $validated['tanggal_penanganan'] = now()->toDateString();
         $tindakLanjut->update($validated);

@@ -3,9 +3,24 @@
 @section('title', ($mode === 'qr' ? 'Lapor via QR' : 'Pengaduan Manual') . ' - SiLapor')
 
 @section('content')
-<div class="min-h-screen flex items-center justify-center p-6 bg-gray-50">
-    <div class="w-full max-w-lg bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+@php
+    $selectedFacilityId = $mode === 'qr'
+        ? (string) $fasilitas->id_fasilitas
+        : (string) old('id_fasilitas', '');
 
+    $selectedFacility = $mode === 'qr'
+        ? $fasilitas
+        : $facilities->firstWhere('id_fasilitas', old('id_fasilitas'));
+
+    $selectedKodeBarang = $selectedFacility?->no_fasilitas ?: '-';
+    $selectedNamaFasilitas = $selectedFacility?->nama_fasilitas ?: '-';
+    $selectedLabName = $selectedFacility?->laboratorium?->nama_laboratorium ?: '-';
+    $selectedLabLocation = $selectedFacility?->laboratorium?->lokasi;
+    $selectedLokasiLab = $selectedLabLocation ? $selectedLabName . ' - ' . $selectedLabLocation : $selectedLabName;
+@endphp
+
+<div class="min-h-screen flex items-center justify-center p-6 bg-gray-50">
+    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
         <div class="flex items-center gap-2 mb-6">
             <img src="{{ asset('images/logo-silapor.png') }}" alt="SiLapor" class="w-9 h-9 rounded-lg object-contain">
             <span class="font-display font-bold text-lg text-gray-900">SiLapor</span>
@@ -13,110 +28,14 @@
 
         @if ($isGuest)
             <div class="mb-6 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-sm px-4 py-3 flex items-center justify-between gap-3">
-                <span>Anda melapor sebagai <strong>Guest</strong> (tanpa login).</span>
+                <span>Anda melapor tanpa login. Nama pelapor wajib dipilih dari user yang sudah terdaftar.</span>
                 <a href="{{ route('login') }}" class="whitespace-nowrap font-semibold text-silapor-600 hover:underline">
                     Login dulu →
                 </a>
-<style>
-    .font-figma { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .shadow-figma-container { box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); }
-
-    /* Custom breakpoint untuk sidebar 850px */
-    @media (min-width: 850px) {
-        .sidebar-desktop { 
-            transform: translateX(0) !important; 
-        }
-        .hide-on-desktop { 
-            display: none !important; 
-        }
-    }
-</style>
-
-<div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
-    <!-- SIDEBAR KIRI (SAMA DENGAN DASHBOARD & TINDAK LANJUT) -->
-    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop md:sticky md:top-0 md:h-screen rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
-        <div class="p-8 flex-1 flex flex-col overflow-y-auto">
-            <!-- Brand Logo SiLapor -->
-            <div class="flex items-center gap-3 px-4">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
-                    <i class="fa-solid fa-square-poll-vertical text-xl"></i>
-                </div>
-                <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-[#0090F5] to-[#1E3A8A] bg-clip-text text-transparent">SiLapor</span>
-            </div>
-
-            <!-- List Menu Navigasi -->
-            <nav class="mt-10 space-y-2">
-                <!-- Dashboard -->
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-solid fa-table-columns text-lg"></i>
-                    <span>Dashboard</span>
-                </a>
-                
-                <!-- MENU PENGADUAN (ACTIVE) -->
-                <a href="{{ route('pengaduan.index') }}" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm transition-all">
-                    <div class="flex items-center gap-3.5">
-                        <i class="fa-regular fa-file-lines text-lg text-[#0090F5]"></i>
-                        <span>Pengaduan</span>
-                    </div>
-                    <div class="w-1.5 h-6 rounded-full bg-[#0090F5]"></div>
-                </a>
-
-                <!-- MENU TINDAK LANJUT -->
-                <a href="{{ route('tindak-lanjut.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-solid fa-screwdriver-wrench text-lg"></i>
-                    <span>Tindak Lanjut</span>
-                </a>
-                <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-solid fa-clock-rotate-left text-lg"></i>
-                    <span>Riwayat</span>
-                </a>
-                <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
-                    <span>Teknisi</span>
-                </a>
-                <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-regular fa-user text-lg"></i>
-                    <span>Profil</span>
-                </a>
-            </nav>
-        </div>
-        <div class="p-8 border-t border-gray-100 bg-white rounded-br-[36px] md:rounded-br-none">
-            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-red-50 hover:text-red-600 font-semibold text-sm transition-all">
-                <i class="fa-solid fa-right-from-bracket text-lg"></i>
-                <span>Logout</span>
-            </a>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">@csrf</form>
-        </div>
-    </aside>
-
-    <!-- Overlay Latar Belakang untuk Mobile Sidebar -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 z-40 hidden" onclick="toggleSidebar()"></div>
-
-    <!-- KONTEN UTAMA -->
-    <main class="flex-1 px-4 py-6 md:px-10 md:py-8 overflow-x-hidden w-full min-w-0">
-        <header class="flex items-center justify-between pb-8">
-            <div class="flex items-center gap-4">
-                <!-- Hamburger menu untuk mobile & tablet di bawah 850px -->
-                <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 focus:outline-none hide-on-desktop">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-                <h1 class="text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-wider uppercase">Pengaduan</h1>
-            </div>
-            
-            <div class="bg-[#0090F5] text-white px-5 py-2.5 rounded-2xl flex items-center gap-3.5 shadow-md">
-                <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#0090F5] shrink-0">
-                    <i class="fa-solid fa-user text-xl"></i>
-                </div>
-                <div class="text-left flex flex-col justify-center leading-tight">
-                    <span class="text-[11px] font-light opacity-90 block">Selamat datang,</span>
-                    <span class="text-sm font-extrabold block tracking-wide">{{ auth()->user()->name ?? 'User' }}</span>
-                </div>
             </div>
         @else
             <div class="mb-6 rounded-xl bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3">
-                Melapor sebagai <strong>{{ auth()->user()->nama }}</strong>.
+                Nama pelapor otomatis memakai akun login: <strong>{{ auth()->user()->nama }}</strong>.
             </div>
         @endif
 
@@ -131,8 +50,8 @@
 
         <p class="text-gray-500 text-sm mb-6">
             {{ $mode === 'qr'
-                ? 'Data fasilitas dikunci berdasarkan QR Code yang dipindai.'
-                : 'Pilih fasilitas yang rusak, lalu lengkapi detail pengaduan.' }}
+                ? 'Kode barang, nama fasilitas, dan lokasi lab otomatis terkunci berdasarkan QR Code yang dipindai.'
+                : 'Pilih fasilitas yang rusak. Kode barang, nama fasilitas, dan lokasi lab akan terisi otomatis.' }}
         </p>
 
         @if ($errors->any())
@@ -149,39 +68,47 @@
               class="space-y-5">
             @csrf
 
-            @if ($mode === 'qr')
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Barang</label>
-                        <input type="text" value="{{ $fasilitas->nama_fasilitas }}" readonly
-                               class="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-2.5 text-gray-600">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Lokasi Lab</label>
-                        <input type="text" value="{{ $fasilitas->laboratorium->nama_laboratorium }}" readonly
-                               class="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-2.5 text-gray-600">
-                    </div>
-                </div>
-
-                @if ($fasilitas->no_fasilitas)
-                    <p class="text-xs text-gray-400">Kode aset: {{ $fasilitas->no_fasilitas }}</p>
-                @endif
-            @else
+            @if ($isGuest)
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Fasilitas yang Dilaporkan
+                        Nama Pelapor <span class="text-red-500">*</span>
                     </label>
-                    <select name="id_fasilitas" required
+                    <select name="id_user" required
+                            class="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-silapor-500">
+                        <option value="">— Pilih nama user terdaftar —</option>
+                        @foreach ($users as $user)
+                            <option value="{{ $user->id_user }}"
+                                    {{ (string) old('id_user') === (string) $user->id_user ? 'selected' : '' }}>
+                                {{ $user->nama }} ({{ $user->role }})
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="text-xs text-gray-400 mt-1">Pengaduan tanpa login tidak bisa anonim. Pilih nama sesuai data user yang sudah terdaftar.</p>
+                </div>
+            @else
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Pelapor</label>
+                    <input type="text" value="{{ auth()->user()->nama }}" readonly
+                           class="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-2.5 text-gray-600">
+                </div>
+            @endif
+
+            @if ($mode === 'manual')
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Fasilitas yang Dilaporkan <span class="text-red-500">*</span>
+                    </label>
+                    <select id="id_fasilitas" name="id_fasilitas" required
                             class="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-silapor-500">
                         <option value="">— Pilih fasilitas —</option>
                         @foreach ($facilities as $item)
                             <option value="{{ $item->id_fasilitas }}"
-                                    {{ (string) old('id_fasilitas') === (string) $item->id_fasilitas ? 'selected' : '' }}>
+                                    {{ $selectedFacilityId === (string) $item->id_fasilitas ? 'selected' : '' }}>
                                 {{ $item->nama_fasilitas }}
                                 @if ($item->no_fasilitas)
                                     ({{ $item->no_fasilitas }})
                                 @endif
-                                — {{ $item->laboratorium->nama_laboratorium }}
+                                — {{ $item->laboratorium?->nama_laboratorium ?? '-' }}
                             </option>
                         @endforeach
                     </select>
@@ -192,35 +119,32 @@
                 </div>
             @endif
 
-            @if ($isGuest)
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Nama Pelapor <span class="text-gray-400 font-normal">(opsional)</span>
-                    </label>
-                    <select name="id_user"
-                            class="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-silapor-500">
-                        <option value="">— Lapor tanpa nama (anonim) —</option>
-                        @foreach ($users as $user)
-                            <option value="{{ $user->id_user }}"
-                                    {{ (string) old('id_user') === (string) $user->id_user ? 'selected' : '' }}>
-                                {{ $user->nama }} ({{ $user->role }})
-                            </option>
-                        @endforeach
-                    </select>
-                    <p class="text-xs text-gray-400 mt-1">
-                        Nama hanya dapat dipilih dari pengguna yang sudah terdaftar. Pengaduan anonim tetap diperbolehkan.
-                    </p>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Kode Barang</label>
+                    <input id="kode_barang" type="text" value="{{ $selectedKodeBarang }}" readonly
+                           class="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-2.5 text-gray-600">
                 </div>
-            @endif
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Fasilitas</label>
+                    <input id="nama_fasilitas" type="text" value="{{ $selectedNamaFasilitas }}" readonly
+                           class="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-2.5 text-gray-600">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Lokasi Lab</label>
+                    <input id="lokasi_lab" type="text" value="{{ $selectedLokasiLab }}" readonly
+                           class="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-2.5 text-gray-600">
+                </div>
+            </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Foto Kerusakan</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Foto Kerusakan <span class="text-red-500">*</span></label>
                 <input type="file" name="foto_kerusakan" accept="image/*" capture="environment" required
                        class="w-full text-sm rounded-xl border border-gray-300 px-3 py-2.5 file:mr-3 file:rounded-lg file:border-0 file:bg-silapor-50 file:text-silapor-700 file:px-3 file:py-1.5">
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi Kerusakan</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi Kerusakan <span class="text-red-500">*</span></label>
                 <textarea name="deskripsi_kerusakan" rows="4" required
                           placeholder="Contoh: Monitor tidak menyala sama sekali sejak pagi ini."
                           class="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-silapor-500">{{ old('deskripsi_kerusakan') }}</textarea>
@@ -247,38 +171,24 @@
 </div>
 
 <script>
-    // Fungsi responsif toggle sidebar untuk mobile/tablet di bawah 850px
-    function handleResponsiveSidebar() {
-        const sidebar = document.getElementById('sidebar-menu');
-        const overlay = document.getElementById('sidebar-overlay');
-        
-        if (window.innerWidth < 850) {
-            sidebar.classList.add('-translate-x-full');
-            sidebar.classList.remove('translate-x-0');
-            overlay.classList.add('hidden');
-        } else {
-            sidebar.classList.remove('-translate-x-full');
-            sidebar.classList.add('translate-x-0');
-            overlay.classList.add('hidden');
-        }
+    const facilities = @json($facilityPayload);
+    const facilityMap = Object.fromEntries(facilities.map((item) => [String(item.id), item]));
+
+    function fillFacilityDetail(id) {
+        const detail = facilityMap[String(id)] || null;
+        document.getElementById('kode_barang').value = detail?.kode_barang || '-';
+        document.getElementById('nama_fasilitas').value = detail?.nama_fasilitas || '-';
+        document.getElementById('lokasi_lab').value = detail?.lokasi_lab || '-';
     }
 
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar-menu');
-        const overlay = document.getElementById('sidebar-overlay');
-        
-        if (sidebar.classList.contains('-translate-x-full')) {
-            sidebar.classList.remove('-translate-x-full');
-            sidebar.classList.add('translate-x-0');
-            overlay.classList.remove('hidden');
-        } else {
-            sidebar.classList.add('-translate-x-full');
-            sidebar.classList.remove('translate-x-0');
-            overlay.classList.add('hidden');
-        }
+    const facilitySelect = document.getElementById('id_fasilitas');
+    if (facilitySelect) {
+        facilitySelect.addEventListener('change', function () {
+            fillFacilityDetail(this.value);
+        });
+        fillFacilityDetail(facilitySelect.value);
+    } else {
+        fillFacilityDetail(@json($selectedFacilityId));
     }
-
-    window.addEventListener('resize', handleResponsiveSidebar);
-    window.addEventListener('load', handleResponsiveSidebar);
 </script>
 @endsection
