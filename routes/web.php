@@ -97,6 +97,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/fasilitas/{fasilitas}/regenerate-qr', [FasilitasController::class, 'regenerateQr'])
         ->middleware('role:admin')
         ->name('fasilitas.regenerate-qr');
+        Route::middleware(['auth'])->group(function () {
+            // Pastikan baris ini ada dan memiliki ->name('pengaduan')
+            Route::get('/pengaduan', [PengaduanController::class, 'index'])->name('pengaduan');
+            
+            // Jika Anda ingin membuat pengaduan baru (form create), tambahkan juga:
+            Route::get('/pengaduan/create', [PengaduanController::class, 'create'])->name('pengaduan.create');
+            Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store');
+        });
 
     Route::get('/laboratorium', [LaboratoriumController::class, 'index'])
         ->middleware('role:admin')
