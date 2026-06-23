@@ -4,6 +4,12 @@
 
 @push('head')
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+    /* Beberapa browser/device menampilkan preview kamera depan secara
+       ter-mirror (efek "cermin"). Kita paksa selalu normal (tidak mirror),
+       supaya orientasi QR yang terbaca tetap sesuai aslinya. */
+    #reader video { transform: none !important; }
+</style>
 @endpush
 
 @section('content')
@@ -23,8 +29,20 @@
 
         <p id="scan-status" class="text-gray-400 text-xs mt-4">Meminta izin kamera…</p>
 
-        <div class="mt-8 pt-6 border-t border-gray-800">
-            <p class="text-gray-400 text-sm mb-3">Tidak dapat memindai QR?</p>
+        {{-- Hidden div, dipakai library buat decode gambar yg di-upload, bukan kamera --}}
+        <div id="reader-file-preview" class="hidden"></div>
+
+        <div class="mt-6">
+            <p class="text-gray-400 text-sm mb-3">Kamera tidak bisa membaca QR-nya?</p>
+            <label for="qr-file-input"
+                   class="inline-flex items-center justify-center w-full rounded-xl border border-gray-700 bg-gray-800 hover:bg-gray-700 text-white text-sm font-semibold px-4 py-3 transition cursor-pointer">
+                📷 Upload Foto QR
+            </label>
+            <input type="file" id="qr-file-input" accept="image/*" capture="environment" class="hidden">
+        </div>
+
+        <div class="mt-4 pt-6 border-t border-gray-800">
+            <p class="text-gray-400 text-sm mb-3">Atau, kalau masih tidak bisa juga:</p>
             <a href="{{ route('pengaduan.manual.create') }}"
                class="inline-flex items-center justify-center w-full rounded-xl border border-gray-700 bg-gray-800 hover:bg-gray-700 text-white text-sm font-semibold px-4 py-3 transition">
                 Buat Pengaduan Manual
@@ -73,8 +91,29 @@
     ).then(() => {
         statusEl.textContent = 'Arahkan kamera ke QR Code…';
     }).catch((error) => {
-        statusEl.textContent = 'Kamera tidak dapat diakses. Gunakan pengaduan manual.';
+        statusEl.textContent = 'Kamera tidak dapat diakses. Silakan upload foto QR di bawah.';
         console.error(error);
+    });
+
+    // Fallback: kalau kamera tidak bisa baca QR (blur, pantulan cahaya, dll),
+    // user bisa foto/upload gambar QR-nya, lalu di-decode dari gambar itu.
+    // Pakai instance Html5Qrcode TERPISAH supaya tidak konflik dengan kamera yang aktif.
+    const html5QrCodeFile = new Html5Qrcode('reader-file-preview');
+
+    document.getElementById('qr-file-input').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        statusEl.textContent = 'Membaca QR dari foto…';
+
+        html5QrCodeFile.scanFile(file, false)
+            .then((decodedText) => {
+                goToQrReport(decodedText);
+            })
+            .catch((error) => {
+                statusEl.textContent = 'QR tidak terbaca dari foto ini. Coba foto lain, atau gunakan pengaduan manual.';
+                console.error(error);
+            });
     });
 </script>
 @endsection
