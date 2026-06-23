@@ -87,7 +87,7 @@
                 </a>
 
                 <!-- Riwayat -->
-                <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
+                <a href="{{ route('riwayat.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
                     <i class="fa-solid fa-clock-rotate-left text-lg"></i>
                     <span>Riwayat</span>
                 </a>

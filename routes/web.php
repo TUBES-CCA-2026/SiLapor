@@ -31,12 +31,14 @@ Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'
 Route::get('/scan', [ScanController::class, 'index'])->name('scan.index');
 
 // 2. Rute Prefix Lapor (Pastikan tidak bentrok)
-Route::prefix('lapor')->name('pengaduan.')->group(function () {
-    Route::get('/qr/{qr_code}', [PengaduanController::class, 'createQr'])->name('qr.create');
-    Route::post('/qr/{qr_code}', [PengaduanController::class, 'storeQr'])->name('qr.store');
-    Route::get('/manual', [PengaduanController::class, 'createManual'])->name('manual.create'); // Akses: pengaduan.manual.create
-    Route::post('/manual', [PengaduanController::class, 'storeManual'])->name('manual.store');
-    Route::get('/sukses/{pengaduan}', [PengaduanController::class, 'success'])->name('success');
+// Tambahkan baris ini di dalam grup middleware('auth')
+use App\Http\Controllers\RiwayatController;
+
+Route::middleware('auth')->group(function () {
+    // ... rute lainnya
+    
+    // Pastikan baris ini ada
+    Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat.index');
 });
 
 // 3. Rute Terlindungi (Auth)
