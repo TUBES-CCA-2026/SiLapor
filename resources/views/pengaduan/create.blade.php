@@ -9,12 +9,24 @@
 
 <style>
     .font-figma { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .shadow-figma-container { box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); }
+
+    /* Custom breakpoint untuk sidebar 850px */
+    @media (min-width: 850px) {
+        .sidebar-desktop { 
+            transform: translateX(0) !important; 
+        }
+        .hide-on-desktop { 
+            display: none !important; 
+        }
+    }
 </style>
 
 <div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
-    <!-- SIDEBAR KIRI (SAMA DENGAN DASHBOARD) -->
-    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full md:translate-x-0 md:sticky md:top-0 md:h-screen rounded-r-[36px] shadow-sm shrink-0">
+    <!-- SIDEBAR KIRI (SAMA DENGAN DASHBOARD & TINDAK LANJUT) -->
+    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop md:sticky md:top-0 md:h-screen rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
         <div class="p-8 flex-1 flex flex-col overflow-y-auto">
+            <!-- Brand Logo SiLapor -->
             <div class="flex items-center gap-3 px-4">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
                     <i class="fa-solid fa-square-poll-vertical text-xl"></i>
@@ -22,14 +34,16 @@
                 <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-[#0090F5] to-[#1E3A8A] bg-clip-text text-transparent">SiLapor</span>
             </div>
 
+            <!-- List Menu Navigasi -->
             <nav class="mt-10 space-y-2">
+                <!-- Dashboard -->
                 <a href="{{ route('dashboard') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
                     <i class="fa-solid fa-table-columns text-lg"></i>
                     <span>Dashboard</span>
                 </a>
                 
                 <!-- MENU PENGADUAN (ACTIVE) -->
-                <a href="{{ route('pengaduan') }}" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm transition-all">
+                <a href="{{ route('pengaduan.index') }}" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm transition-all">
                     <div class="flex items-center gap-3.5">
                         <i class="fa-regular fa-file-lines text-lg text-[#0090F5]"></i>
                         <span>Pengaduan</span>
@@ -37,7 +51,8 @@
                     <div class="w-1.5 h-6 rounded-full bg-[#0090F5]"></div>
                 </a>
 
-                <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
+                <!-- MENU TINDAK LANJUT -->
+                <a href="{{ route('tindak-lanjut.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
                     <i class="fa-solid fa-screwdriver-wrench text-lg"></i>
                     <span>Tindak Lanjut</span>
                 </a>
@@ -55,7 +70,7 @@
                 </a>
             </nav>
         </div>
-        <div class="p-8 border-t border-gray-100 bg-white rounded-br-[36px]">
+        <div class="p-8 border-t border-gray-100 bg-white rounded-br-[36px] md:rounded-br-none">
             <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-red-50 hover:text-red-600 font-semibold text-sm transition-all">
                 <i class="fa-solid fa-right-from-bracket text-lg"></i>
                 <span>Logout</span>
@@ -64,17 +79,29 @@
         </div>
     </aside>
 
+    <!-- Overlay Latar Belakang untuk Mobile Sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 z-40 hidden" onclick="toggleSidebar()"></div>
+
     <!-- KONTEN UTAMA -->
-    <main class="flex-1 px-6 py-6 md:px-10 md:py-8 overflow-x-hidden">
+    <main class="flex-1 px-4 py-6 md:px-10 md:py-8 overflow-x-hidden w-full min-w-0">
         <header class="flex items-center justify-between pb-8">
-            <h1 class="text-2xl font-extrabold text-[#2C3E50] tracking-wider uppercase">Pengaduan</h1>
+            <div class="flex items-center gap-4">
+                <!-- Hamburger menu untuk mobile & tablet di bawah 850px -->
+                <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 focus:outline-none hide-on-desktop">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <h1 class="text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-wider uppercase">Pengaduan</h1>
+            </div>
+            
             <div class="bg-[#0090F5] text-white px-5 py-2.5 rounded-2xl flex items-center gap-3.5 shadow-md">
                 <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#0090F5] shrink-0">
                     <i class="fa-solid fa-user text-xl"></i>
                 </div>
                 <div class="text-left flex flex-col justify-center leading-tight">
                     <span class="text-[11px] font-light opacity-90 block">Selamat datang,</span>
-                    <span class="text-sm font-extrabold block tracking-wide">{{ auth()->user()->nama ?? 'User' }}</span>
+                    <span class="text-sm font-extrabold block tracking-wide">{{ auth()->user()->name ?? 'User' }}</span>
                 </div>
             </div>
         </header>
@@ -83,7 +110,7 @@
         <div class="bg-white p-8 rounded-[32px] shadow-figma-container border border-gray-150 w-full">
             <form action="{{ route('pengaduan.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
-                <div class="grid grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Pelapor</label>
                         <select name="id_user" class="w-full border border-gray-200 rounded-2xl px-5 py-4 focus:ring-2 focus:ring-[#0090F5] bg-[#F8FAFC]">
@@ -134,4 +161,40 @@
         </div>
     </main>
 </div>
+
+<script>
+    // Fungsi responsif toggle sidebar untuk mobile/tablet di bawah 850px
+    function handleResponsiveSidebar() {
+        const sidebar = document.getElementById('sidebar-menu');
+        const overlay = document.getElementById('sidebar-overlay');
+        
+        if (window.innerWidth < 850) {
+            sidebar.classList.add('-translate-x-full');
+            sidebar.classList.remove('translate-x-0');
+            overlay.classList.add('hidden');
+        } else {
+            sidebar.classList.remove('-translate-x-full');
+            sidebar.classList.add('translate-x-0');
+            overlay.classList.add('hidden');
+        }
+    }
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar-menu');
+        const overlay = document.getElementById('sidebar-overlay');
+        
+        if (sidebar.classList.contains('-translate-x-full')) {
+            sidebar.classList.remove('-translate-x-full');
+            sidebar.classList.add('translate-x-0');
+            overlay.classList.remove('hidden');
+        } else {
+            sidebar.classList.add('-translate-x-full');
+            sidebar.classList.remove('translate-x-0');
+            overlay.classList.add('hidden');
+        }
+    }
+
+    window.addEventListener('resize', handleResponsiveSidebar);
+    window.addEventListener('load', handleResponsiveSidebar);
+</script>
 @endsection

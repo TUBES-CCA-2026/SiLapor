@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\TindakLanjutController;
 use App\Mail\TugasPerbaikanMail;
 use App\Models\Notifikasi;
 use App\Models\Pengaduan;
@@ -14,6 +15,13 @@ use Illuminate\Support\Facades\Log;
 
 class TindakLanjutController extends Controller
 {
+    // Tambahkan ini di dalam class TindakLanjutController
+public function index()
+{
+    $tugas = TindakLanjut::all(); 
+    return view('tindak_lanjut.index', compact('tugas'));
+}
+
     /**
      * Dipanggil oleh koordinator_lab: menugaskan satu pengaduan ke seorang asisten.
      * Sesuai flowchart Koordinator Lab: "Sistem Mengirimkan Notifikasi Email ke
