@@ -81,7 +81,7 @@
                 <div class="flex items-center justify-center gap-3">
                     <a href="{{ route('scan.index') }}" class="text-silapor-600 hover:underline">Scan QR</a>
                     <span class="text-gray-300">|</span>
-                    <a href="{{ route('pengaduan.manual.create') }}" class="text-silapor-600 hover:underline">Lapor Manual</a>
+                    <a href="{{ route('pengaduan.create') }}" class="text-silapor-600 hover:underline">Lapor Manual</a>
                 </div>
             </div>
         </div>

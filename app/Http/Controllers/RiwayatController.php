@@ -11,11 +11,11 @@ class RiwayatController extends Controller
     public function index()
     {
         // Debug: Cek apakah kolom status ada di tabel pengaduan
-        if (!Schema::hasColumn('pengaduan', 'status')) {
+        if (!Schema::hasColumn('pengaduan', 'status_pengaduan')) {
             dd("Error: Kolom 'status' tidak ditemukan di tabel 'pengaduan'. Cek nama kolom Anda!");
         }
 
-        $riwayat = Pengaduan::where('status', 'SELESAI')
+        $riwayat = Pengaduan::where('status_pengaduan', 'DONE')
                             ->latest()
                             ->get();
 
