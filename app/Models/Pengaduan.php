@@ -18,6 +18,9 @@ class Pengaduan extends Model
         'tanggal_lapor' => 'date',
     ];
 
+    public function user() {
+        return $this->belongsTo(User::class, 'id_user');
+    }
     public function pelapor()
     {
         return $this->belongsTo(User::class, 'id_user', 'id_user');
