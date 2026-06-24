@@ -84,28 +84,18 @@ textarea {
     text-decoration: none;
 }
 
-.brand-mark {
-    width: 38px;
-    height: 38px;
-    flex: 0 0 38px;
-    display: inline-grid;
-    place-items: center;
-    border-radius: 10px;
-    background: linear-gradient(135deg, var(--accent), #2fa6ff);
-    box-shadow: 0 8px 18px rgba(13, 143, 242, .28);
-    overflow: hidden;
-    color: #fff;
-}
-
-.brand-mark svg {
-    width: 72%;
-    height: 72%;
+.brand-logo {
+    width: 58px;
+    height: 58px;
+    flex: 0 0 58px;
+    display: block;
+    object-fit: contain;
 }
 
 .brand-text {
     color: var(--accent-dark);
-    font-weight: 700;
-    font-size: 24px;
+    font-weight: 800;
+    font-size: 27px;
     letter-spacing: -.5px;
 }
 
@@ -873,12 +863,7 @@ textarea {
     <div class="app-shell">
         <aside class="sidebar">
             <a href="{{ url('/dashboard') }}" class="brand" aria-label="SiLapor Dashboard">
-                <span class="brand-mark" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" role="img">
-                        <rect x="5" y="5" width="14" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
-                        <path d="M9 15V11M12 15V8M15 15v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </span>
+                <img src="{{ asset('images/logo-silapor.png') }}" alt="Logo SiLapor" class="brand-logo">
                 <span class="brand-text">SiLapor</span>
             </a>
 
