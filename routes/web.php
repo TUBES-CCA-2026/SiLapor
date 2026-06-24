@@ -76,6 +76,22 @@ Route::prefix('lapor')->name('pengaduan.')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::get('/laporan', [DashboardController::class, 'laporan'])
+        ->middleware('role:koordinator_lab')
+        ->name('laporan.index');
+
+    Route::get('/penugasan', [DashboardController::class, 'penugasan'])
+        ->middleware('role:koordinator_lab')
+        ->name('penugasan.index');
+
+    Route::get('/detail-laporan', [DashboardController::class, 'detailLaporan'])
+        ->middleware('role:koordinator_lab')
+        ->name('detail-laporan.index');
+
+    Route::get('/dashboard/pengaduan/{pengaduan}/detail', [DashboardController::class, 'detailPengaduan'])
+        ->middleware('role:koordinator_lab')
+        ->name('dashboard.pengaduan.detail');
+
     Route::post('/pengaduan/{pengaduan}/assign', [TindakLanjutController::class, 'assign'])
         ->middleware('role:koordinator_lab')
         ->name('tindak-lanjut.assign');

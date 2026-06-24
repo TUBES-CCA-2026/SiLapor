@@ -6,6 +6,7 @@ use App\Models\Notifikasi;
 use App\Models\Pengaduan;
 use App\Models\TindakLanjut;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -33,6 +34,51 @@ class DashboardController extends Controller
     }
 
     /**
+     * Halaman menu Laporan pada sidebar koordinator.
+     */
+    public function laporan()
+    {
+        $pengaduanList = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten'])
+            ->orderByDesc('id_pengaduan')
+            ->get();
+
+        return view('laporan.index', compact('pengaduanList'));
+    }
+
+    /**
+     * Halaman menu Penugasan pada sidebar koordinator.
+     */
+    public function penugasan()
+    {
+        $pengaduanList = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten'])
+            ->orderByDesc('id_pengaduan')
+            ->get();
+
+        $asisten = User::where('role', 'asisten')
+            ->orderBy('nama')
+            ->get();
+
+        return view('penugasan.index', compact('pengaduanList', 'asisten'));
+    }
+
+    /**
+     * Halaman menu Detail Laporan pada sidebar koordinator.
+     */
+    public function detailLaporan()
+    {
+        $pengaduanList = Pengaduan::with([
+                'fasilitas.laboratorium',
+                'pelapor',
+                'tindakLanjut.asisten',
+                'tindakLanjut.penugas',
+            ])
+            ->orderBy('id_pengaduan')
+            ->get();
+
+        return view('detail-laporan.index', compact('pengaduanList'));
+    }
+
+    /**
      * Dashboard koordinator_lab: lihat pengaduan masuk & berikan tugas
      * perbaikan ke asisten (inilah fitur "koordinator memberi asisten tugas
      * perbaikan" yang memicu notifikasi email, lihat TindakLanjutController@assign).
@@ -47,12 +93,68 @@ class DashboardController extends Controller
         $pengaduanDitangani = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten'])
             ->whereIn('status_pengaduan', ['HANDLED', 'DONE'])
             ->orderByDesc('id_pengaduan')
-            ->take(20)
             ->get();
+
+        // Data utama untuk tabel dashboard koordinator.
+        $pengaduanList = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten'])
+            ->orderByDesc('id_pengaduan')
+            ->take(50)
+            ->get();
+
+        $totalLaporan = Pengaduan::count();
+        $proses = Pengaduan::where('status_pengaduan', 'HANDLED')->count();
+        $selesai = Pengaduan::where('status_pengaduan', 'DONE')->count();
 
         $asisten = User::where('role', 'asisten')->orderBy('nama')->get();
 
-        return view('dashboard.koordinator', compact('pengaduanBaru', 'pengaduanDitangani', 'asisten'));
+        return view('dashboard.koordinator', compact(
+            'pengaduanBaru',
+            'pengaduanDitangani',
+            'pengaduanList',
+            'totalLaporan',
+            'proses',
+            'selesai',
+            'asisten'
+        ));
+    }
+
+    /**
+     * Endpoint JSON untuk popup detail pengaduan pada dashboard koordinator.
+     */
+    public function detailPengaduan(Pengaduan $pengaduan): JsonResponse
+    {
+        $pengaduan->load(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten']);
+
+        $statusLabel = match ($pengaduan->status_pengaduan) {
+            'NEW' => 'Baru',
+            'HANDLED' => 'On Progress',
+            'DONE' => 'Selesai',
+            default => $pengaduan->status_pengaduan,
+        };
+
+        $statusClass = match ($pengaduan->status_pengaduan) {
+            'NEW' => 'new',
+            'HANDLED' => 'progress',
+            'DONE' => 'done',
+            default => 'new',
+        };
+
+        return response()->json([
+            'id' => 'PGD-' . str_pad((string) $pengaduan->id_pengaduan, 3, '0', STR_PAD_LEFT),
+            'status' => $pengaduan->status_pengaduan,
+            'statusLabel' => $statusLabel,
+            'statusClass' => $statusClass,
+            'pelapor' => $pengaduan->pelapor->nama ?? 'Guest',
+            'lokasi' => $pengaduan->fasilitas?->laboratorium?->nama_laboratorium ?? '-',
+            'fasilitas' => $pengaduan->fasilitas?->nama_fasilitas ?? '-',
+            'tanggal' => $pengaduan->tanggal_lapor
+                ? $pengaduan->tanggal_lapor->format('d/m/Y')
+                : '-',
+            'deskripsi' => $pengaduan->deskripsi_kerusakan ?? '-',
+            'foto' => $pengaduan->foto_kerusakan
+                ? asset('storage/' . $pengaduan->foto_kerusakan)
+                : null,
+        ]);
     }
 
     protected function dashboardAsisten($user)

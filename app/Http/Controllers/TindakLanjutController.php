@@ -29,14 +29,18 @@ class TindakLanjutController extends Controller
             ->where('role', 'asisten')
             ->firstOrFail();
 
-        $tindakLanjut = TindakLanjut::create([
-            'id_pengaduan' => $pengaduan->id_pengaduan,
-            'id_user' => Auth::id(), // koordinator yang menugaskan
-            'id_asisten' => $asisten->id_user,
-            'status_penanganan' => 'ON PROGRES',
-        ]);
+        $tindakLanjut = TindakLanjut::updateOrCreate(
+            ['id_pengaduan' => $pengaduan->id_pengaduan],
+            [
+                'id_user' => Auth::id(), // koordinator yang menugaskan
+                'id_asisten' => $asisten->id_user,
+                'status_penanganan' => $pengaduan->status_pengaduan === 'DONE' ? 'DONE' : 'ON PROGRES',
+            ]
+        );
 
-        $pengaduan->update(['status_pengaduan' => 'HANDLED']);
+        if ($pengaduan->status_pengaduan !== 'DONE') {
+            $pengaduan->update(['status_pengaduan' => 'HANDLED']);
+        }
 
         $this->kirimNotifikasiAsisten($tindakLanjut, $asisten);
 
