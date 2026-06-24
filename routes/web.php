@@ -10,7 +10,8 @@ use App\Http\Controllers\PengaduanController;
 use App\Http\Controllers\ScanController;
 use App\Http\Controllers\TindakLanjutController;
 use App\Http\Controllers\RiwayatController;
-use App\Http\Controllers\TeknisiController; // <-- PASTIKAN INI DITAMBAHKAN
+use App\Http\Controllers\TeknisiController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // 1. Rute Publik
@@ -21,7 +22,7 @@ Route::get('/', function () {
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
 
-// Password Reset Routes (Tetap sama)
+// Password Reset Routes
 Route::controller(ForgotPasswordController::class)->group(function () {
     Route::get('/forgot-password', 'showEmailForm')->name('password.request');
     Route::post('/forgot-password', 'sendOtp')->name('password.email');
@@ -52,7 +53,9 @@ Route::middleware('auth')->group(function () {
     // Riwayat & Teknisi
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat.index');
     Route::get('/teknisi', [TeknisiController::class, 'index'])->name('teknisi.index');
-    Route::get('/teknisi', [TeknisiController::class, 'index'])->name('teknisi.index');
 
-    
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });

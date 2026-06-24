@@ -40,37 +40,35 @@
                 <a href="{{ route('riwayat.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
                     <i class="fa-solid fa-clock-rotate-left text-lg"></i> <span>Riwayat</span>
                 </a>
-                
-                <a href="{{ route('teknisi.index') }}" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm group transition-all">
+                <a href="{{ route('teknisi.index') }}" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm transition-all">
                     <div class="flex items-center gap-3.5">
                         <i class="fa-solid fa-triangle-exclamation text-lg text-[#0090F5]"></i> <span>Teknisi</span>
                     </div>
                     <div class="w-1.5 h-6 rounded-full bg-[#0090F5]"></div>
                 </a>
-
-                <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
+                <a href="{{ route('profile.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
                     <i class="fa-regular fa-user text-lg"></i> <span>Profil</span>
                 </a>
             </nav>
         </div>
+        <!-- Logout Section -->
+        <div class="p-8">
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-red-50 hover:text-red-600 font-semibold text-sm transition-all">
+                <i class="fa-solid fa-right-from-bracket text-lg"></i> <span>Logout</span>
+            </a>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">@csrf</form>
+        </div>
     </aside>
 
-    <!-- Overlay untuk mobile agar bisa menutup sidebar -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 z-40 hidden md:hidden" onclick="toggleSidebar()"></div>
 
     <main class="flex-1 px-4 py-6 md:px-10 md:py-8 space-y-6">
         <header class="flex items-center justify-between pb-4 border-b border-gray-100/50">
             <div class="flex items-center gap-3">
-                <!-- Tombol Menu untuk Mobile -->
                 <button onclick="toggleSidebar()" class="md:hidden p-2 text-gray-600">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </button>
                 <h1 class="text-2xl font-extrabold text-[#2C3E50] uppercase tracking-wider">Daftar Teknisi</h1>
-            </div>
-            
-            <div class="bg-[#0090F5] text-white px-5 py-2.5 rounded-2xl flex items-center gap-3 shadow-md">
-                <i class="fa-solid fa-user"></i>
-                <span class="font-bold">{{ Auth::user()->name ?? 'Nurul' }}</span>
             </div>
         </header>
 
@@ -101,7 +99,6 @@
     </main>
 </div>
 
-<!-- Tambahkan fungsi toggle untuk sidebar -->
 <script>
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar-menu');
