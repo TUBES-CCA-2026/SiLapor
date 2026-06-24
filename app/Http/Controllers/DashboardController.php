@@ -29,9 +29,16 @@ class DashboardController extends Controller
 
         if ($user->isLaboran() || $user->isAdmin()) {
             return $this->dashboardLaboran($user);
+        if ($user->isKepalaLab()) {
+            return $this->dashboardKepalaLab($user);
+        }
+
+        if ($user->isAdmin()) {
+            return view('dashboard.admin');
         }
 
         return view('dashboard.default', compact('user'));
+        }
     }
 
     /**
@@ -259,4 +266,24 @@ class DashboardController extends Controller
 
         return view('dashboard.asisten', compact('user', 'tugas', 'notifikasi', 'totalPengaduan', 'sedangDiperbaiki', 'selesai'));
     }
+
+    protected function dashboardKepalaLab($user)
+    {
+        // 1. Ambil data hitungan untuk 4 kotak ringkasan di atas
+        $totalLaporan = Pengaduan::count();
+        $selesai      = Pengaduan::where('status_pengaduan', 'DONE')->count();
+        $proses       = Pengaduan::where('status_pengaduan', 'HANDLED')->count();
+        $tertunda     = Pengaduan::where('status_pengaduan', 'NEW')->count();
+
+        // 2. Ambil 8 data laporan terbaru untuk tabel bawah (sesuai UI Figma)
+       $daftarLaporan = \App\Models\Pengaduan::with(['fasilitas.laboratorium'])
+        ->orderByDesc('id_pengaduan')
+        ->take(8) // Ambil 8 data saja
+        ->get();
+
+        // 3. Kirim semua data ke view 'dashboard/kepalalab.blade.php'
+        return view('dashboard.kepalalab', compact('totalLaporan', 'selesai', 'proses', 'tertunda', 'daftarLaporan'));
+    }
 }
+
+
