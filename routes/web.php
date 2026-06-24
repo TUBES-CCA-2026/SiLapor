@@ -10,6 +10,7 @@ use App\Http\Controllers\PengaduanController;
 use App\Http\Controllers\ScanController;
 use App\Http\Controllers\TindakLanjutController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LaporanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,6 +76,10 @@ Route::prefix('lapor')->name('pengaduan.')->group(function () {
 */
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/laporan', [LaporanController::class, 'index'])
+        ->middleware('role:kepala_lab')
+        ->name('laporan.index');
 
     Route::post('/pengaduan/{pengaduan}/assign', [TindakLanjutController::class, 'assign'])
         ->middleware('role:koordinator_lab')
