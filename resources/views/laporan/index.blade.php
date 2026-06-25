@@ -645,23 +645,34 @@
                 </span>
             </a>
 
-            <nav class="mt-10 space-y-7">
-                @foreach($menuItems as [$key, $label, $icon, $url])
-                    @if($activeMenu === $key)
-                        <a href="{{ $url }}" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm group transition-all">
-                            <div class="flex items-center gap-3.5">
-                                <i class="{{ $icon }} text-lg text-[#0090F5]"></i>
-                                <span>{{ $label }}</span>
-                            </div>
-                            <div class="w-1.5 h-6 rounded-full bg-[#0090F5]"></div>
-                        </a>
-                    @else
-                        <a href="{{ $url }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                            <i class="{{ $icon }} text-lg"></i>
-                            <span>{{ $label }}</span>
-                        </a>
-                    @endif
-                @endforeach
+            <nav class="mt-10 space-y-2">
+                <a href="{{ route('dashboard') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
+                    <i class="fa-solid fa-table-columns text-lg"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="{{ route('laporan.index') }}" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm group transition-all">
+                    <div class="flex items-center gap-3.5">
+                        <i class="fa-solid fa-file-invoice text-lg text-[#0090F5]"></i>
+                        <span>Laporan</span>
+                    </div>
+                    <div class="w-1.5 h-6 rounded-full bg-[#0090F5]"></div>
+                </a>
+
+                <a href="{{ route('riwayat.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
+                    <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                    <span>Riwayat</span>
+                </a>
+
+                <a href="{{ route('rekapsulasi.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
+                    <i class="fa-solid fa-file-invoice text-lg"></i>
+                    <span>Rekapsulasi</span>
+                </a>
+
+                <a href="{{ route('profil.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
+                    <i class="fa-regular fa-user text-lg"></i>
+                    <span>Profil</span>
+                </a>
             </nav>
         </div>
 
@@ -691,15 +702,30 @@
                 </h1>
             </div>
 
-            <div class="bg-[#1E90FF] text-white px-5 py-3 rounded-[22px] flex items-center gap-4 shadow-md w-full sm:w-auto">
-                <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#1E90FF] shrink-0">
-                    <i class="fa-solid fa-user text-lg"></i>
-                </div>
-                <div class="text-left overflow-hidden">
-                    <span class="text-[11px] opacity-80 block uppercase tracking-wider">Selamat datang</span>
-                    <span class="text-xl font-extrabold block truncate">
-                        {{ $user->name ?? $user->nama ?? 'User' }}
-                    </span>
+            {{-- BADGE USER DINAMIS DENGAN FOTO PROFIL ASLI --}}
+            <div class="bg-[#0090F5] text-white px-5 py-2.5 rounded-2xl flex items-center gap-4 shadow-lg border border-white/5 transition-all hover:shadow-xl">
+                {{-- Foto Profil (Header tetap Bulat agar kontras dengan Foto Profil di halaman utama) --}}
+                <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->nama).'&background=FFFFFF&color=0090F5' }}" 
+                    alt="Profil" 
+                    class="w-10 h-10 rounded-full object-cover border-2 border-white/30 shadow-sm shrink-0">
+                
+                <div class="text-left flex flex-col justify-center">
+                    <span class="text-[11px] font-medium opacity-70 block tracking-tight">Selamat datang,</span>
+                    
+                    <div class="flex items-center gap-3 mt-0.5">
+                        {{-- Nama Profil --}}
+                        <span class="text-sm font-extrabold block tracking-wide truncate max-w-[150px]">
+                            {{ auth()->user()->nama }}
+                        </span>
+
+                        {{-- Garis Pemisah Vertikal | --}}
+                        <div class="h-3.5 w-[1px] bg-white/30 rounded-full"></div>
+
+                        {{-- Role Profil --}}
+                        <span class="text-[10px] font-bold opacity-80 block tracking-widest uppercase">
+                            {{ auth()->user()->role ?? 'KEPALA LAB' }}
+                        </span>
+                    </div>
                 </div>
             </div>
         </header>

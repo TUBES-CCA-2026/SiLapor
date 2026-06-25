@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Rekapsulasi - SiLapor')
+@section('title', 'Rekapitulasi - SiLapor')
 
 @section('content')
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -73,16 +73,30 @@
                 <h1 class="text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-wider uppercase font-figma">REKAPSULASI</h1>
             </div>
             
-            {{-- Profil Dinamis (Konsisten) --}}
-            <div class="bg-[#0090F5] text-white px-5 py-2.5 rounded-2xl flex items-center gap-3.5 shadow-md">
-                <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#0090F5] shrink-0">
-                    <i class="fa-solid fa-user-tie text-xl"></i>
-                </div>
-                <div class="text-left flex flex-col justify-center leading-tight min-w-[110px]">
-                    <span class="text-[11px] font-light opacity-90 block">Selamat datang,</span>
-                    <span class="text-sm font-extrabold block tracking-wide">
-                        {{ Auth::check() ? (Auth::user()->name ?: (Auth::user()->nama ?: 'Kepala Lab')) : 'Kepala Lab' }}
-                    </span>
+            {{-- BADGE USER DINAMIS - OPSI 3 (NAMA | ROLE) --}}
+            <div class="bg-[#0090F5] text-white px-5 py-2.5 rounded-2xl flex items-center gap-4 shadow-lg border border-white/5 transition-all hover:shadow-xl">
+                {{-- Foto Profil (Header tetap Bulat agar kontras dengan Foto Profil di halaman utama) --}}
+                <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->nama).'&background=FFFFFF&color=0090F5' }}" 
+                    alt="Profil" 
+                    class="w-10 h-10 rounded-full object-cover border-2 border-white/30 shadow-sm shrink-0">
+                
+                <div class="text-left flex flex-col justify-center">
+                    <span class="text-[11px] font-medium opacity-70 block tracking-tight">Selamat datang,</span>
+                    
+                    <div class="flex items-center gap-3 mt-0.5">
+                        {{-- Nama Profil --}}
+                        <span class="text-sm font-extrabold block tracking-wide truncate max-w-[150px]">
+                            {{ auth()->user()->nama }}
+                        </span>
+
+                        {{-- Garis Pemisah Vertikal | --}}
+                        <div class="h-3.5 w-[1px] bg-white/30 rounded-full"></div>
+
+                        {{-- Role Profil --}}
+                        <span class="text-[10px] font-bold opacity-80 block tracking-widest uppercase">
+                            {{ auth()->user()->role ?? 'KEPALA LAB' }}
+                        </span>
+                    </div>
                 </div>
             </div>
         </header>
@@ -90,38 +104,54 @@
         <div class="bg-white border border-gray-150 rounded-[36px] p-6 md:p-8 shadow-figma-container space-y-6">
             
             {{-- Filter Section --}}
-            <section class="bg-gray-50 p-6 rounded-[24px] border border-gray-100">
-                <h3 class="text-sm font-bold text-gray-700 mb-4">Filter Laporan</h3>
-                <form action="{{ route('rekapsulasi.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <input type="text" name="tanggal" placeholder="Tanggal" class="p-3 rounded-xl border border-gray-300 text-sm">
-                    <select name="penanggung_jawab" class="p-3 rounded-xl border border-gray-300 text-sm text-gray-500">
-                        <option value="">Semua Penanggung Jawab</option>
-                    </select>
-                    <select name="lokasi" class="p-3 rounded-xl border border-gray-300 text-sm text-gray-500">
-                        <option value="">Semua Lokasi</option>
-                    </select>
-                    <input type="text" name="search" placeholder="Cari Laporan..." class="p-3 rounded-xl border border-gray-300 text-sm">
-                    <select name="urutan" class="p-3 rounded-xl border border-gray-300 text-sm text-gray-500">
-                        <option value="desc">Terbaru</option>
-                        <option value="asc">Terlama</option>
-                    </select>
-                    <select name="status" class="p-3 rounded-xl border border-gray-300 text-sm text-gray-500">
-                        <option value="">Semua Status</option>
-                        <option value="On Progress">On Progress</option>
-                        <option value="Done">Done</option>
-                    </select>
-                    <select name="fasilitas" class="p-3 rounded-xl border border-gray-300 text-sm text-gray-500">
-                        <option value="">Semua Fasilitas</option>
-                    </select>
-                    <a href="{{ route('rekapsulasi.index') }}" class="flex items-center justify-center gap-2 p-3 rounded-xl bg-white border border-gray-300 text-sm font-bold text-gray-600 hover:bg-gray-100 transition-all">
-                        <i class="fa-solid fa-rotate-left"></i> Reset
-                    </a>
-                </form>
-            </section>
+<section class="bg-gray-50 p-6 rounded-[24px] border border-gray-100">
+    <div class="mb-4">
+        <h3 class="text-sm font-bold text-gray-700">Filter Laporan</h3>
+    </div>
+    
+    <form action="{{ route('rekapsulasi.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <input type="date" name="tanggal" value="{{ request('tanggal') }}" class="p-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-[#0090F5] bg-white">
+        
+        <select name="penanggung_jawab" class="p-3 rounded-xl border border-gray-300 text-sm text-gray-600 focus:outline-none focus:border-[#0090F5] bg-white">
+            <option value="">Semua Penanggung Jawab</option>
+            @slot('pj_options') @endslot
+        </select>
+        
+        <select name="lokasi" class="p-3 rounded-xl border border-gray-300 text-sm text-gray-600 focus:outline-none focus:border-[#0090F5] bg-white">
+            <option value="">Semua Lokasi</option>
+        </select>
+        
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Laporan..." class="p-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-[#0090F5]">
+        
+        <select name="urutan" class="p-3 rounded-xl border border-gray-300 text-sm text-gray-600 focus:outline-none focus:border-[#0090F5] bg-white">
+            <option value="desc" {{ request('urutan') == 'desc' ? 'selected' : '' }}>Terbaru</option>
+            <option value="asc" {{ request('urutan') == 'asc' ? 'selected' : '' }}>Terlama</option>
+        </select>
+        
+        <select name="status" class="p-3 rounded-xl border border-gray-300 text-sm text-gray-600 focus:outline-none focus:border-[#0090F5] bg-white">
+            <option value="">Semua Status</option>
+            <option value="On Progress" {{ request('status') == 'On Progress' ? 'selected' : '' }}>On Progress</option>
+            <option value="Done" {{ request('status') == 'Done' ? 'selected' : '' }}>Done</option>
+        </select>
+        
+        <select name="fasilitas" class="p-3 rounded-xl border border-gray-300 text-sm text-gray-600 focus:outline-none focus:border-[#0090F5] bg-white">
+            <option value="">Semua Fasilitas</option>
+        </select>
+        
+        <div class="flex gap-2">
+            <button type="submit" class="flex-1 flex items-center justify-center gap-2 p-3 rounded-xl bg-[#0090F5] text-sm font-bold text-white hover:bg-sky-600 transition-all shadow-sm">
+                <i class="fa-solid fa-filter"></i> Filter
+            </button>
+            <a href="{{ route('rekapsulasi.index') }}" class="flex items-center justify-center gap-2 p-3 rounded-xl bg-white border border-gray-300 text-sm font-bold text-gray-600 hover:bg-gray-100 transition-all shadow-sm">
+                <i class="fa-solid fa-rotate-left"></i> Reset
+            </a>
+        </div>
+    </form>
+</section>
 
             {{-- Table Section --}}
-            <section>
-                <h2 class="text-lg font-bold text-[#2C3E50] mb-4">Daftar Laporan</h2>
+            <section class="space-y-4">
+                <h2 class="text-lg font-bold text-[#2C3E50] tracking-tight">Daftar Hasil Rekapitulasi</h2>
                 <div class="border border-gray-300 rounded-[18px] overflow-hidden bg-white">
                     <div class="overflow-x-auto custom-scrollbar">
                         <table class="w-full text-left border-collapse min-w-[900px]">
@@ -137,25 +167,45 @@
                             </thead>
                             <tbody class="divide-y divide-gray-200">
                                 @forelse($daftarLaporan as $item)
-                                <tr class="hover:bg-gray-50 transition-colors">
-                                    <td class="py-3.5 px-6 text-sm text-gray-600">{{ $item->created_at->format('d-m-Y') }}</td>
-                                    <td class="py-3.5 px-6 text-sm text-gray-700 font-medium">{{ $item->user->nama ?? 'N/A' }}</td>
-                                    <td class="py-3.5 px-6 text-sm text-gray-700">{{ $item->lokasi_masalah ?? '-' }}</td>
-                                    <td class="py-3.5 px-6 text-sm text-gray-600">{{ $item->fasilitas ?? '-' }}</td>
+                                <tr class="hover:bg-gray-50/80 transition-colors">
+                                    <td class="py-3.5 px-6 text-sm text-gray-600">
+                                        {{ $item->created_at ? $item->created_at->format('d-m-Y') : '-' }}
+                                    </td>
+                                    <td class="py-3.5 px-6 text-sm text-gray-700 font-semibold">
+                                        {{ $item->user->nama ?? ($item->user->name ?? 'N/A') }}
+                                    </td>
+                                    <td class="py-3.5 px-6 text-sm text-gray-700 font-medium">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fa-solid fa-location-dot text-[#EF4444]"></i>
+                                            <span>{{ $item->fasilitas->laboratorium->nama_laboratorium ?? ($item->lokasi_masalah ?? 'Lab Tidak Diketahui') }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3.5 px-6 text-sm text-gray-600">
+                                        {{ $item->fasilitas->nama_fasilitas ?? ($item->fasilitas ?? '-') }}
+                                    </td>
                                     <td class="py-3.5 px-6 text-center">
-                                        @if($item->status == 'Done')
-                                            <span class="inline-block px-3 py-1 rounded-md text-xs font-bold bg-green-100 text-green-700 border border-green-200">Done</span>
+                                        @if(($item->status ?? 'On Progress') == 'Done')
+                                            <span class="inline-flex items-center gap-1.5 text-xs font-bold bg-green-100 text-green-700 px-3 py-1 rounded-md border border-green-200 shadow-sm">
+                                                <i class="fa-solid fa-circle-check text-[10px]"></i> Done
+                                            </span>
                                         @else
-                                            <span class="inline-block px-3 py-1 rounded-md text-xs font-bold bg-amber-100 text-amber-700 border border-amber-200">On Progress</span>
+                                            <span class="inline-flex items-center gap-1.5 text-xs font-bold bg-[#FFD02B]/20 text-amber-800 px-3 py-1 rounded-md border border-amber-300 shadow-sm">
+                                                <i class="fa-solid fa-spinner animate-spin text-[10px]"></i> On Progress
+                                            </span>
                                         @endif
                                     </td>
                                     <td class="py-3.5 px-6 text-center">
-                                        <button class="text-xs font-bold text-[#0090F5] bg-white border border-[#0090F5] px-5 py-1 rounded-md hover:bg-sky-50">Detail</button>
+                                        <a href="{{ route('laporan.show', $item->id_pengaduan ?? $item->id) }}" 
+                                           class="inline-block text-xs font-bold text-[#0090F5] bg-white border border-[#0090F5] hover:bg-sky-50 px-5 py-1 rounded-md transition-all shadow-sm">
+                                            Detail
+                                        </a>
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="text-center py-10 text-gray-400">Belum ada data laporan.</td>
+                                    <td colspan="6" class="text-center py-12 text-gray-400 font-medium italic bg-white">
+                                        Belum ada data laporan yang cocok atau tersedia.
+                                    </td>
                                 </tr>
                                 @endforelse
                             </tbody>
@@ -163,6 +213,17 @@
                     </div>
                 </div>
             </section>
+
+            {{-- Pagination Section --}}
+            <div class="pt-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="text-xs text-gray-400 font-medium">
+                    Menampilkan {{ $daftarLaporan->firstItem() ?? 0 }} sampai {{ $daftarLaporan->lastItem() ?? 0 }} dari {{ $daftarLaporan->total() }} rekap laporan
+                </div>
+                <div class="font-figma">
+                    {{ $daftarLaporan->appends(request()->query())->links() }}
+                </div>
+            </div>
+            
         </div>
     </main>
 </div>
