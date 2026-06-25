@@ -11,9 +11,8 @@ return new class extends Migration
         Schema::create('notifikasi', function (Blueprint $table) {
             $table->id('id_notifikasi');
             $table->foreignId('id_tindak_lanjut')->constrained('tindak_lanjut', 'id_tindak_lanjut')->cascadeOnDelete();
-            $table->foreignId('id_asisten')->constrained('users', 'id_user')->cascadeOnDelete();
-            $table->string('email_tujuan', 120);
-            $table->enum('status_pengiriman', ['sent', 'failed'])->default('sent');
+            $table->foreignId('id_user_penerima')->constrained('users', 'id_user')->cascadeOnDelete();
+            $table->foreignId('id_status_pengiriman')->constrained('status_pengiriman', 'id_status_pengiriman')->restrictOnDelete();
             $table->dateTime('tanggal_pengiriman')->nullable();
             $table->timestamp('created_at')->nullable();
         });

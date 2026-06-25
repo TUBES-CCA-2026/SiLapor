@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\FasilitasLab;
 use App\Models\Pengaduan;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -127,7 +128,7 @@ class PengaduanController extends Controller
                 'lokasi_lab' => $this->formatLokasiLab($item),
             ])->values(),
             'isGuest' => !Auth::check(),
-            'users' => User::orderBy('nama')->get(['id_user', 'nama', 'role']),
+            'users' => User::with('roleData')->orderBy('nama')->get(['id_user', 'id_role', 'nama']),
         ];
     }
 
@@ -180,14 +181,22 @@ class PengaduanController extends Controller
         $path = $request->file('foto_kerusakan')->store('pengaduan', 'public');
 
         try {
-            $pengaduan = Pengaduan::create([
-                'foto_kerusakan' => $path,
-                'deskripsi_kerusakan' => $validated['deskripsi_kerusakan'],
-                'tanggal_lapor' => now()->toDateString(),
-                'status_pengaduan' => 'NEW',
-                'id_user' => Auth::check() ? Auth::id() : $validated['id_user'],
-                'id_fasilitas' => $fasilitas->id_fasilitas,
-            ]);
+            $pengaduan = DB::transaction(function () use ($validated, $fasilitas, $path) {
+                $pengaduan = Pengaduan::create([
+                    'deskripsi_kerusakan' => $validated['deskripsi_kerusakan'],
+                    'tanggal_lapor' => now()->toDateString(),
+                    'status_pengaduan' => 'NEW',
+                    'id_user' => Auth::check() ? Auth::id() : $validated['id_user'],
+                    'id_fasilitas' => $fasilitas->id_fasilitas,
+                ]);
+
+                $pengaduan->foto()->create([
+                    'file_path' => $path,
+                    'created_at' => now(),
+                ]);
+
+                return $pengaduan;
+            });
         } catch (Throwable $exception) {
             Storage::disk('public')->delete($path);
             Log::error('Gagal menyimpan pengaduan: ' . $exception->getMessage());

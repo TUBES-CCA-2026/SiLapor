@@ -16,7 +16,7 @@ class TindakLanjutController extends Controller
 {
     public function index()
     {
-        $tugas = TindakLanjut::with(['pengaduan.user', 'pengaduan.fasilitas.laboratorium', 'asisten'])
+        $tugas = TindakLanjut::with(['pengaduan.user', 'pengaduan.fasilitas.laboratorium', 'asisten', 'statusData'])
             ->latest('id_tindak_lanjut')
             ->get();
 
@@ -35,17 +35,20 @@ class TindakLanjutController extends Controller
         ]);
 
         $asisten = User::where('id_user', $validated['id_asisten'])
-            ->where('role', 'asisten')
+            ->role('asisten')
             ->firstOrFail();
 
-        $tindakLanjut = TindakLanjut::create([
-            'id_pengaduan' => $pengaduan->id_pengaduan,
-            'id_user' => Auth::id(), // koordinator yang menugaskan
-            'id_asisten' => $asisten->id_user,
-            'status_penanganan' => 'ON PROGRES',
-        ]);
+        $tindakLanjut = TindakLanjut::updateOrCreate(
+            ['id_pengaduan' => $pengaduan->id_pengaduan],
+            [
+                'id_petugas' => $asisten->id_user,
+                'status_penanganan' => $pengaduan->status_pengaduan === 'DONE' ? 'DONE' : 'ON PROGRES',
+            ]
+        );
 
-        $pengaduan->update(['status_pengaduan' => 'HANDLED']);
+        if ($pengaduan->status_pengaduan !== 'DONE') {
+            $pengaduan->update(['status_pengaduan' => 'HANDLED']);
+        }
 
         $this->kirimNotifikasiAsisten($tindakLanjut, $asisten);
 
@@ -69,8 +72,7 @@ class TindakLanjutController extends Controller
 
         return Notifikasi::create([
             'id_tindak_lanjut' => $tindakLanjut->id_tindak_lanjut,
-            'id_asisten' => $asisten->id_user,
-            'email_tujuan' => $asisten->email,
+            'id_user_penerima' => $asisten->id_user,
             'status_pengiriman' => $status,
             'tanggal_pengiriman' => now(),
             'created_at' => now(),
@@ -119,7 +121,7 @@ class TindakLanjutController extends Controller
 
     protected function authorizeAsisten(TindakLanjut $tindakLanjut): void
     {
-        if (Auth::id() !== $tindakLanjut->id_asisten) {
+        if (Auth::id() !== $tindakLanjut->id_petugas) {
             abort(403);
         }
     }

@@ -11,17 +11,10 @@ return new class extends Migration
         Schema::create('tindak_lanjut', function (Blueprint $table) {
             $table->id('id_tindak_lanjut');
             $table->foreignId('id_pengaduan')->constrained('pengaduan', 'id_pengaduan')->cascadeOnDelete();
-
-            // id_user = koordinator/penanggung jawab yang MENUGASKAN perbaikan
-            $table->foreignId('id_user')->constrained('users', 'id_user');
-
+            $table->foreignId('id_petugas')->constrained('users', 'id_user')->restrictOnDelete();
+            $table->foreignId('id_status_penanganan')->constrained('status_penanganan', 'id_status_penanganan')->restrictOnDelete();
             $table->text('catatan_perbaikan')->nullable();
             $table->date('tanggal_penanganan')->nullable();
-            $table->enum('status_penanganan', ['ON PROGRES', 'DONE'])->default('ON PROGRES');
-
-            // id_asisten = asisten yang DITUGASKAN memperbaiki
-            $table->foreignId('id_asisten')->nullable()->constrained('users', 'id_user')->nullOnDelete();
-
             $table->timestamps();
         });
     }

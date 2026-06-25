@@ -10,8 +10,9 @@ class TindakLanjut extends Model
     protected $primaryKey = 'id_tindak_lanjut';
 
     protected $fillable = [
-        'id_pengaduan', 'id_user', 'catatan_perbaikan',
-        'tanggal_penanganan', 'status_penanganan', 'id_asisten',
+        'id_pengaduan', 'id_petugas', 'id_status_penanganan',
+        'catatan_perbaikan', 'tanggal_penanganan',
+        'status_penanganan', 'id_asisten',
     ];
 
     protected $casts = [
@@ -23,18 +24,61 @@ class TindakLanjut extends Model
         return $this->belongsTo(Pengaduan::class, 'id_pengaduan', 'id_pengaduan');
     }
 
-    public function penugas()
+    public function petugas()
     {
-        return $this->belongsTo(User::class, 'id_user', 'id_user');
+        return $this->belongsTo(User::class, 'id_petugas', 'id_user');
     }
 
     public function asisten()
     {
-        return $this->belongsTo(User::class, 'id_asisten', 'id_user');
+        return $this->belongsTo(User::class, 'id_petugas', 'id_user');
+    }
+
+    public function penugas()
+    {
+        return $this->belongsTo(User::class, 'id_petugas', 'id_user');
+    }
+
+    public function statusData()
+    {
+        return $this->belongsTo(StatusPenanganan::class, 'id_status_penanganan', 'id_status_penanganan');
     }
 
     public function notifikasi()
     {
         return $this->hasMany(Notifikasi::class, 'id_tindak_lanjut', 'id_tindak_lanjut');
+    }
+
+    public function setStatusPenangananAttribute(string $value): void
+    {
+        $this->attributes['id_status_penanganan'] = StatusPenanganan::idByKode($value);
+    }
+
+    public function getStatusPenangananAttribute(): ?string
+    {
+        if ($this->relationLoaded('statusData')) {
+            return $this->statusData?->kode_status;
+        }
+
+        return $this->statusData()->value('kode_status');
+    }
+
+    public function setIdAsistenAttribute(int|string|null $value): void
+    {
+        if ($value !== null) {
+            $this->attributes['id_petugas'] = $value;
+        }
+    }
+
+    public function getIdAsistenAttribute(): ?int
+    {
+        return $this->id_petugas;
+    }
+
+    public function scopeStatusKode($query, string|array $kodeStatus)
+    {
+        $kodeStatus = (array) $kodeStatus;
+
+        return $query->whereHas('statusData', fn ($q) => $q->whereIn('kode_status', $kodeStatus));
     }
 }

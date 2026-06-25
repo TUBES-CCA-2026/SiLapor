@@ -15,7 +15,7 @@ class LaboratoriumController extends Controller
             ->get();
 
         // Hanya user dengan role koordinator_lab yang relevan dipilih jadi penanggung jawab
-        $koordinators = User::where('role', 'koordinator_lab')->orderBy('nama')->get();
+        $koordinators = User::role('koordinator_lab')->orderBy('nama')->get();
 
         return view('laboratorium.index', compact('laboratoriums', 'koordinators'));
     }

@@ -60,6 +60,10 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">Peminatan</label>
                     <input name="peminatan" value="{{ old('peminatan', $user->peminatan) }}" class="w-full rounded-xl border border-gray-300 px-4 py-2.5">
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Penanggung Jawab</label>
+                    <input name="penanggung_jawab" value="{{ old('penanggung_jawab', $user->penanggung_jawab) }}" class="w-full rounded-xl border border-gray-300 px-4 py-2.5">
+                </div>
             </div>
 
             <button type="submit" class="w-full bg-silapor-500 hover:bg-silapor-600 text-white font-semibold rounded-xl py-3">

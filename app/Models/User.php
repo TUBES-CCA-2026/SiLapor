@@ -2,19 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasFactory, Notifiable;
 
     protected $table = 'users';
     protected $primaryKey = 'id_user';
 
     protected $fillable = [
-        'nama', 'email', 'password', 'role', 'phone',
-        'nim', 'jurusan', 'peminatan', 'penanggung_jawab',
+        'id_role', 'nama', 'email', 'password', 'phone', 'role',
     ];
 
     protected $hidden = [
@@ -25,7 +25,21 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // ----- Relasi -----
+    public function roleData()
+    {
+        return $this->belongsTo(Role::class, 'id_role', 'id_role');
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(UserProfile::class, 'id_user', 'id_user');
+    }
+
+    public function laboratoriumDikoordinatori()
+    {
+        return $this->hasMany(Laboratorium::class, 'id_koordinator', 'id_user');
+    }
+
     public function pengaduanDilaporkan()
     {
         return $this->hasMany(Pengaduan::class, 'id_user', 'id_user');
@@ -33,15 +47,53 @@ class User extends Authenticatable
 
     public function tindakLanjutDitugaskan()
     {
-        return $this->hasMany(TindakLanjut::class, 'id_asisten', 'id_user');
+        return $this->hasMany(TindakLanjut::class, 'id_petugas', 'id_user');
     }
 
     public function notifikasi()
     {
-        return $this->hasMany(Notifikasi::class, 'id_asisten', 'id_user');
+        return $this->hasMany(Notifikasi::class, 'id_user_penerima', 'id_user');
     }
 
-    // ----- Helper role -----
+    public function setRoleAttribute(string $value): void
+    {
+        $this->attributes['id_role'] = Role::idByName($value);
+    }
+
+    public function getRoleAttribute(): ?string
+    {
+        if ($this->relationLoaded('roleData')) {
+            return $this->roleData?->nama_role;
+        }
+
+        return $this->roleData()->value('nama_role');
+    }
+
+    public function getNimAttribute(): ?string
+    {
+        return $this->profile?->nim;
+    }
+
+    public function getJurusanAttribute(): ?string
+    {
+        return $this->profile?->jurusan;
+    }
+
+    public function getPeminatanAttribute(): ?string
+    {
+        return $this->profile?->peminatan;
+    }
+
+    public function getPenanggungJawabAttribute(): ?string
+    {
+        return $this->profile?->penanggung_jawab;
+    }
+
+    public function scopeRole($query, string $role)
+    {
+        return $query->whereHas('roleData', fn ($q) => $q->where('nama_role', $role));
+    }
+
     public function isAsisten(): bool
     {
         return $this->role === 'asisten';

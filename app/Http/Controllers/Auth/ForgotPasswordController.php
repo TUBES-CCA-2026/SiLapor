@@ -40,7 +40,7 @@ class ForgotPasswordController extends Controller
         }
 
         // Anti-spam: tidak boleh minta kode baru < 60 detik dari permintaan terakhir.
-        $last = PasswordResetOtp::where('email', $user->email)->latest('id')->first();
+        $last = PasswordResetOtp::where('id_user', $user->id_user)->latest('id')->first();
         if ($last && $last->created_at && $last->created_at->diffInSeconds(now()) < 60) {
             return back()->withErrors(['email' => 'Tunggu beberapa saat sebelum minta kode baru.']);
         }
@@ -48,7 +48,7 @@ class ForgotPasswordController extends Controller
         $otp = (string) random_int(100000, 999999);
 
         PasswordResetOtp::create([
-            'email' => $user->email,
+            'id_user' => $user->id_user,
             'otp' => Hash::make($otp),
             'expires_at' => now()->addMinutes(10),
             'created_at' => now(),
@@ -90,7 +90,8 @@ class ForgotPasswordController extends Controller
             return redirect()->route('password.request');
         }
 
-        $record = PasswordResetOtp::where('email', $email)->latest('id')->first();
+        $user = User::where('email', $email)->firstOrFail();
+        $record = PasswordResetOtp::where('id_user', $user->id_user)->latest('id')->first();
 
         if (!$record || $record->expires_at->isPast() || !Hash::check($request->otp, $record->otp)) {
             return back()->withErrors(['otp' => 'Kode OTP salah atau sudah kedaluwarsa.']);
@@ -148,7 +149,7 @@ class ForgotPasswordController extends Controller
         $user = User::where('email', session('reset_email'))->firstOrFail();
         $user->update(['password' => Hash::make($validated['password'])]);
 
-        PasswordResetOtp::where('email', $user->email)->delete();
+        PasswordResetOtp::where('id_user', $user->id_user)->delete();
         $request->session()->forget(['reset_email', 'otp_verified']);
 
         return redirect()->route('login')->with('success', 'Password berhasil direset. Silakan login dengan password baru.');

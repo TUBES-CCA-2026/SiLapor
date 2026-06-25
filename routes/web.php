@@ -54,6 +54,7 @@ Route::prefix('lapor')->name('pengaduan.')->group(function () {
 | Area wajib login
 |--------------------------------------------------------------------------
 */
+
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -62,6 +63,22 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengaduan/create', [PengaduanController::class, 'create'])->name('pengaduan.create');
 
     Route::get('/tindak-lanjut', [TindakLanjutController::class, 'index'])->name('tindak-lanjut.index');
+    Route::get('/laporan', [DashboardController::class, 'laporan'])
+        ->middleware('role:koordinator_lab')
+        ->name('laporan.index');
+
+    Route::get('/penugasan', [DashboardController::class, 'penugasan'])
+        ->middleware('role:koordinator_lab')
+        ->name('penugasan.index');
+
+    Route::get('/detail-laporan', [DashboardController::class, 'detailLaporan'])
+        ->middleware('role:koordinator_lab')
+        ->name('detail-laporan.index');
+
+    Route::get('/dashboard/pengaduan/{pengaduan}/detail', [DashboardController::class, 'detailPengaduan'])
+        ->middleware('role:koordinator_lab')
+        ->name('dashboard.pengaduan.detail');
+
     Route::post('/pengaduan/{pengaduan}/assign', [TindakLanjutController::class, 'assign'])
         ->middleware('role:koordinator_lab')
         ->name('tindak-lanjut.assign');

@@ -10,16 +10,11 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id('id_user');
+            $table->foreignId('id_role')->constrained('roles', 'id_role')->restrictOnDelete();
             $table->string('nama', 120);
             $table->string('email', 120)->unique();
-            $table->string('password', 120);
-            $table->enum('role', ['asisten', 'laboran', 'koordinator_lab', 'kepala_lab', 'admin']);
+            $table->string('password', 255);
             $table->string('phone', 15)->nullable();
-            $table->string('nim', 12)->nullable();
-            $table->string('jurusan', 20)->nullable();
-            $table->string('peminatan', 20)->nullable();
-            $table->string('penanggung_jawab', 20)->nullable();
-            // tambahan wajib untuk Auth bawaan Laravel (Remember Me & reset password)
             $table->rememberToken();
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();

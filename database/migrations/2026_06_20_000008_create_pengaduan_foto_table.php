@@ -8,17 +8,16 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('password_reset_otps', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('id_user')->constrained('users', 'id_user')->cascadeOnDelete();
-            $table->string('otp', 255);
-            $table->dateTime('expires_at');
+        Schema::create('pengaduan_foto', function (Blueprint $table) {
+            $table->id('id_foto');
+            $table->foreignId('id_pengaduan')->constrained('pengaduan', 'id_pengaduan')->cascadeOnDelete();
+            $table->string('file_path', 255);
             $table->timestamp('created_at')->nullable();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('password_reset_otps');
+        Schema::dropIfExists('pengaduan_foto');
     }
 };

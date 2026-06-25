@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -23,8 +24,8 @@ class UserSeeder extends Seeder
                 ['email' => $data['email']],
                 [
                     'nama' => $data['nama'],
-                    'password' => Hash::make('password'), // ganti setelah login pertama
-                    'role' => $data['role'],
+                    'password' => Hash::make('password'),
+                    'id_role' => Role::idByName($data['role']),
                 ]
             );
         }
