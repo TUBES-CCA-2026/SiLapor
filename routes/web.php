@@ -9,8 +9,12 @@ use App\Http\Controllers\LaboratoriumController;
 use App\Http\Controllers\PengaduanController;
 use App\Http\Controllers\ScanController;
 use App\Http\Controllers\TindakLanjutController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\RiwayatController;
+use App\Http\Controllers\RekapsulasiController;
+use App\Http\Controllers\ProfilController;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,7 +22,7 @@ use App\Http\Controllers\LaporanController;
 |--------------------------------------------------------------------------
 */
 Route::get('/', function () {
-    return auth()->check() ? redirect()->route('dashboard') : redirect()->route('login');
+    return Auth::check() ? redirect()->route('dashboard') : redirect()->route('login');
 })->name('home');
 
 /*
@@ -44,29 +48,20 @@ Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'
 |--------------------------------------------------------------------------
 | 2) PENGADUAN PUBLIK
 |--------------------------------------------------------------------------
-| Alur QR dan manual memakai URL serta handler yang berbeda.
-| QR     : fasilitas ditentukan oleh token QR.
-| Manual : pelapor memilih fasilitas dari formulir.
 */
 Route::get('/scan', [ScanController::class, 'index'])->name('scan.index');
 
 Route::prefix('lapor')->name('pengaduan.')->group(function () {
-    Route::get('/qr/{qr_code}', [PengaduanController::class, 'createQr'])
-        ->name('qr.create');
-    Route::post('/qr/{qr_code}', [PengaduanController::class, 'storeQr'])
-        ->name('qr.store');
+    Route::get('/qr/{qr_code}', [PengaduanController::class, 'createQr'])->name('qr.create');
+    Route::post('/qr/{qr_code}', [PengaduanController::class, 'storeQr'])->name('qr.store');
 
-    Route::get('/manual', [PengaduanController::class, 'createManual'])
-        ->name('manual.create');
-    Route::post('/manual', [PengaduanController::class, 'storeManual'])
-        ->name('manual.store');
+    Route::get('/manual', [PengaduanController::class, 'createManual'])->name('manual.create');
+    Route::post('/manual', [PengaduanController::class, 'storeManual'])->name('manual.store');
 
-    Route::get('/sukses/{pengaduan}', [PengaduanController::class, 'success'])
-        ->name('success');
+    Route::get('/sukses/{pengaduan}', [PengaduanController::class, 'success'])->name('success');
 
-    // Kompatibilitas QR lama yang masih menyimpan URL /lapor/{qr_code}.
-    Route::get('/{qr_code}', [PengaduanController::class, 'redirectLegacyQr'])
-        ->name('qr.legacy');
+    // Kompatibilitas QR lama
+    Route::get('/{qr_code}', [PengaduanController::class, 'redirectLegacyQr'])->name('qr.legacy');
 });
 
 /*
@@ -75,12 +70,24 @@ Route::prefix('lapor')->name('pengaduan.')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
+    
+    // Fitur Utama Staff/Koor/Asisten
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/{id}', [LaporanController::class, 'show'])->name('laporan.show');
+    Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat.index');
+    Route::get('/rekapsulasi', [RekapsulasiController::class, 'index'])->name('rekapsulasi.index');
+    
+    // Fitur Profil & Manajemen Akun
+    Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');
+    Route::put('/profil/update', [ProfilController::class, 'update'])->name('profil.update');
 
-    Route::get('/laporan', [LaporanController::class, 'index'])
-        ->middleware('role:kepala_lab')
-        ->name('laporan.index');
+    // Manajemen Pengaduan Internal
+    Route::get('/pengaduan', [PengaduanController::class, 'index'])->name('pengaduan');
+    Route::get('/pengaduan/create', [PengaduanController::class, 'create'])->name('pengaduan.create');
+    Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store');
 
+    // Tindak Lanjut Koordinator & Asisten
     Route::post('/pengaduan/{pengaduan}/assign', [TindakLanjutController::class, 'assign'])
         ->middleware('role:koordinator_lab')
         ->name('tindak-lanjut.assign');
@@ -93,6 +100,7 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:asisten')
         ->name('tindak-lanjut.update');
 
+    // Managemen Master Data (Admin Only)
     Route::get('/fasilitas', [FasilitasController::class, 'index'])
         ->middleware('role:admin')
         ->name('fasilitas.index');
@@ -102,14 +110,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/fasilitas/{fasilitas}/regenerate-qr', [FasilitasController::class, 'regenerateQr'])
         ->middleware('role:admin')
         ->name('fasilitas.regenerate-qr');
-        Route::middleware(['auth'])->group(function () {
-            // Pastikan baris ini ada dan memiliki ->name('pengaduan')
-            Route::get('/pengaduan', [PengaduanController::class, 'index'])->name('pengaduan');
-            
-            // Jika Anda ingin membuat pengaduan baru (form create), tambahkan juga:
-            Route::get('/pengaduan/create', [PengaduanController::class, 'create'])->name('pengaduan.create');
-            Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store');
-        });
 
     Route::get('/laboratorium', [LaboratoriumController::class, 'index'])
         ->middleware('role:admin')
@@ -121,6 +121,7 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:admin')
         ->name('laboratorium.update');
 
+    // CRUD User Admin
     Route::prefix('admin')->middleware('role:admin')->name('admin.')->group(function () {
         Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
         Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
