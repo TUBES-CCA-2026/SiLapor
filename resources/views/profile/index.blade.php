@@ -54,13 +54,11 @@
     </div>
 
     <!-- Bagian Bawah Sidebar (Logout) -->
-    <div class="p-8 border-t border-gray-100">
-        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-red-500 hover:bg-red-50 font-semibold text-sm transition-all">
+    <div class="p-8">
+        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-red-50 hover:text-red-600 font-semibold text-sm transition-all">
             <i class="fa-solid fa-right-from-bracket text-lg"></i> <span>Logout</span>
         </a>
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
-            @csrf
-        </form>
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">@csrf</form>
     </div>
 </aside>
 

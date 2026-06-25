@@ -1,17 +1,7 @@
 <?php
 
-use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\FasilitasController;
-use App\Http\Controllers\LaboratoriumController;
-use App\Http\Controllers\PengaduanController;
-use App\Http\Controllers\ScanController;
-use App\Http\Controllers\TindakLanjutController;
-use App\Http\Controllers\RiwayatController;
-use App\Http\Controllers\TeknisiController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Auth\{LoginController, ForgotPasswordController};
+use App\Http\Controllers\{DashboardController, PengaduanController, TindakLanjutController, RiwayatController, TeknisiController, ProfileController, ScanController};
 use Illuminate\Support\Facades\Route;
 
 // 1. Rute Publik
@@ -19,8 +9,10 @@ Route::get('/', function () {
     return auth()->check() ? redirect()->route('dashboard') : redirect()->route('login');
 })->name('home');
 
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
+Route::controller(LoginController::class)->group(function () {
+    Route::get('/login', 'showLoginForm')->name('login');
+    Route::post('/login', 'login')->name('login.attempt');
+});
 
 // Password Reset Routes
 Route::controller(ForgotPasswordController::class)->group(function () {
@@ -36,26 +28,37 @@ Route::controller(ForgotPasswordController::class)->group(function () {
 Route::get('/scan', [ScanController::class, 'index'])->name('scan.index');
 
 // 2. Rute Terlindungi (Auth)
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    
+    // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Pengaduan
-    Route::get('/pengaduan', [PengaduanController::class, 'index'])->name('pengaduan.index');
-    Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store');
-    Route::get('/pengaduan/create', [PengaduanController::class, 'create'])->name('pengaduan.create');
+    Route::prefix('pengaduan')->name('pengaduan.')->group(function () {
+        Route::get('/', [PengaduanController::class, 'index'])->name('index');
+        Route::get('/create', [PengaduanController::class, 'create'])->name('create');
+        Route::post('/', [PengaduanController::class, 'store'])->name('store');
+    });
 
     // Tindak Lanjut
-    Route::get('/tindak-lanjut', [TindakLanjutController::class, 'index'])->name('tindak-lanjut.index');
-    Route::post('/pengaduan/{pengaduan}/assign', [TindakLanjutController::class, 'assign'])->middleware('role:koordinator_lab')->name('tindak-lanjut.assign');
-    Route::patch('/tindak-lanjut/{tindakLanjut}', [TindakLanjutController::class, 'update'])->middleware('role:asisten')->name('tindak-lanjut.update');
+    Route::prefix('tindak-lanjut')->name('tindak-lanjut.')->group(function () {
+        Route::get('/', [TindakLanjutController::class, 'index'])->name('index');
+        Route::post('/{pengaduan}/assign', [TindakLanjutController::class, 'assign'])
+            ->middleware('role:koordinator_lab')->name('assign');
+        Route::patch('/{tindakLanjut}', [TindakLanjutController::class, 'update'])
+            ->middleware('role:asisten')->name('update');
+    });
     
     // Riwayat & Teknisi
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat.index');
     Route::get('/teknisi', [TeknisiController::class, 'index'])->name('teknisi.index');
 
     // Profile
-    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [ProfileController::class, 'index'])->name('index');
+        Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+        Route::put('/', [ProfileController::class, 'update'])->name('update');
+    });
 });
+

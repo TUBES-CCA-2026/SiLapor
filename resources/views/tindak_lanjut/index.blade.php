@@ -109,7 +109,7 @@
         <!-- Bagian Bawah Sidebar (Logout) -->
         <div class="p-8 border-t border-gray-100 bg-white rounded-br-[36px] md:rounded-br-none">
             <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-red-50 hover:text-red-600 font-semibold text-sm transition-all"
-               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                 <i class="fa-solid fa-right-from-bracket text-lg"></i>
                 <span>Logout</span>
             </a>
@@ -138,15 +138,16 @@
             </div>
 
             <!-- Profil Widget Kanan (Persis TINDAK LANJUT.png) -->
-            <div class="bg-[#0090F5] text-white px-5 py-2.5 rounded-2xl flex items-center gap-3.5 shadow-md justify-center">
+            <div class="bg-[#0090F5] text-white px-5 py-2.5 rounded-2xl flex items-center gap-3.5 shadow-md w-full sm:w-auto">
                 <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#0090F5] shrink-0">
                     <i class="fa-solid fa-user text-xl"></i>
                 </div>
-                <div class="text-left flex flex-col justify-center leading-tight min-w-[100px]">
+                <div class="text-left flex flex-col justify-center leading-tight">
+                    <span class="text-[11px] font-light opacity-90 block">Selamat datang,</span>
+                    <!-- Gunakan Auth::user()->name atau Auth::user()->nama sesuai kolom di database -->
                     <span class="text-sm font-extrabold block tracking-wide">
-                        {{ Auth::user()->name ?? 'Nurul' }}
+                        {{ Auth::user()->name ?? Auth::user()->nama ?? 'User' }}
                     </span>
-                    <span class="text-[11px] font-light opacity-90 block">Asisten Lab</span>
                 </div>
             </div>
         </header>

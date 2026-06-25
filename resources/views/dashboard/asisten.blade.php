@@ -130,11 +130,17 @@
                 <h1 class="text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-wider">DASHBOARD ASISTEN LAB</h1>
             </div>
             
+            <!-- Bagian Header dalam file dashboard Anda -->
             <div class="bg-[#0090F5] text-white px-5 py-2.5 rounded-2xl flex items-center gap-3.5 shadow-md w-full sm:w-auto">
-                <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#0090F5] shrink-0"><i class="fa-solid fa-user text-xl"></i></div>
+                <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#0090F5] shrink-0">
+                    <i class="fa-solid fa-user text-xl"></i>
+                </div>
                 <div class="text-left flex flex-col justify-center leading-tight">
                     <span class="text-[11px] font-light opacity-90 block">Selamat datang,</span>
-                    <span class="text-sm font-extrabold block tracking-wide">{{ Auth::user()->name ?? 'Asisten Lab' }}</span>
+                    <!-- Gunakan Auth::user()->name atau Auth::user()->nama sesuai kolom di database -->
+                    <span class="text-sm font-extrabold block tracking-wide">
+                        {{ Auth::user()->name ?? Auth::user()->nama ?? 'User' }}
+                    </span>
                 </div>
             </div>
         </header>
