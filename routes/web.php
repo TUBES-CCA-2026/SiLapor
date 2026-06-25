@@ -91,6 +91,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/pengaduan/{pengaduan}/detail', [DashboardController::class, 'detailPengaduan'])
         ->middleware('role:koordinator_lab')
         ->name('dashboard.pengaduan.detail');
+    
+    Route::get('/profil', function () {
+    return view('profil.index');
+    })
+    ->middleware('role:koordinator_lab')
+    ->name('profil.index');
 
     Route::post('/pengaduan/{pengaduan}/assign', [TindakLanjutController::class, 'assign'])
         ->middleware('role:koordinator_lab')
