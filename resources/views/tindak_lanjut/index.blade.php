@@ -50,7 +50,7 @@
 <div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
     
     <!-- SIDEBAR KIRI (Persis seperti mockup TINDAK LANJUT.png) -->
-    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white ... transition-all duration-300 -translate-x-full md:translate-x-0 md:sticky md:top-0 h-screen">
+    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop md:sticky md:top-0 md:h-screen rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
         
         <!-- Bagian Atas Sidebar -->
         <div class="p-8 flex-1 flex flex-col overflow-y-auto">
@@ -63,51 +63,70 @@
             </div>
 
             <!-- List Menu Navigasi -->
-            <nav class="mt-10 space-y-2">
-                <!-- Dashboard -->
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-solid fa-table-columns text-lg"></i>
-                    <span>Dashboard</span>
-                </a>
+            @php
+                $activeMenu = 'tindak-lanjut';
+                $routeSafe = function (string $name, string $fallback = '#') {
+                    return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
+                };
+                $sidebarUser = auth()->user();
+                $sidebarRole = $sidebarUser?->role;
 
-                <!-- Pengaduan -->
-                <a href="{{ route('pengaduan.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-regular fa-file-lines text-lg"></i>
-                    <span>Pengaduan</span>
-                </a>
+                if ($sidebarRole === 'laboran' || $sidebarRole === 'admin') {
+                    $menuItems = [
+                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+                        ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
+                        ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
+                        ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
+                        ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
+                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+                    ];
+                } elseif ($sidebarRole === 'koordinator_lab') {
+                    $menuItems = [
+                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+                        ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
+                        ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
+                        ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
+                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+                    ];
+                } elseif ($sidebarRole === 'asisten') {
+                    $menuItems = [
+                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+                        ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
+                        ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
+                        ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
+                        ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
+                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+                    ];
+                } else {
+                    $menuItems = [
+                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+                    ];
+                }
+            @endphp
 
-                <!-- Tindak Lanjut (ACTIVE - Berwarna abu-abu tipis dengan bar biru di kanan) -->
-                <a href="#" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm group transition-all">
-                    <div class="flex items-center gap-3.5">
-                        <i class="fa-solid fa-screwdriver-wrench text-lg text-[#0090F5]"></i>
-                        <span>Tindak Lanjut</span>
-                    </div>
-                    <!-- Indicator bar vertical biru kanan -->
-                    <div class="w-1.5 h-6 rounded-full bg-[#0090F5]"></div>
-                </a>
-
-                <!-- Riwayat -->
-                <a href="{{ route('riwayat.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-solid fa-clock-rotate-left text-lg"></i>
-                    <span>Riwayat</span>
-                </a>
-
-                <!-- Teknisi -->
-                <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
-                    <span>Teknisi</span>
-                </a>
-
-                <!-- Profil -->
-                <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-regular fa-user text-lg"></i>
-                    <span>Profil</span>
-                </a>
+            <nav class="mt-10 space-y-7">
+                @foreach($menuItems as [$key, $label, $icon, $url])
+                    @if($activeMenu === $key)
+                        <a href="{{ $url }}" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm group transition-all">
+                            <div class="flex items-center gap-3.5">
+                                <i class="{{ $icon }} text-lg text-[#0090F5]"></i>
+                                <span>{{ $label }}</span>
+                            </div>
+                            <div class="w-1.5 h-6 rounded-full bg-[#0090F5]"></div>
+                        </a>
+                    @else
+                        <a href="{{ $url }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
+                            <i class="{{ $icon }} text-lg"></i>
+                            <span>{{ $label }}</span>
+                        </a>
+                    @endif
+                @endforeach
             </nav>
         </div>
 
         <!-- Bagian Bawah Sidebar (Logout) -->
-        <div class="p-8 border-t border-gray-100 bg-white rounded-br-[36px] md:rounded-br-none">
+        <div class="mt-auto p-8 border-t border-gray-100 bg-white rounded-br-[36px] md:rounded-br-none">
             <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-red-50 hover:text-red-600 font-semibold text-sm transition-all"
                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                 <i class="fa-solid fa-right-from-bracket text-lg"></i>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard Koordinator - SiLapor')
+@section('title', 'Dashboard Laboran - SiLapor')
 
 @section('content')
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -113,7 +113,7 @@
                 <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 focus:outline-none hide-on-desktop">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
-                <h1 class="text-lg sm:text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-tight">DASHBOARD KOORDINATOR</h1>
+                <h1 class="text-lg sm:text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-tight">DASHBOARD LABORAN</h1>
             </div>
 
             <div class="bg-[#1E90FF] text-white px-5 py-3 rounded-[22px] flex items-center gap-4 shadow-md w-full sm:w-auto">
@@ -122,7 +122,7 @@
                 </div>
                 <div class="text-left overflow-hidden">
                     <span class="text-[11px] opacity-80 block uppercase tracking-wider">Selamat datang</span>
-                    <span class="text-xl font-extrabold block truncate">{{ $user->name ?? $user->nama ?? 'Koordinator' }}</span>
+                    <span class="text-xl font-extrabold block truncate">{{ $user->name ?? $user->nama ?? 'Laboran' }}</span>
                 </div>
             </div>
         </header>
@@ -130,12 +130,12 @@
         @php
             $stats = [
                 ['Total Laporan', $totalLaporan ?? 0, 'fa-triangle-exclamation', 'text-[#FF4D4D]', 'bg-[#FFEAEB]'],
-                ['Sedang Diproses', $proses ?? 0, 'fa-screwdriver-wrench', 'text-[#0090F5]', 'bg-[#EAF5FE]'],
-                ['Selesai', $selesai ?? 0, 'fa-circle-check', 'text-[#22C55E]', 'bg-[#E6F9EE]'],
+                ['Total Laboratorium', $totalLaboratorium ?? 0, 'fa-building', 'text-[#0090F5]', 'bg-[#EAF5FE]'],
+                ['Total Fasilitas', $totalFasilitas ?? 0, 'fa-computer', 'text-[#22C55E]', 'bg-[#E6F9EE]'],
             ];
         @endphp
 
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
             @foreach($stats as $s)
                 <div class="bg-white border rounded-3xl p-5 md:p-6 flex items-center shadow-figma-card">
                     <div class="w-14 h-14 rounded-full {{ $s[4] }} flex items-center justify-center {{ $s[3] }} text-xl shrink-0">
@@ -149,23 +149,84 @@
             @endforeach
         </section>
 
+        <section class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div class="xl:col-span-2 bg-white border rounded-[32px] overflow-hidden shadow-figma-container">
+                <div class="px-8 py-6 border-b flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <h2 class="font-bold text-xl text-gray-800">Akses Cepat Laboran</h2>
+                    <span class="text-sm text-gray-400">Semua fitur admin telah dipindahkan ke role laboran</span>
+                </div>
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    <a href="{{ route('admin.users.index') }}" class="rounded-3xl border border-gray-200 p-5 hover:border-[#0090F5] hover:bg-sky-50/40 transition-all">
+                        <div class="w-12 h-12 rounded-2xl bg-[#EAF5FE] text-[#0090F5] flex items-center justify-center text-lg mb-4"><i class="fa-solid fa-users"></i></div>
+                        <h3 class="font-bold text-[#2C3E50]">Kelola User</h3>
+                        <p class="text-sm text-gray-500 mt-1">Tambah akun, ubah data, reset password pengguna.</p>
+                    </a>
+
+                    <a href="{{ route('fasilitas.index') }}" class="rounded-3xl border border-gray-200 p-5 hover:border-[#0090F5] hover:bg-sky-50/40 transition-all">
+                        <div class="w-12 h-12 rounded-2xl bg-[#FFF9E6] text-[#F59E0B] flex items-center justify-center text-lg mb-4"><i class="fa-solid fa-qrcode"></i></div>
+                        <h3 class="font-bold text-[#2C3E50]">Fasilitas & QR</h3>
+                        <p class="text-sm text-gray-500 mt-1">Kelola fasilitas laboratorium dan regenerate QR Code.</p>
+                    </a>
+
+                    <a href="{{ route('laboratorium.index') }}" class="rounded-3xl border border-gray-200 p-5 hover:border-[#0090F5] hover:bg-sky-50/40 transition-all">
+                        <div class="w-12 h-12 rounded-2xl bg-[#E6F9EE] text-[#22C55E] flex items-center justify-center text-lg mb-4"><i class="fa-solid fa-building"></i></div>
+                        <h3 class="font-bold text-[#2C3E50]">Data Laboratorium</h3>
+                        <p class="text-sm text-gray-500 mt-1">Kelola laboratorium, koordinator, dan data ruangan.</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white border rounded-[32px] overflow-hidden shadow-figma-container">
+                <div class="px-6 py-5 border-b">
+                    <h2 class="font-bold text-lg text-gray-800">Ringkasan Sistem</h2>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-500">Pengguna</span>
+                        <span class="font-bold text-[#2C3E50]">{{ $totalPengguna ?? 0 }}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-500">Laporan Diproses</span>
+                        <span class="font-bold text-[#2C3E50]">{{ $proses ?? 0 }}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-500">Laporan Selesai</span>
+                        <span class="font-bold text-[#2C3E50]">{{ $selesai ?? 0 }}</span>
+                    </div>
+
+                    <div class="pt-4 border-t">
+                        <h3 class="font-bold text-sm text-gray-700 mb-3">Laboratorium Terdaftar</h3>
+                        <div class="space-y-3 max-h-[240px] overflow-y-auto custom-scrollbar pr-1">
+                            @forelse($laboratoriumList as $lab)
+                                <div class="rounded-2xl border border-gray-100 px-4 py-3">
+                                    <p class="font-semibold text-[#2C3E50] text-sm">{{ $lab->nama_laboratorium }}</p>
+                                    <p class="text-xs text-gray-500 mt-1">{{ $lab->lokasi ?? '-' }}</p>
+                                </div>
+                            @empty
+                                <p class="text-sm text-gray-400">Belum ada data laboratorium.</p>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="bg-white border rounded-[32px] overflow-hidden shadow-figma-container">
             <div class="px-8 py-6 border-b flex flex-col sm:flex-row justify-between items-center gap-4">
-                <h2 class="font-bold text-xl text-gray-800">Pengaduan Terbaru</h2>
-                <a href="{{ route('penugasan.index') }}" class="bg-[#0090F5] hover:bg-blue-600 transition-colors text-white px-6 py-3 rounded-xl font-bold text-sm w-full sm:w-auto text-center">
-                    Kelola Penugasan
+                <h2 class="font-bold text-xl text-gray-800">Laporan Terbaru</h2>
+                <a href="{{ route('laporan.index') }}" class="bg-[#0090F5] hover:bg-blue-600 transition-colors text-white px-6 py-3 rounded-xl font-bold text-sm w-full sm:w-auto text-center">
+                    Lihat Semua Laporan
                 </a>
             </div>
 
             <div class="overflow-x-auto custom-scrollbar">
-                <table class="w-full text-left min-w-[1000px]">
+                <table class="w-full text-left min-w-[980px]">
                     <thead class="bg-[#F8FAFC] text-gray-500 uppercase text-xs font-extrabold tracking-wider border-b">
                         <tr>
                             <th class="py-5 px-6">ID PGD</th>
                             <th class="py-5 px-6">Pelapor</th>
                             <th class="py-5 px-6">Lokasi Masalah</th>
                             <th class="py-5 px-6">Fasilitas</th>
-                            <th class="py-5 px-6">Tanggal Lapor</th>
                             <th class="py-5 px-6">Status</th>
                             <th class="py-5 px-6">PJ</th>
                         </tr>
@@ -190,12 +251,11 @@
                                 <td class="py-5 px-6 text-sm text-gray-700 font-medium">{{ $item->pelapor?->nama ?? '-' }}</td>
                                 <td class="py-5 px-6 text-sm text-gray-500">{{ $item->fasilitas?->laboratorium?->nama_laboratorium ?? '-' }}</td>
                                 <td class="py-5 px-6 text-sm text-gray-800 font-semibold">{{ $item->fasilitas?->nama_fasilitas ?? '-' }}</td>
-                                <td class="py-5 px-6 text-sm text-gray-500">{{ $item->tanggal_lapor ? \Carbon\Carbon::parse($item->tanggal_lapor)->format('d/m/Y') : '-' }}</td>
                                 <td class="py-5 px-6"><span class="inline-block text-xs font-bold px-4 py-1.5 rounded-md text-center {{ $statusStyle }}">{{ $statusLabel }}</span></td>
                                 <td class="py-5 px-6 text-sm text-gray-700">{{ $item->tindakLanjut?->asisten?->nama ?? 'Belum ditugaskan' }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="7" class="py-10 text-center text-gray-400">Belum ada pengaduan.</td></tr>
+                            <tr><td colspan="6" class="py-10 text-center text-gray-400">Belum ada pengaduan.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
