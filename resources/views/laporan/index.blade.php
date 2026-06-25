@@ -5,18 +5,24 @@
 @section('content')
 @php
 <<<<<<< HEAD
+<<<<<<< HEAD
     $activeMenu = 'laporan';
     $pageTitle = 'LAPORAN';
     $user = auth()->user();
     $role = $user?->role;
 =======
+=======
+>>>>>>> 1446e82 (Istigfar)
     $user = auth()->user();
     $role = $user?->role;
     $sidebarUser = $user;
     $sidebarRole = $role;
     $activeMenu = 'laporan';
     $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
+<<<<<<< HEAD
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
 
     $routeSafe = function (string $name, string $fallback = '#') {
         return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
@@ -31,10 +37,14 @@
     };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     if ($role === 'laboran' || $role === 'admin') {
 =======
     if ($role === 'laboran') {
 >>>>>>> 2a3988f (bismillah)
+=======
+    if ($role === 'laboran') {
+>>>>>>> 1446e82 (Istigfar)
         $menuItems = [
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
@@ -42,10 +52,15 @@
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
             ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
             ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
 >>>>>>> 2a3988f (bismillah)
+=======
+            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
+            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
+>>>>>>> 1446e82 (Istigfar)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'koordinator_lab') {
@@ -54,10 +69,14 @@
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
 <<<<<<< HEAD
+<<<<<<< HEAD
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
 =======
             ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
 >>>>>>> 2a3988f (bismillah)
+=======
+            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
+>>>>>>> 1446e82 (Istigfar)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'asisten') {
@@ -87,6 +106,7 @@
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
 .dashboard-card,
 <<<<<<< HEAD
+<<<<<<< HEAD
     .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: hidden; }
     .page-card-body { padding: 1.5rem; }
     .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
@@ -95,6 +115,8 @@
     .report-table thead { background: #F8FAFC; color: #64748B; text-transform: uppercase; font-size: .75rem; font-weight: 800; letter-spacing: .04em; }
     .report-table th, .report-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid #F1F5F9; white-space: nowrap; }
 =======
+=======
+>>>>>>> 1446e82 (Istigfar)
     .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: visible; }
     .page-card-body { padding: 1.5rem; }
     .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
@@ -102,7 +124,10 @@
     .report-table { width: 100%; border-collapse: collapse; min-width: 0; table-layout: fixed; }
     .report-table thead { background: #F8FAFC; color: #64748B; text-transform: uppercase; font-size: .75rem; font-weight: 800; letter-spacing: .04em; }
     .report-table th, .report-table td { padding: .95rem 1rem; text-align: left; border-bottom: 1px solid #F1F5F9; white-space: normal; vertical-align: middle; }
+<<<<<<< HEAD
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
     .report-table td { font-size: .875rem; color: #374151; }
     .report-table tr:hover td { background: #F8FAFC; }
     .text-center { text-align: center !important; }
@@ -128,23 +153,32 @@
     .laporan-search input::placeholder { color: #9AA9BA; }
     .laporan-search svg { width: 22px; height: 22px; fill: none; stroke: #52657A; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
 <<<<<<< HEAD
+<<<<<<< HEAD
     .laporan-table-wrap { border-radius: 1.5rem; }
     .laporan-table { min-width: 1180px; }
     .laporan-description { max-width: 230px; overflow: hidden; text-overflow: ellipsis; }
     .laporan-status { min-width: 116px; height: 28px; padding: 0 9px 0 12px; display: inline-flex; align-items: center; justify-content: space-between; gap: 8px; border-radius: 7px; font-size: 13px; font-weight: 700; line-height: 1; white-space: nowrap; }
 =======
+=======
+>>>>>>> 1446e82 (Istigfar)
     .laporan-table-wrap { border-radius: 1.5rem; overflow-x: visible; }
     .laporan-table { width: 100%; min-width: 0; table-layout: fixed; }
     .laporan-description { max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
     .laporan-status { min-width: 104px; height: 28px; padding: 0 9px 0 12px; display: inline-flex; align-items: center; justify-content: space-between; gap: 8px; border-radius: 7px; font-size: 12px; font-weight: 700; line-height: 1; white-space: nowrap; }
+<<<<<<< HEAD
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
     .laporan-status.progress { color: #756000; background: #FFD400; }
     .laporan-status.done { color: #187C28; background: #59FF45; }
     .laporan-status.new { color: #095E9C; background: #D8ECFF; }
     .status-arrow { font-size: 12px; opacity: .75; }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 1446e82 (Istigfar)
     .laporan-table th:nth-child(1), .laporan-table td:nth-child(1) { width: 13%; }
     .laporan-table th:nth-child(2), .laporan-table td:nth-child(2) { width: 15%; }
     .laporan-table th:nth-child(3), .laporan-table td:nth-child(3) { width: 13%; }
@@ -159,7 +193,10 @@
     }
 
 
+<<<<<<< HEAD
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
     .modal-backdrop { position: fixed; inset: 0; z-index: 60; padding: 20px; background: rgba(15, 23, 42, .35); display: grid; place-items: center; }
     .modal-backdrop[hidden] { display: none !important; }
     .modal-card { width: min(520px, 96vw); max-height: 92vh; overflow: hidden; border-radius: 1.5rem; background: #fff; box-shadow: 0 18px 35px rgba(0,0,0,.18); }
@@ -242,11 +279,17 @@
             @endphp
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             @php
                 $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
             @endphp
 >>>>>>> 2a3988f (bismillah)
+=======
+            @php
+                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
+            @endphp
+>>>>>>> 1446e82 (Istigfar)
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -400,6 +443,9 @@
     </div>
 </div>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1446e82 (Istigfar)
 
 </main>
 </div>
@@ -553,6 +599,7 @@
 </script>
 
 @endsection
+<<<<<<< HEAD
 =======
 >>>>>>> 2a3988f (bismillah)
 
@@ -708,3 +755,5 @@
 </script>
 
 @endsection
+=======
+>>>>>>> 1446e82 (Istigfar)

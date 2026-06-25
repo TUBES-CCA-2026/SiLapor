@@ -85,6 +85,7 @@
 
             @php
 <<<<<<< HEAD
+<<<<<<< HEAD
                 $activeMenu = 'pengaduan';
                 $routeSafe = function (string $name, string $fallback = '#') {
                     return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
@@ -130,6 +131,10 @@
                 $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole);
             @endphp
 >>>>>>> 2a3988f (bismillah)
+=======
+                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole);
+            @endphp
+>>>>>>> 1446e82 (Istigfar)
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)

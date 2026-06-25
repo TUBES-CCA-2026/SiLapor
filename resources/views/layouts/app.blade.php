@@ -109,11 +109,14 @@
 
     <div id="app-content">
 <<<<<<< HEAD
+<<<<<<< HEAD
         @if (session('success'))
             <div class="max-w-3xl mx-auto mt-4 px-4">
                 <div class="bg-green-50 text-green-700 border border-green-200 rounded-xl px-4 py-3 text-sm">
                     {{ session('success') }}
 =======
+=======
+>>>>>>> 1446e82 (Istigfar)
         @yield('content')
     </div>
     
@@ -137,18 +140,24 @@
                     </div>
                     <p class="global-notification-message">{{ $globalNotificationMessage }}</p>
                     <button type="button" class="global-notification-button" onclick="document.getElementById('global-notification-popup')?.remove()">Tutup</button>
+<<<<<<< HEAD
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
                 </div>
             </div>
         </div>
     @endif
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         @yield('content')
     </div>
     
 =======
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
     @stack('scripts')
 </body>
 </html>

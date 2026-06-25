@@ -5,18 +5,24 @@
 @section('content')
 @php
 <<<<<<< HEAD
+<<<<<<< HEAD
     $activeMenu = 'laboratorium';
     $pageTitle = 'LABORATORIUM';
     $user = auth()->user();
     $role = $user?->role;
 =======
+=======
+>>>>>>> 1446e82 (Istigfar)
     $user = auth()->user();
     $role = $user?->role;
     $sidebarUser = $user;
     $sidebarRole = $role;
     $activeMenu = 'laboratorium';
     $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
+<<<<<<< HEAD
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
 
     $routeSafe = function (string $name, string $fallback = '#') {
         return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
@@ -31,10 +37,14 @@
     };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     if ($role === 'laboran' || $role === 'admin') {
 =======
     if ($role === 'laboran') {
 >>>>>>> 2a3988f (bismillah)
+=======
+    if ($role === 'laboran') {
+>>>>>>> 1446e82 (Istigfar)
         $menuItems = [
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
@@ -42,10 +52,15 @@
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
             ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
             ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
 >>>>>>> 2a3988f (bismillah)
+=======
+            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
+            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
+>>>>>>> 1446e82 (Istigfar)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'koordinator_lab') {
@@ -54,10 +69,14 @@
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
 <<<<<<< HEAD
+<<<<<<< HEAD
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
 =======
             ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
 >>>>>>> 2a3988f (bismillah)
+=======
+            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
+>>>>>>> 1446e82 (Istigfar)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'asisten') {
@@ -87,16 +106,22 @@
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
 .dashboard-card,
 <<<<<<< HEAD
+<<<<<<< HEAD
     .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: hidden; }
     .page-card-body { padding: 1.5rem; }
     .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
     .table-wrap { width: 100%; overflow-x: auto; background: #fff; }
 =======
+=======
+>>>>>>> 1446e82 (Istigfar)
     .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: visible; }
     .page-card-body { padding: 1.5rem; }
     .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
     .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; overflow-y: visible; background: #fff; }
+<<<<<<< HEAD
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
     .report-table { width: 100%; border-collapse: collapse; min-width: 900px; }
     .report-table thead { background: #F8FAFC; color: #64748B; text-transform: uppercase; font-size: .75rem; font-weight: 800; letter-spacing: .04em; }
     .report-table th, .report-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid #F1F5F9; white-space: nowrap; }
@@ -215,11 +240,17 @@
             @endphp
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             @php
                 $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
             @endphp
 >>>>>>> 2a3988f (bismillah)
+=======
+            @php
+                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
+            @endphp
+>>>>>>> 1446e82 (Istigfar)
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -283,6 +314,7 @@
             </p>
         </div>
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         @if ($errors->any())
             <div style="margin-bottom: 1rem; padding: .85rem 1rem; border-radius: 1rem; background: #FEE2E2; color: #991B1B; font-weight: 700;">
@@ -294,6 +326,9 @@
 =======
 <form method="POST" action="{{ route('laboratorium.store') }}" class="laboratorium-form-admin-like" style="background: #fff; border: 1px solid #E5E7EB; border-radius: 1rem; padding: 1.25rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem; margin-bottom: 1.5rem;">
 >>>>>>> 2a3988f (bismillah)
+=======
+<form method="POST" action="{{ route('laboratorium.store') }}" class="laboratorium-form-admin-like" style="background: #fff; border: 1px solid #E5E7EB; border-radius: 1rem; padding: 1.25rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem; margin-bottom: 1.5rem;">
+>>>>>>> 1446e82 (Istigfar)
             @csrf
             <input name="nama_laboratorium" placeholder="Nama lab (cth: Lab RPL)" required class="form-control" style="font-size: .9rem;">
             <input name="kode_laboratorium" placeholder="Kode (cth: LAB-RPL)" class="form-control" style="font-size: .9rem;">
@@ -301,21 +336,30 @@
 
             <select name="id_koordinator" class="form-control" style="font-size: .9rem;">
 <<<<<<< HEAD
+<<<<<<< HEAD
                 <option value="">Koordinator (opsional)</option>
                 @foreach ($koordinators as $k)
 =======
                 <option value="">Penanggung jawab (role asisten)</option>
                 @foreach (($penanggungJawabs ?? $koordinators) as $k)
 >>>>>>> 2a3988f (bismillah)
+=======
+                <option value="">Penanggung jawab (role asisten)</option>
+                @foreach (($penanggungJawabs ?? $koordinators) as $k)
+>>>>>>> 1446e82 (Istigfar)
                     <option value="{{ $k->id_user }}">{{ $k->nama }}</option>
                 @endforeach
             </select>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
             <input type="number" name="kapasitas" placeholder="Kapasitas unit (opsional)" min="0" class="form-control" style="font-size: .9rem;">
 =======
             <input name="keterangan" placeholder="Keterangan (opsional)" class="form-control" style="font-size: .9rem;">
 >>>>>>> 2a3988f (bismillah)
+=======
+            <input name="keterangan" placeholder="Keterangan (opsional)" class="form-control" style="font-size: .9rem;">
+>>>>>>> 1446e82 (Istigfar)
 
             <button class="btn-primary" style="font-size: .9rem; border-radius: .85rem;">
                 + Tambah Laboratorium
@@ -324,6 +368,7 @@
 
         <div style="background: #fff; border: 1px solid #E5E7EB; border-radius: 1rem; overflow: hidden;">
             @forelse ($laboratoriums as $lab)
+<<<<<<< HEAD
 <<<<<<< HEAD
                 <div style="padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: {{ $loop->last ? '0' : '1px solid #F1F5F9' }};">
                     <div>
@@ -342,6 +387,8 @@
 
                     <span style="color: #94A3B8; font-size: .8rem; font-weight: 700; white-space: nowrap;">{{ $lab->fasilitas()->count() }} fasilitas</span>
 =======
+=======
+>>>>>>> 1446e82 (Istigfar)
                 <div style="padding: 1rem 1.25rem; border-bottom: {{ $loop->last ? '0' : '1px solid #F1F5F9' }};">
                     <div class="laboratorium-row-main" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
                         <div>
@@ -391,7 +438,10 @@
                             <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk" style="margin-right: .45rem;"></i>Simpan Perubahan</button>
                         </form>
                     </div>
+<<<<<<< HEAD
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
                 </div>
             @empty
                 <p style="margin: 0; padding: 1.5rem; color: #94A3B8; font-size: .9rem;">Belum ada data laboratorium.</p>
@@ -406,7 +456,10 @@
         grid-template-columns: 1fr !important;
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 1446e82 (Istigfar)
 
     .laboratorium-row-main {
         align-items: flex-start !important;
@@ -417,7 +470,10 @@
 .btn-danger-soft:disabled {
     cursor: not-allowed;
     opacity: .45;
+<<<<<<< HEAD
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
 }
 </style>
 

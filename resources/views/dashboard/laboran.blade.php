@@ -36,6 +36,7 @@
 
             @php
 <<<<<<< HEAD
+<<<<<<< HEAD
                 $activeMenu = 'dashboard';
                 $routeSafe = function (string $name, string $fallback = '#') {
                     return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
@@ -78,6 +79,8 @@
             @endphp
 
 =======
+=======
+>>>>>>> 1446e82 (Istigfar)
     $user = auth()->user();
     $role = $user?->role;
     $sidebarUser = $user;
@@ -136,7 +139,10 @@
             @php
                 $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
             @endphp
+<<<<<<< HEAD
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -205,10 +211,14 @@
                     <div class="ml-4">
                         <p class="text-xs text-gray-500 font-bold">{{ $s[0] }}</p>
 <<<<<<< HEAD
+<<<<<<< HEAD
                         <p class="text-2xl md:text-3xl font-extrabold text-[#2C3E50]">{{ str_pad((string) $s[1], 3, '0', STR_PAD_LEFT) }}</p>
 =======
                         <p class="text-2xl md:text-3xl font-extrabold text-[#2C3E50]">{{ ((int) $s[1]) > 0 ? (string) ((int) $s[1]) : '-' }}</p>
 >>>>>>> 2a3988f (bismillah)
+=======
+                        <p class="text-2xl md:text-3xl font-extrabold text-[#2C3E50]">{{ ((int) $s[1]) > 0 ? (string) ((int) $s[1]) : '-' }}</p>
+>>>>>>> 1446e82 (Istigfar)
                     </div>
                 </div>
             @endforeach

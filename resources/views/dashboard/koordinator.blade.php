@@ -6,6 +6,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 <style>
     .font-figma { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -78,6 +79,8 @@
             @endphp
 
 =======
+=======
+>>>>>>> 1446e82 (Istigfar)
 
 <style>
     .font-figma { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -166,7 +169,10 @@
             @php
                 $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
             @endphp
+<<<<<<< HEAD
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -235,10 +241,14 @@
                     <div class="ml-4">
                         <p class="text-xs text-gray-500 font-bold">{{ $s[0] }}</p>
 <<<<<<< HEAD
+<<<<<<< HEAD
                         <p class="text-2xl md:text-3xl font-extrabold text-[#2C3E50]">{{ str_pad((string) $s[1], 3, '0', STR_PAD_LEFT) }}</p>
 =======
                         <p class="text-2xl md:text-3xl font-extrabold text-[#2C3E50]">{{ ((int) $s[1]) > 0 ? (string) ((int) $s[1]) : '-' }}</p>
 >>>>>>> 2a3988f (bismillah)
+=======
+                        <p class="text-2xl md:text-3xl font-extrabold text-[#2C3E50]">{{ ((int) $s[1]) > 0 ? (string) ((int) $s[1]) : '-' }}</p>
+>>>>>>> 1446e82 (Istigfar)
                     </div>
                 </div>
             @endforeach

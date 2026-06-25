@@ -5,18 +5,24 @@
 @section('content')
 @php
 <<<<<<< HEAD
+<<<<<<< HEAD
     $activeMenu = 'penugasan';
     $pageTitle = 'PENUGASAN';
     $user = auth()->user();
     $role = $user?->role;
 =======
+=======
+>>>>>>> 1446e82 (Istigfar)
     $user = auth()->user();
     $role = $user?->role;
     $sidebarUser = $user;
     $sidebarRole = $role;
     $activeMenu = 'penugasan';
     $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
+<<<<<<< HEAD
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
 
     $routeSafe = function (string $name, string $fallback = '#') {
         return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
@@ -31,10 +37,14 @@
     };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     if ($role === 'laboran' || $role === 'admin') {
 =======
     if ($role === 'laboran') {
 >>>>>>> 2a3988f (bismillah)
+=======
+    if ($role === 'laboran') {
+>>>>>>> 1446e82 (Istigfar)
         $menuItems = [
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
@@ -42,10 +52,15 @@
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
             ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
             ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
 >>>>>>> 2a3988f (bismillah)
+=======
+            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
+            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
+>>>>>>> 1446e82 (Istigfar)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'koordinator_lab') {
@@ -54,10 +69,14 @@
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
 <<<<<<< HEAD
+<<<<<<< HEAD
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
 =======
             ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
 >>>>>>> 2a3988f (bismillah)
+=======
+            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
+>>>>>>> 1446e82 (Istigfar)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'asisten') {
@@ -87,16 +106,22 @@
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
 .dashboard-card,
 <<<<<<< HEAD
+<<<<<<< HEAD
     .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: hidden; }
     .page-card-body { padding: 1.5rem; }
     .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
     .table-wrap { width: 100%; overflow-x: auto; background: #fff; }
 =======
+=======
+>>>>>>> 1446e82 (Istigfar)
     .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: visible; }
     .page-card-body { padding: 1.5rem; }
     .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
     .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; overflow-y: visible; background: #fff; }
+<<<<<<< HEAD
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
     .report-table { width: 100%; border-collapse: collapse; min-width: 900px; }
     .report-table thead { background: #F8FAFC; color: #64748B; text-transform: uppercase; font-size: .75rem; font-weight: 800; letter-spacing: .04em; }
     .report-table th, .report-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid #F1F5F9; white-space: nowrap; }
@@ -160,11 +185,17 @@
         .hide-on-desktop { display: none !important; }
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
     .penugasan-page { overflow: visible !important; }
     .penugasan-table-wrap { max-width: 100%; overflow-x: auto; overflow-y: visible; }
 >>>>>>> 2a3988f (bismillah)
+=======
+
+    .penugasan-page { overflow: visible !important; }
+    .penugasan-table-wrap { max-width: 100%; overflow-x: auto; overflow-y: visible; }
+>>>>>>> 1446e82 (Istigfar)
 </style>
 @endonce
 
@@ -221,11 +252,17 @@
             @endphp
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             @php
                 $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
             @endphp
 >>>>>>> 2a3988f (bismillah)
+=======
+            @php
+                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
+            @endphp
+>>>>>>> 1446e82 (Istigfar)
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -522,9 +559,35 @@
 </section>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> 2a3988f (bismillah)
+=======
+
+
+<div id="assign-confirm-modal" class="modal-backdrop" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" style="width:min(440px,96vw);">
+        <div class="modal-header">
+            <h2>Konfirmasi Penugasan</h2>
+            <button type="button" class="modal-close" onclick="document.getElementById('assign-confirm-no')?.click()">&times;</button>
+        </div>
+        <div class="modal-body" style="text-align:center;">
+            <div style="width:64px;height:64px;border-radius:999px;margin:0 auto 1rem;display:grid;place-items:center;background:#DBEAFE;color:#0090F5;font-size:1.75rem;">
+                <i class="fa-solid fa-user-check"></i>
+            </div>
+            <p id="assign-confirm-message" style="margin:0;color:#374151;font-weight:800;line-height:1.6;">
+                Tugaskan laporan ini?
+            </p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:1.35rem;">
+                <button type="button" id="assign-confirm-no" style="border:1px solid #E5E7EB;background:#fff;color:#64748B;border-radius:.9rem;padding:.8rem 1rem;font-weight:800;cursor:pointer;">Tidak</button>
+                <button type="button" id="assign-confirm-yes" class="btn-primary" style="width:100%;border-radius:.9rem;">Ya</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+>>>>>>> 1446e82 (Istigfar)
 </main>
 </div>
 

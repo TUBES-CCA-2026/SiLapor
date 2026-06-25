@@ -4,12 +4,15 @@
 
 @section('content')
 <<<<<<< HEAD
+<<<<<<< HEAD
 @php
     $activeMenu = 'laboratorium';
     $pageTitle = 'FASILITAS';
     $user = auth()->user();
     $role = $user?->role;
 =======
+=======
+>>>>>>> 1446e82 (Istigfar)
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 @php
     $user = auth()->user();
@@ -18,7 +21,10 @@
     $sidebarRole = $role;
     $activeMenu = 'fasilitas';
     $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
+<<<<<<< HEAD
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
 
     $routeSafe = function (string $name, string $fallback = '#') {
         return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
@@ -33,10 +39,14 @@
     };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     if ($role === 'laboran' || $role === 'admin') {
 =======
     if ($role === 'laboran') {
 >>>>>>> 2a3988f (bismillah)
+=======
+    if ($role === 'laboran') {
+>>>>>>> 1446e82 (Istigfar)
         $menuItems = [
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
@@ -44,10 +54,15 @@
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
             ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
             ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
 >>>>>>> 2a3988f (bismillah)
+=======
+            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
+            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
+>>>>>>> 1446e82 (Istigfar)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'koordinator_lab') {
@@ -56,10 +71,14 @@
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
 <<<<<<< HEAD
+<<<<<<< HEAD
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
 =======
             ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
 >>>>>>> 2a3988f (bismillah)
+=======
+            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
+>>>>>>> 1446e82 (Istigfar)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'asisten') {
@@ -89,16 +108,22 @@
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
 .dashboard-card,
 <<<<<<< HEAD
+<<<<<<< HEAD
     .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: hidden; }
     .page-card-body { padding: 1.5rem; }
     .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
     .table-wrap { width: 100%; overflow-x: auto; background: #fff; }
 =======
+=======
+>>>>>>> 1446e82 (Istigfar)
     .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: visible; }
     .page-card-body { padding: 1.5rem; }
     .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
     .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; overflow-y: visible; background: #fff; }
+<<<<<<< HEAD
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
     .report-table { width: 100%; border-collapse: collapse; min-width: 900px; }
     .report-table thead { background: #F8FAFC; color: #64748B; text-transform: uppercase; font-size: .75rem; font-weight: 800; letter-spacing: .04em; }
     .report-table th, .report-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid #F1F5F9; white-space: nowrap; }
@@ -176,10 +201,14 @@
 
             @php
 <<<<<<< HEAD
+<<<<<<< HEAD
                 $activeMenu = 'laboratorium';
 =======
                 $activeMenu = 'fasilitas';
 >>>>>>> 2a3988f (bismillah)
+=======
+                $activeMenu = 'fasilitas';
+>>>>>>> 1446e82 (Istigfar)
                 $routeSafe = function (string $name, string $fallback = '#') {
                     return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
                 };
@@ -221,11 +250,17 @@
             @endphp
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             @php
                 $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
             @endphp
 >>>>>>> 2a3988f (bismillah)
+=======
+            @php
+                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
+            @endphp
+>>>>>>> 1446e82 (Istigfar)
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -289,6 +324,7 @@
             <a href="{{ route('laboratorium.index') }}" class="btn-outline-blue">Kelola Laboratorium</a>
         </div>
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         @if ($errors->any())
             <div style="margin-bottom: 1rem; padding: .85rem 1rem; border-radius: 1rem; background: #FEE2E2; color: #991B1B; font-weight: 700;">
@@ -300,6 +336,9 @@
 =======
 <form method="POST" action="{{ route('fasilitas.store') }}" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-bottom: 2rem;">
 >>>>>>> 2a3988f (bismillah)
+=======
+<form method="POST" action="{{ route('fasilitas.store') }}" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+>>>>>>> 1446e82 (Istigfar)
             @csrf
             <input name="nama_fasilitas" placeholder="Nama fasilitas" required class="form-control">
             <select name="id_laboratorium" required class="form-control">
@@ -311,6 +350,7 @@
             <input name="no_fasilitas" placeholder="Kode aset" class="form-control">
             <button class="btn-primary">+ Tambah Fasilitas</button>
         </form>
+<<<<<<< HEAD
 <<<<<<< HEAD
 
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
@@ -329,6 +369,8 @@
                         <button class="btn-outline-blue" type="submit">Regenerasi QR</button>
                     </form>
 =======
+=======
+>>>>>>> 1446e82 (Istigfar)
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
             @forelse ($fasilitas as $f)
                 <div id="fasilitas-card-{{ $f->id_fasilitas }}" style="background: #fff; border: {{ session('new_fasilitas_id') == $f->id_fasilitas ? '2px solid #0090F5' : '1px solid #E5E7EB' }}; border-radius: 1.25rem; padding: 1.25rem; text-align: center;">
@@ -361,7 +403,10 @@
                             <i class="fa-solid fa-print" style="margin-right:.35rem;"></i>Cetak QR
                         </button>
                     </div>
+<<<<<<< HEAD
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
                 </div>
             @empty
                 <p class="empty-state">Belum ada fasilitas.</p>
@@ -375,7 +420,10 @@
 
 <script>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 1446e82 (Istigfar)
 
     function printQr(id) {
         const target = document.getElementById(id);
@@ -421,7 +469,10 @@
         }
     });
 
+<<<<<<< HEAD
 >>>>>>> 2a3988f (bismillah)
+=======
+>>>>>>> 1446e82 (Istigfar)
     function handleResponsiveSidebar() {
         const sidebar = document.getElementById('sidebar-menu');
         const overlay = document.getElementById('sidebar-overlay');

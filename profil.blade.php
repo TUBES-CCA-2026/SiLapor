@@ -1,36 +1,15 @@
 @extends('layouts.app')
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-@section('title', 'Rekapsulasi | SiLapor')
+@section('title', 'Profil | SiLapor')
 
 @section('content')
 @php
-    $activeMenu = 'rekapsulasi';
-    $pageTitle = 'REKAPSULASI';
-    $user = auth()->user();
-    $role = $user?->role;
-=======
-@section('title', auth()->user()?->role === 'koordinator_lab' ? 'Detail Laporan | SiLapor' : 'Rekapsulasi | SiLapor')
-
-@section('content')
-@php
-=======
-@section('title', auth()->user()?->role === 'koordinator_lab' ? 'Detail Laporan | SiLapor' : 'Rekapsulasi | SiLapor')
-
-@section('content')
-@php
->>>>>>> 1446e82 (Istigfar)
     $user = auth()->user();
     $role = $user?->role;
     $sidebarUser = $user;
     $sidebarRole = $role;
-    $activeMenu = $sidebarRole === 'koordinator_lab' ? 'detail-laporan' : 'rekapsulasi';
+    $activeMenu = 'profil';
     $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
-<<<<<<< HEAD
->>>>>>> 2a3988f (bismillah)
-=======
->>>>>>> 1446e82 (Istigfar)
 
     $routeSafe = function (string $name, string $fallback = '#') {
         return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
@@ -44,31 +23,15 @@
         default => 'User',
     };
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    if ($role === 'laboran' || $role === 'admin') {
-=======
     if ($role === 'laboran') {
->>>>>>> 2a3988f (bismillah)
-=======
-    if ($role === 'laboran') {
->>>>>>> 1446e82 (Istigfar)
         $menuItems = [
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
             ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
             ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
             ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
->>>>>>> 2a3988f (bismillah)
-=======
-            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
-            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
->>>>>>> 1446e82 (Istigfar)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'koordinator_lab') {
@@ -76,15 +39,7 @@
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
-<<<<<<< HEAD
-<<<<<<< HEAD
-            ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
-=======
             ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
->>>>>>> 2a3988f (bismillah)
-=======
-            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
->>>>>>> 1446e82 (Istigfar)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'asisten') {
@@ -113,23 +68,10 @@
     .custom-scrollbar::-webkit-scrollbar-track { background: #F1F5F9; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
 .dashboard-card,
-<<<<<<< HEAD
-<<<<<<< HEAD
     .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: hidden; }
     .page-card-body { padding: 1.5rem; }
     .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
     .table-wrap { width: 100%; overflow-x: auto; background: #fff; }
-=======
-=======
->>>>>>> 1446e82 (Istigfar)
-    .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: visible; }
-    .page-card-body { padding: 1.5rem; }
-    .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
-    .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; overflow-y: visible; background: #fff; }
-<<<<<<< HEAD
->>>>>>> 2a3988f (bismillah)
-=======
->>>>>>> 1446e82 (Istigfar)
     .report-table { width: 100%; border-collapse: collapse; min-width: 900px; }
     .report-table thead { background: #F8FAFC; color: #64748B; text-transform: uppercase; font-size: .75rem; font-weight: 800; letter-spacing: .04em; }
     .report-table th, .report-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid #F1F5F9; white-space: nowrap; }
@@ -206,15 +148,7 @@
             </a>
 
             @php
-<<<<<<< HEAD
-<<<<<<< HEAD
-                $activeMenu = 'rekapsulasi';
-=======
-                $activeMenu = $sidebarRole === 'koordinator_lab' ? 'detail-laporan' : 'rekapsulasi';
->>>>>>> 2a3988f (bismillah)
-=======
-                $activeMenu = $sidebarRole === 'koordinator_lab' ? 'detail-laporan' : 'rekapsulasi';
->>>>>>> 1446e82 (Istigfar)
+                $activeMenu = 'profil';
                 $routeSafe = function (string $name, string $fallback = '#') {
                     return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
                 };
@@ -255,18 +189,6 @@
                 }
             @endphp
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-            @php
-                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
-            @endphp
->>>>>>> 2a3988f (bismillah)
-=======
-            @php
-                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
-            @endphp
->>>>>>> 1446e82 (Istigfar)
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -306,15 +228,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
-<<<<<<< HEAD
-<<<<<<< HEAD
-            <h1 class="text-lg sm:text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-tight uppercase">REKAPSULASI</h1>
-=======
-            <h1 class="text-lg sm:text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-tight uppercase">{{ $sidebarRole === 'koordinator_lab' ? 'DETAIL LAPORAN' : 'REKAPSULASI' }}</h1>
->>>>>>> 2a3988f (bismillah)
-=======
-            <h1 class="text-lg sm:text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-tight uppercase">{{ $sidebarRole === 'koordinator_lab' ? 'DETAIL LAPORAN' : 'REKAPSULASI' }}</h1>
->>>>>>> 1446e82 (Istigfar)
+            <h1 class="text-lg sm:text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-tight uppercase">PROFIL</h1>
         </div>
 
         <div class="bg-[#1E90FF] text-white px-5 py-3 rounded-[22px] flex items-center gap-4 shadow-md w-full sm:w-auto">
@@ -328,425 +242,38 @@
         </div>
     </header>
 
-@php
-    $rows = isset($pengaduanList) ? $pengaduanList : collect();
-
-    $statusMeta = function ($status) {
-        return match ($status) {
-            'NEW' => ['label' => 'Baru', 'class' => 'new'],
-            'HANDLED' => ['label' => 'On Progress', 'class' => 'progress'],
-            'DONE' => ['label' => 'Done', 'class' => 'done'],
-            default => ['label' => $status ?: '-', 'class' => 'new'],
-        };
-    };
-
-    $formatPgd = function ($id) {
-        return 'PGD-' . str_pad((string) $id, 3, '0', STR_PAD_LEFT);
-    };
-
-    $formatTdl = function ($id) {
-        return $id ? 'TDL-' . str_pad((string) $id, 3, '0', STR_PAD_LEFT) : '-';
-    };
-@endphp
-
 <style>
-    .detail-laporan-page {
-        overflow: visible !important;
-        padding-top: 4px;
-    }
-
-    .detail-laporan-table-wrap {
-        border-radius: 24px;
-        overflow-x: auto;
-        overflow-y: hidden;
-        scrollbar-width: thin;
-        scrollbar-color: #94A3B8 #E2E8F0;
-    }
-
-    .detail-laporan-table {
-        width: 100%;
-        min-width: 900px;
-        table-layout: fixed;
-    }
-
-    .detail-laporan-table th,
-    .detail-laporan-table td {
-        padding-left: 18px;
-        padding-right: 18px;
-        white-space: normal;
-        overflow-wrap: anywhere;
-    }
-
-    .detail-laporan-table th {
-        color: #39495a;
-        font-size: 14px;
-        font-weight: 800;
-        text-align: center;
-        vertical-align: middle;
-    }
-
-    .detail-laporan-table td {
-        color: #3f4c5a;
-        font-size: 13px;
-        text-align: center;
-    }
-
-    .detail-laporan-table .cell-left {
-        text-align: left;
-    }
-
-    .detail-laporan-table .lokasi-cell {
-        max-width: none;
-    }
-
-    .detail-status {
-        min-width: 108px;
-        height: 30px;
-        padding: 0 10px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        border-radius: 7px;
-        font-size: 12px;
-        font-weight: 700;
-        line-height: 1;
-    }
-
-    .detail-status.progress {
-        color: #806600;
-        background: #ffd400;
-    }
-
-    .detail-status.done {
-        color: #128a2b;
-        background: #4dff41;
-    }
-
-    .detail-status.new {
-        color: #0d5d9c;
-        background: #dceeff;
-    }
-
-    .detail-status .status-arrow {
-        margin-left: auto;
-        opacity: .8;
-        font-size: 11px;
-    }
-
-    .detail-laporan-btn {
-        min-width: 66px;
-        height: 29px;
-        padding: 0 13px;
-        border: 1px solid #16a4ff;
-        border-radius: 5px;
-        background: #eef8ff;
-        color: #0d8ff2;
-        font-size: 12px;
-        font-weight: 600;
-        line-height: 27px;
-        cursor: pointer;
-        transition: background .18s ease, color .18s ease, box-shadow .18s ease;
-    }
-
-    .detail-laporan-btn:hover {
-        background: #0d8ff2;
-        color: #fff;
-        box-shadow: 0 8px 18px rgba(13, 143, 242, .22);
-    }
-
-    .detail-laporan-note {
-        margin: 14px 0 0;
-        color: #70849b;
-        font-size: 12px;
-        line-height: 1.5;
-    }
-
-    .detail-modal-backdrop {
-        position: fixed;
-        inset: 0;
-        z-index: 60;
-        padding: 20px;
-        background: rgba(16, 38, 61, .30);
-        backdrop-filter: blur(4px);
-        display: grid;
-        place-items: center;
-    }
-
-    .detail-modal-backdrop[hidden] {
-        display: none !important;
-    }
-
-    .detail-modal-card {
-        width: min(760px, 96vw);
-        max-height: 92vh;
-        overflow: hidden;
-        border: 1px solid #DCE6F1;
-        border-radius: 28px;
-        background: #fff;
-        box-shadow: 0 28px 70px rgba(30, 64, 175, .18);
-    }
-
-    .detail-modal-header {
-        min-height: 68px;
-        padding: 0 24px;
-        border-bottom: 0;
-        background: linear-gradient(135deg, #0090F5, #2563EB);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .detail-modal-header h2 {
-        margin: 0;
-        color: #fff;
-        font-size: 18px;
-        font-weight: 800;
-    }
-
-    .detail-modal-close {
-        border: 0;
-        background: transparent;
-        color: #fff;
-        font-size: 32px;
-        font-weight: 800;
-        line-height: 1;
-        cursor: pointer;
-        padding: 0;
-    }
-
-    .detail-modal-body {
-        padding: 24px;
-        overflow-y: auto;
-        max-height: calc(92vh - 68px);
-        background: #F8FAFC;
-    }
-
-    .detail-modal-grid {
-        display: grid;
-        grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
-        gap: 20px;
-        align-items: start;
-    }
-
-    .detail-modal-photo-wrap {
-        display: grid;
-        gap: 10px;
-        width: 100%;
-        max-height: 360px;
-        margin: 0;
-        border: 1px solid #DCE6F1;
-        border-radius: 18px;
-        overflow-y: auto;
-        background: #fff;
-        padding: 8px;
-    }
-
-    .detail-modal-photo {
-        width: 100%;
-        height: 160px;
-        display: block;
-        object-fit: cover;
-        border-radius: 12px;
-    }
-
-    .detail-modal-photo-placeholder {
-        width: 100%;
-        min-height: 160px;
-        display: grid;
-        place-items: center;
-        color: #777;
-        font-size: 13px;
-        font-weight: 700;
-    }
-
-    .detail-modal-panel {
-        width: 100%;
-        margin: 0;
-        border: 1px solid #DCE6F1;
-        border-radius: 20px;
-        overflow: hidden;
-        background: #fff;
-    }
-
-    .detail-modal-row {
-        min-height: 38px;
-        display: grid;
-        grid-template-columns: 96px 12px 1fr;
-        align-items: center;
-        padding: 0 16px;
-        background: #fff;
-        color: #475569;
-        font-size: 14px;
-        border-bottom: 1px solid #EEF2F7;
-    }
-
-    .detail-modal-row:nth-child(even) {
-        background: #F8FAFC;
-    }
-
-    .detail-modal-label {
-        font-weight: 700;
-    }
-
-    .detail-modal-badge {
-        display: inline-block;
-        padding: 2px 8px;
-        border-radius: 5px;
-        font-size: 11px;
-        font-style: normal;
-        line-height: 1.25;
-        color: #6b5700;
-        background: #ffe03d;
-    }
-
-    .detail-modal-badge.new {
-        color: #0b5b9c;
-        background: #d8ecff;
-    }
-
-    .detail-modal-badge.done {
-        color: #0f7433;
-        background: #d9f7e3;
-    }
-
-    .detail-modal-badge.progress {
-        color: #6b5700;
-        background: #ffe03d;
-    }
-
-    .detail-modal-description-row {
-        min-height: 116px;
-        align-items: start;
-        padding-top: 14px;
-        padding-bottom: 14px;
-    }
-
-    .detail-modal-description {
-        min-height: 76px;
-        padding: 14px;
-        border: 1px solid #DCE6F1;
-        border-radius: 18px;
-        background: #fff;
-        color: #475569;
-        line-height: 1.45;
-        white-space: pre-wrap;
-    }
-
-    .detail-loading-line {
-        height: 13px;
-        margin: 13px 0;
-        border-radius: 30px;
-        background: linear-gradient(90deg, #edf2f7, #f8fbff, #edf2f7);
-    }
-
-    .detail-loading-line.short {
-        width: 60%;
-    }
-
-    .btn-print-report:hover {
-        border-color: #DC2626 !important;
-        background: #DC2626 !important;
-        color: #fff !important;
-    }
-
-    .btn-excel-report:hover {
-        border-color: #16A34A !important;
-        background: #16A34A !important;
-        color: #fff !important;
-    }
-
-    @media (max-width: 820px) {
-        .detail-laporan-table {
-            min-width: 900px;
-        }
-
-        .detail-modal-grid {
-            grid-template-columns: 1fr;
-        }
-    }
+.profile-card{background:#fff;border:1px solid #e5ebf2;border-radius:24px;padding:28px;box-shadow:0 10px 25px rgba(0,0,0,.05);margin:0 38px 40px}
+.profile-top{display:flex;justify-content:flex-end;margin-bottom:20px}
+.btn-outline{border:1px solid #bfc8d4;padding:8px 16px;border-radius:10px;text-decoration:none;color:#333;background:#fff}
+.profile-grid{display:grid;grid-template-columns:180px 1fr;gap:30px}
+.avatar-box{text-align:center}.avatar{width:120px;height:120px;border-radius:10px;object-fit:cover;border:1px solid #ddd}
+.badge-role{margin-top:8px;border:1px solid #bbb;border-radius:6px;padding:4px 8px;font-size:12px;display:inline-block}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px}.field label{display:block;margin-bottom:6px;font-size:13px}.field input{width:100%;padding:10px;border:1px solid #aaa;border-radius:8px;background:#fafafa}.full{grid-column:1/-1}
 </style>
 
+<div class="profile-card">
+<div class="profile-top"><a href="#" class="btn-outline">Edit Profil ✎</a></div>
 
-@php
-    $isKoordinator = auth()->user()?->role === 'koordinator_lab';
-    $filterAction = $isKoordinator ? route('detail-laporan.index') : route('rekapsulasi.index');
-    $groupedRows = $isKoordinator
-        ? $rows->groupBy(fn ($item) => data_get($item, 'fasilitas.laboratorium.nama_laboratorium', 'Tanpa Lokasi Lab'))
-        : collect(['Daftar Laporan' => $rows]);
-@endphp
+<div class="profile-grid">
+<div class="avatar-box">
+    <img class="avatar" src="{{ asset('images/alisa.jpg') }}" alt="Foto Alisa">
+    <div class="badge-role">Koordinator Lab</div>
+</div>
 
-<section class="dashboard-card detail-laporan-page" style="padding: 1.5rem;">
-    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
-        <div>
-            <h2 class="section-title" style="margin: 0; font-size: 1.5rem;">{{ $isKoordinator ? 'Detail Laporan' : 'Rekap Laporan' }}</h2>
-            <p style="margin: .35rem 0 0; color: #64748B; font-size: .9rem;">{{ $isKoordinator ? 'Seluruh laporan aktif ditampilkan otomatis berdasarkan laboratorium. Laporan selesai tidak ditampilkan.' : 'Filter dan pantau seluruh riwayat laporan berdasarkan lokasi, fasilitas, dan status.' }}</p>
-        </div>
-        @unless($isKoordinator)
-        <div style="display: flex; gap: .75rem; flex-wrap: wrap;">
-            <button type="button" onclick="window.print()" class="btn-outline-blue btn-print-report"><i class="fa-solid fa-print" style="margin-right:.4rem"></i> Print Laporan</button>
-            <button type="button" onclick="window.print()" class="btn-outline-blue btn-excel-report"><i class="fa-solid fa-download" style="margin-right:.4rem"></i> Unduh File Excel</button>
-        </div>
-        @endunless
-    </div>
+<div class="form-grid">
+<div class="field"><label>Nama Koordinator</label><input value="{{ auth()->user()->name ?? 'Nur Alisa' }}" readonly></div>
+<div class="field"><label>ID Koordinator</label><input value="{{ auth()->id() ?? 'xxxxx' }}" readonly></div>
+<div class="field full"><label>Email</label><input value="{{ auth()->user()->email ?? 'koor@silapor.test' }}" readonly></div>
+<div class="field"><label>No Hp</label><input value="+62813xxxxxxx" readonly></div>
+<div class="field"><label>Role</label><input value="Koordinator LAB" readonly></div>
 
-    @unless($isKoordinator)
-    <form method="GET" action="{{ $filterAction }}" style="border: 1px solid #D1D5DB; border-radius: 1.25rem; padding: 1rem; background: #F8FAFC; margin-bottom: 1.5rem;">
-        <h3 style="margin: 0 0 1rem; font-size: 1.15rem; font-weight: 800; color: #374151;">Filter Laporan</h3>
-        <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; align-items: end;">
-            <div><label class="field-label">Penanggung Jawab</label><select name="id_penanggung_jawab" class="form-control"><option value="">Semua Penanggung Jawab</option>@foreach(($penanggungJawabs ?? collect()) as $pj)<option value="{{ $pj->id_user }}" {{ (string)($filters['id_penanggung_jawab'] ?? '') === (string)$pj->id_user ? 'selected' : '' }}>{{ $pj->nama }}</option>@endforeach</select></div>
-            <div><label class="field-label">Lokasi Masalah</label><select name="id_laboratorium" class="form-control"><option value="">Semua Lokasi</option>@foreach(($laboratoriums ?? collect()) as $lab)<option value="{{ $lab->id_laboratorium }}" {{ (string)($filters['id_laboratorium'] ?? '') === (string)$lab->id_laboratorium ? 'selected' : '' }}>{{ $lab->nama_laboratorium }}</option>@endforeach</select></div>
-            <div><label class="field-label">Fasilitas</label><select name="id_fasilitas" class="form-control"><option value="">Semua Fasilitas</option>@foreach(($fasilitasList ?? collect()) as $fasilitas)<option value="{{ $fasilitas->id_fasilitas }}" {{ (string)($filters['id_fasilitas'] ?? '') === (string)$fasilitas->id_fasilitas ? 'selected' : '' }}>{{ $fasilitas->nama_fasilitas }}</option>@endforeach</select></div>
-            <div><label class="field-label">Cari Laporan</label><input name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Cari laporan..." class="form-control"></div>
-            <div><label class="field-label">Urutkan</label><select name="sort" class="form-control"><option value="terbaru" {{ ($filters['sort'] ?? 'terbaru') === 'terbaru' ? 'selected' : '' }}>Terbaru</option><option value="terlama" {{ ($filters['sort'] ?? '') === 'terlama' ? 'selected' : '' }}>Terlama</option></select></div>
-            <div><label class="field-label">Status Laporan</label><select name="status" class="form-control"><option value="">Semua Status</option><option value="NEW" {{ ($filters['status'] ?? '') === 'NEW' ? 'selected' : '' }}>Baru</option><option value="HANDLED" {{ ($filters['status'] ?? '') === 'HANDLED' ? 'selected' : '' }}>On Progress</option><option value="DONE" {{ ($filters['status'] ?? '') === 'DONE' ? 'selected' : '' }}>Done</option></select></div>
-            <div style="display: flex; gap: .75rem; align-items: center;"><button type="submit" class="btn-primary">Terapkan</button><a href="{{ $filterAction }}" class="btn-danger-soft">Reset</a></div>
-        </div>
-    </form>
-    @endunless
+<div style="grid-column:1/-1; display:flex; justify-content:flex-end; margin-top:20px;">
+    <a href="#" class="btn-outline">Ubah Password ⚙</a>
+</div>
+</div>
 
-    <div style="display: grid; gap: 1.5rem;">
-        @forelse($groupedRows as $groupName => $items)
-            @if($isKoordinator)<h3 style="margin: 0; color: #2C3E50; font-size: 1.1rem; font-weight: 800;">Lokasi Lab: {{ $groupName }}</h3>@endif
-            <div class="table-wrap detail-laporan-table-wrap" style="border: 1px solid #D1D5DB; border-radius: 1.25rem; overflow-x: auto; overflow-y: visible;">
-                <table class="report-table detail-laporan-table">
-                    <thead><tr><th>Tanggal</th><th>Penanggung Jawab</th><th>Lokasi Masalah</th><th>Fasilitas</th><th>Status</th><th class="text-center">Aksi</th></tr></thead>
-                    <tbody>
-                        @forelse($items as $laporan)
-                            @php
-                                $tindak = $laporan->tindakLanjut;
-                                $status = $statusMeta($laporan->status_pengaduan ?? null);
-                                $tanggal = $laporan->tanggal_lapor ? \Carbon\Carbon::parse($laporan->tanggal_lapor)->format('d-m-Y') : '-';
-                                $pj = data_get($tindak, 'asisten.nama') ?: data_get($tindak, 'penugas.nama') ?: '-';
-                                $lokasi = data_get($laporan, 'fasilitas.laboratorium.nama_laboratorium', '-');
-                                $fasilitas = data_get($laporan, 'fasilitas.nama_fasilitas', '-');
-                                $detailUrl = route('dashboard.pengaduan.detail', $laporan);
-                            @endphp
-                            <tr><td>{{ $tanggal }}</td><td>{{ $pj }}</td><td>{{ $lokasi }}</td><td>{{ $fasilitas }}</td><td><span class="detail-status {{ $status['class'] }}">{{ $status['label'] }} <span class="status-arrow">▾</span></span></td><td class="text-center"><button type="button" class="detail-laporan-btn" data-detail-laporan-url="{{ $detailUrl }}">Detail</button></td></tr>
-                        @empty
-                            <tr><td colspan="6" class="empty-state">Belum ada laporan pada kelompok ini.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        @empty
-            <div class="empty-state page-card">Belum ada detail laporan pengaduan.</div>
-        @endforelse
-    </div>
-</section>
-
-<div class="detail-modal-backdrop" id="detailLaporanModal" hidden>
-    <div class="detail-modal-card" role="dialog" aria-modal="true" aria-labelledby="detailLaporanModalTitle">
-        <div class="detail-modal-header">
-            <h2 id="detailLaporanModalTitle">Detail Pengaduan</h2>
-            <button type="button" class="detail-modal-close" data-detail-laporan-close aria-label="Tutup">×</button>
-        </div>
-        <div class="detail-modal-body" id="detailLaporanModalContent">
-            <div class="detail-loading-line"></div>
-            <div class="detail-loading-line short"></div>
-            <div class="detail-loading-line"></div>
-        </div>
-    </div>
+</div>
 </div>
 
 </main>
@@ -901,135 +428,3 @@
 </script>
 
 @endsection
-
-@push('scripts')
-<script>
-(function () {
-    const modal = document.getElementById('detailLaporanModal');
-    const modalContent = document.getElementById('detailLaporanModalContent');
-
-    if (!modal || !modalContent) return;
-
-    function esc(value) {
-        return String(value ?? '-')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
-
-    function loadingTemplate() {
-        return '<div class="detail-loading-line"></div><div class="detail-loading-line short"></div><div class="detail-loading-line"></div>';
-    }
-
-    function closeModal() {
-        modal.hidden = true;
-        modalContent.innerHTML = loadingTemplate();
-        document.body.style.overflow = '';
-    }
-
-    function renderDetail(data) {
-        const fotoItems = Array.isArray(data.fotos) && data.fotos.length
-            ? data.fotos
-            : (data.foto ? [{ url: data.foto }] : []);
-
-        const foto = fotoItems.length
-            ? fotoItems.map((item, index) => {
-                const url = typeof item === 'string' ? item : item.url;
-                return url
-                    ? `<img src="${esc(url)}" alt="Foto kerusakan ${index + 1}" class="detail-modal-photo" loading="lazy">`
-                    : '';
-            }).join('')
-            : `<div class="detail-modal-photo-placeholder">Tidak ada foto</div>`;
-
-        const statusClass = esc(data.statusClass || 'new');
-        const statusLabel = esc(data.statusLabel || data.status || '-');
-
-        return `
-            <div class="detail-modal-grid">
-                <div class="detail-modal-photo-wrap">${foto}</div>
-                <div class="detail-modal-panel">
-                <div class="detail-modal-row">
-                    <span class="detail-modal-label">ID</span>
-                    <span>:</span>
-                    <span>${esc(data.id)}</span>
-                </div>
-                <div class="detail-modal-row">
-                    <span class="detail-modal-label">Status</span>
-                    <span>:</span>
-                    <span><mark class="detail-modal-badge ${statusClass}">${statusLabel}</mark></span>
-                </div>
-                <div class="detail-modal-row">
-                    <span class="detail-modal-label">Pelapor</span>
-                    <span>:</span>
-                    <span>${esc(data.pelapor)}</span>
-                </div>
-                <div class="detail-modal-row">
-                    <span class="detail-modal-label">Lokasi</span>
-                    <span>:</span>
-                    <span>${esc(data.lokasi)}</span>
-                </div>
-                <div class="detail-modal-row">
-                    <span class="detail-modal-label">Fasilitas</span>
-                    <span>:</span>
-                    <span>${esc(data.fasilitas)}</span>
-                </div>
-                <div class="detail-modal-row">
-                    <span class="detail-modal-label">Tgl Lapor</span>
-                    <span>:</span>
-                    <span>${esc(data.tanggal)}</span>
-                </div>
-                <div class="detail-modal-row detail-modal-description-row">
-                    <span class="detail-modal-label">Deskripsi</span>
-                    <span>:</span>
-                    <div class="detail-modal-description">${esc(data.deskripsi)}</div>
-                </div>
-                </div>
-            </div>
-        `;
-    }
-
-    document.addEventListener('click', async function (event) {
-        const closeButton = event.target.closest('[data-detail-laporan-close]');
-        if (closeButton || event.target === modal) {
-            closeModal();
-            return;
-        }
-
-        const detailButton = event.target.closest('[data-detail-laporan-url]');
-        if (!detailButton) return;
-
-        const url = detailButton.dataset.detailLaporanUrl;
-        modal.hidden = false;
-        modalContent.innerHTML = loadingTemplate();
-        document.body.style.overflow = 'hidden';
-
-        if (!url) {
-            modalContent.innerHTML = '<p>URL detail belum tersedia.</p>';
-            return;
-        }
-
-        try {
-            const response = await fetch(url, {
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            });
-
-            if (!response.ok) throw new Error('Gagal mengambil detail laporan.');
-
-            const data = await response.json();
-            modalContent.innerHTML = renderDetail(data);
-        } catch (error) {
-            modalContent.innerHTML = '<p>Detail laporan belum bisa ditampilkan. Pastikan route detail pengaduan sudah benar.</p>';
-        }
-    });
-
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape' && !modal.hidden) closeModal();
-    });
-})();
-</script>
-@endpush

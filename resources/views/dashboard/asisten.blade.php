@@ -83,6 +83,7 @@
 
 <div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
 <<<<<<< HEAD
+<<<<<<< HEAD
     <!-- SIDEBAR KIRI (SINKRON DENGAN HALAMAN TINDAK LANJUT) -->
     <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop md:sticky md:top-0 md:h-screen rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
         <div class="p-8 flex-1 flex flex-col overflow-y-auto">
@@ -93,12 +94,18 @@
         <div class="p-8 flex-1 flex flex-col overflow-y-auto custom-scrollbar">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4">
 >>>>>>> 2a3988f (bismillah)
+=======
+    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop md:sticky md:top-0 md:h-screen rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
+        <div class="p-8 flex-1 flex flex-col overflow-y-auto custom-scrollbar">
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4">
+>>>>>>> 1446e82 (Istigfar)
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
                     <i class="fa-solid fa-square-poll-vertical text-xl"></i>
                 </div>
                 <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-[#0090F5] to-[#1E3A8A] bg-clip-text text-transparent">SiLapor</span>
             </a>
 
+<<<<<<< HEAD
 <<<<<<< HEAD
             <!-- List Menu Navigasi -->
             @php
@@ -148,6 +155,11 @@
                 $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole);
             @endphp
 >>>>>>> 2a3988f (bismillah)
+=======
+            @php
+                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole);
+            @endphp
+>>>>>>> 1446e82 (Istigfar)
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
