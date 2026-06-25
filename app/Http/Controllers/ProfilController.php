@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User; // WAJIB DITAMBAHKAN agar Eloquent terikat dengan sempurna
+use Illuminate\Validation\Rule;
+use App\Models\User; 
 
 class ProfilController extends Controller
 {
@@ -18,21 +19,30 @@ class ProfilController extends Controller
 
     public function update(Request $request)
     {
-        // Mengambil langsung model User berdasarkan ID yang login untuk menghindari error .save()
-        $user = User::findOrFail(Auth::id());
+        // 1. Ambil ID user yang sedang login (Menggunakan primary key custom Anda)
+        $userId = Auth::id();
+        $user = User::findOrFail($userId);
 
+        // 2. Validasi Input (Disesuaikan dengan panjang kolom & nama kolom di ERD)
         $request->validate([
-            'name'  => 'required|string|max:255', // Ganti ke 'nama' jika kolom DB Anda adalah nama
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'no_hp' => 'nullable|string|max:15',
+            'nama'  => 'required|string|max:120', // Sesuai varchar(120) di DB
+            'phone' => 'nullable|string|max:15',  // Sesuai nama kolom 'phone' di DB
+            'email' => [
+                'required',
+                'email',
+                'max:120',
+                // SOLUSI UTAMA: Mengabaikan email milik user ini sendiri berdasarkan 'id_user'
+                Rule::unique('users', 'email')->ignore($userId, 'id_user')
+            ],
             'foto'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Catatan: Jika di database menggunakan 'nama', ubah $user->name menjadi $user->nama
-        $user->name = $request->name; 
+        // 3. Mapping data dari Form ke Kolom Database yang Benar
+        $user->nama = $request->nama; 
         $user->email = $request->email;
-        $user->no_hp = $request->no_hp;
+        $user->phone = $request->phone; // Menggunakan 'phone' sesuai database
 
+        // 4. Proses Upload Foto
         if ($request->hasFile('foto')) {
             if ($user->foto) {
                 Storage::disk('public')->delete($user->foto);
@@ -42,26 +52,23 @@ class ProfilController extends Controller
         }
 
         $user->save();
-
-        return back()->with('success', 'Profil berhasil diperbarui!');
+        // Mengarahkan langsung ke fungsi index() profil menggunakan GET secara aman
+        return redirect()->route('profil.index')->with('success', 'Profil berhasil diperbarui!');
     }
 
     public function updatePassword(Request $request)
     {
-        // Validasi input form ganti password
         $request->validate([
             'current_password' => 'required',
-            'password'         => 'required|string|min:8|confirmed', // otomatis mengecek password_confirmation
+            'password'         => 'required|string|min:8|confirmed', 
         ]);
 
         $user = User::findOrFail(Auth::id());
 
-        // Periksa kesesuaian password lama dengan hash di database
         if (!Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Password saat ini yang Anda masukkan salah.']);
         }
 
-        // Enkripsi dan simpan password baru
         $user->password = Hash::make($request->password);
         $user->save();
 

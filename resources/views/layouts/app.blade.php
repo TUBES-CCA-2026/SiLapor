@@ -24,6 +24,8 @@
     </script>
     <style> body { font-family: 'Inter', sans-serif; } .font-display { font-family: 'Poppins', sans-serif; } </style>
     @stack('head')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
@@ -32,13 +34,6 @@
     @endauth
 
     <main>
-        @if (session('success'))
-            <div class="max-w-3xl mx-auto mt-4 px-4">
-                <div class="bg-green-50 text-green-700 border border-green-200 rounded-xl px-4 py-3 text-sm">
-                    {{ session('success') }}
-                </div>
-            </div>
-        @endif
 
         @yield('content')
     </main>
