@@ -54,7 +54,7 @@
 
 <div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
     <!-- SIDEBAR KIRI (SINKRON DENGAN HALAMAN TINDAK LANJUT) -->
-    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop md:sticky md:top-0 md:h-screen rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
+    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white ... transition-all duration-300 -translate-x-full md:translate-x-0 md:sticky md:top-0 h-screen">
         <div class="p-8 flex-1 flex flex-col overflow-y-auto">
             <!-- Brand Logo SiLapor -->
             <div class="flex items-center gap-3 px-4">
@@ -106,7 +106,7 @@
                 </a>
             </nav>
         </div>
-
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Logout Section -->
         <div class="p-8 border-t border-gray-100 bg-white rounded-br-[36px] md:rounded-br-none">
             <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-red-50 hover:text-red-600 font-semibold text-sm transition-all">
@@ -120,47 +120,49 @@
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 z-40 hidden" onclick="toggleSidebar()"></div>
 
     <!-- KONTEN UTAMA -->
-    <main class="flex-1 px-4 py-6 md:px-10 md:py-8 space-y-8 overflow-x-hidden w-full min-w-0">
-        <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4">
-            <div class="flex items-center gap-4">
-                <!-- Hamburger menu untuk mobile & tablet di bawah 850px -->
-                <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 focus:outline-none hide-on-desktop">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                </button>
-                <h1 class="text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-wider">DASHBOARD ASISTEN LAB</h1>
+    <main class="w-full min-w-0 px-4 py-6 md:px-8 md:py-8 space-y-6">
+    <!-- HEADER -->
+    <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2">
+        <div class="flex items-center gap-3">
+            <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 focus:outline-none hide-on-desktop">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            <h1 class="text-lg sm:text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-tight">DASHBOARD ASISTEN</h1>
+        </div>
+        
+        <div class="bg-[#0090F5] text-white px-4 py-2 rounded-2xl flex items-center gap-3 shadow-md w-full sm:w-auto">
+            <div class="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#0090F5] shrink-0">
+                <i class="fa-solid fa-user text-sm"></i>
             </div>
-            
-            <div class="bg-[#0090F5] text-white px-5 py-2.5 rounded-2xl flex items-center gap-3.5 shadow-md w-full sm:w-auto">
-                <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#0090F5] shrink-0"><i class="fa-solid fa-user text-xl"></i></div>
-                <div class="text-left flex flex-col justify-center leading-tight">
-                    <span class="text-[11px] font-light opacity-90 block">Selamat datang,</span>
-                    <span class="text-sm font-extrabold block tracking-wide">{{ Auth::user()->nama ?? 'Asisten Lab' }}</span>
-                </div>
+            <div class="text-left overflow-hidden">
+                <span class="text-[10px] opacity-80 block uppercase tracking-wider">Selamat datang</span>
+                <span class="text-xs font-bold block truncate">{{ Auth::user()->name ?? Auth::user()->nama ?? 'User' }}</span>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <!-- STATISTIK (DIBUNGKUS DENGAN FALLBACK AMAN) -->
-        @php
-            $tugas = $tugas ?? collect([]);
-            $totalPengaduan = $tugas->count();
-            $sedangDiperbaiki = $tugas->where('status_penanganan', 'ON PROGRES')->count();
-            $selesai = $tugas->where('status_penanganan', 'DONE')->count();
-        @endphp
+    <!-- STATISTIK -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+    @php
+    $stats = [
+        ['Total Pengaduan', $totalPengaduan ?? 0, 'text-[#FF4D4D]', 'bg-[#FFEAEB]'],
+        ['Sedang Diperbaiki', $sedangDiperbaiki ?? 0, 'text-[#0090F5]', 'bg-[#EAF5FE]'],
+        ['Selesai', $selesai ?? 0, 'text-[#22C55E]', 'bg-[#E6F9EE]']
+    ];
+    @endphp
+        @foreach($stats as $s)
+        <div class="bg-white border rounded-3xl p-5 md:p-6 flex items-center shadow-figma-card">
+            <div class="w-14 h-14 rounded-full {{ $s[3] }} flex items-center justify-center {{ $s[2] }} text-xl shrink-0">
+                <i class="fa-solid {{ $loop->index == 0 ? 'fa-triangle-exclamation' : ($loop->index == 1 ? 'fa-screwdriver-wrench' : 'fa-circle-check') }}"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-xs text-gray-500 font-bold">{{ $s[0] }}</p>
+                <p class="text-2xl md:text-3xl font-extrabold text-[#2C3E50]">{{ str_pad($s[1], 3, '0', STR_PAD_LEFT) }}</p>
+            </div>
+        </div>
+        @endforeach
+    </section>
 
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="bg-white border rounded-[28px] p-7 flex items-center shadow-figma-card">
-                <div class="w-16 h-16 rounded-full bg-[#FFEAEB] flex items-center justify-center text-[#FF4D4D] text-2xl font-bold">!</div>
-                <div class="ml-5"><p class="text-sm text-gray-500 font-bold">Total Pengaduan</p><p class="text-3xl font-extrabold text-[#2C3E50]">{{ str_pad($totalPengaduan, 3, '0', STR_PAD_LEFT) }}</p></div>
-            </div>
-            <div class="bg-white border rounded-[28px] p-7 flex items-center shadow-figma-card">
-                <div class="w-16 h-16 rounded-full bg-[#EAF5FE] flex items-center justify-center text-[#0090F5] text-2xl"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-                <div class="ml-5"><p class="text-sm text-gray-500 font-bold">Sedang Diperbaiki</p><p class="text-3xl font-extrabold text-[#2C3E50]">{{ str_pad($sedangDiperbaiki, 3, '0', STR_PAD_LEFT) }}</p></div>
-            </div>
-            <div class="bg-white border rounded-[28px] p-7 flex items-center shadow-figma-card sm:col-span-2 lg:col-span-1">
-                <div class="w-16 h-16 rounded-full bg-[#E6F9EE] flex items-center justify-center text-[#22C55E] text-2xl"><i class="fa-solid fa-circle-check"></i></div>
-                <div class="ml-5"><p class="text-sm text-gray-500 font-bold">Selesai</p><p class="text-3xl font-extrabold text-[#2C3E50]">{{ str_pad($selesai, 3, '0', STR_PAD_LEFT) }}</p></div>
-            </div>
-        </section>
 
         <!-- TABEL -->
         <section class="bg-white border rounded-[32px] overflow-hidden shadow-figma-container">

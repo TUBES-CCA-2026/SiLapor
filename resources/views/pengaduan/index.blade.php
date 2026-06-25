@@ -78,27 +78,30 @@
 
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 z-40 hidden" onclick="toggleSidebar()"></div>
 
-    <main class="flex-1 px-4 py-6 md:px-10 md:py-8 overflow-x-hidden w-full min-w-0">
-        <header class="flex items-center justify-between pb-8">
-            <div class="flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 focus:outline-none hide-on-desktop">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-                <h1 class="text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-wider uppercase">Pengaduan</h1>
-            </div>
-
-            <div class="bg-[#0090F5] text-white px-5 py-2.5 rounded-2xl flex items-center gap-3.5 shadow-md">
-                <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#0090F5] shrink-0">
-                    <i class="fa-solid fa-user text-xl"></i>
-                </div>
-                <div class="text-left flex flex-col justify-center leading-tight">
-                    <span class="text-[11px] font-light opacity-90 block">Selamat datang,</span>
-                    <span class="text-sm font-extrabold block tracking-wide">{{ auth()->user()->nama ?? 'User' }}</span>
-                </div>
-            </div>
-        </header>
+    <!-- KONTEN UTAMA -->
+    <main class="w-full min-w-0 px-4 py-6 md:px-8 md:py-8 space-y-6">
+    <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-8">
+    <div class="flex items-center gap-4">
+        <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 focus:outline-none hide-on-desktop">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+        <h1 class="text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-wider uppercase">Pengaduan</h1>
+    </div>
+    
+    <div class="bg-[#0090F5] text-white px-4 py-2 rounded-2xl flex items-center gap-3 shadow-md w-full sm:w-auto">
+        <div class="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#0090F5] shrink-0">
+            <i class="fa-solid fa-user text-sm"></i>
+        </div>
+        <div class="text-left overflow-hidden">
+            <span class="text-[10px] opacity-80 block uppercase tracking-wider">Selamat datang</span>
+            <span class="text-xs font-bold block truncate">
+                {{ Auth::user()->name ?? Auth::user()->nama ?? 'User' }}
+            </span>
+        </div>
+    </div>
+    </header>
 
         <div class="bg-white p-8 rounded-[32px] shadow-figma-container border border-gray-150 w-full">
             <div class="mb-6">

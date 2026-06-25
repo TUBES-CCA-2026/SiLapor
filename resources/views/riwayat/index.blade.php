@@ -17,7 +17,7 @@
 
 <div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
     <!-- SIDEBAR KIRI -->
-    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
+    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white ... transition-all duration-300 -translate-x-full md:translate-x-0 md:sticky md:top-0 h-screen">
         <div class="p-8 flex-1 flex flex-col overflow-y-auto">
             <div class="flex items-center gap-3 px-4">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
@@ -62,13 +62,26 @@
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 z-40 hidden md:hidden" onclick="toggleSidebar()"></div>
 
     <!-- MAIN CONTENT -->
-    <main class="flex-1 px-4 py-6 md:px-10 md:py-8">
-        <header class="flex items-center justify-between pb-8 border-b border-gray-100/50 mb-6">
+    <main class="w-full min-w-0 px-4 py-6 md:px-8 md:py-8 space-y-6">
+    <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2">
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="md:hidden p-2 text-gray-600">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </button>
                 <h1 class="text-2xl font-extrabold text-[#2C3E50] uppercase tracking-wider">RIWAYAT</h1>
+            </div>
+
+            <div class="bg-[#0090F5] text-white px-5 py-2.5 rounded-2xl flex items-center gap-3.5 shadow-md w-full sm:w-auto">
+                <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#0090F5] shrink-0">
+                    <i class="fa-solid fa-user text-xl"></i>
+                </div>
+                <div class="text-left flex flex-col justify-center leading-tight">
+                    <span class="text-[11px] font-light opacity-90 block">Selamat datang,</span>
+                    <!-- Gunakan Auth::user()->name atau Auth::user()->nama sesuai kolom di database -->
+                    <span class="text-sm font-extrabold block tracking-wide">
+                        {{ Auth::user()->name ?? Auth::user()->nama ?? 'User' }}
+                    </span>
+                </div>
             </div>
         </header>
 
