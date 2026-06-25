@@ -132,7 +132,7 @@
                                     <th class="py-3.5 px-6">Lokasi Masalah</th>
                                     <th class="py-3.5 px-6">Fasilitas</th>
                                     <th class="py-3.5 px-6 text-center">Status</th>
-                                    <th class="py-3.5 px-6 text-center">Aksi</th>
+                                    <th class="py-3.5 px-6 text-center"></th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200">

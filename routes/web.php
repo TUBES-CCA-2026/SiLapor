@@ -77,6 +77,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan/{id}', [LaporanController::class, 'show'])->name('laporan.show');
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat.index');
     Route::get('/rekapsulasi', [RekapsulasiController::class, 'index'])->name('rekapsulasi.index');
+    Route::put('/profil/password', [ProfilController::class, 'updatePassword'])->name('profil.password');
     
     // Fitur Profil & Manajemen Akun
     Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');
