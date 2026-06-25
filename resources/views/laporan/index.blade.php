@@ -4,10 +4,19 @@
 
 @section('content')
 @php
+<<<<<<< HEAD
     $activeMenu = 'laporan';
     $pageTitle = 'LAPORAN';
     $user = auth()->user();
     $role = $user?->role;
+=======
+    $user = auth()->user();
+    $role = $user?->role;
+    $sidebarUser = $user;
+    $sidebarRole = $role;
+    $activeMenu = 'laporan';
+    $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
+>>>>>>> 2a3988f (bismillah)
 
     $routeSafe = function (string $name, string $fallback = '#') {
         return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
@@ -21,13 +30,22 @@
         default => 'User',
     };
 
+<<<<<<< HEAD
     if ($role === 'laboran' || $role === 'admin') {
+=======
+    if ($role === 'laboran') {
+>>>>>>> 2a3988f (bismillah)
         $menuItems = [
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
             ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
+<<<<<<< HEAD
+=======
+            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
+            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
+>>>>>>> 2a3988f (bismillah)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'koordinator_lab') {
@@ -35,7 +53,11 @@
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
+<<<<<<< HEAD
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
+=======
+            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
+>>>>>>> 2a3988f (bismillah)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'asisten') {
@@ -64,6 +86,7 @@
     .custom-scrollbar::-webkit-scrollbar-track { background: #F1F5F9; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
 .dashboard-card,
+<<<<<<< HEAD
     .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: hidden; }
     .page-card-body { padding: 1.5rem; }
     .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
@@ -71,6 +94,15 @@
     .report-table { width: 100%; border-collapse: collapse; min-width: 900px; }
     .report-table thead { background: #F8FAFC; color: #64748B; text-transform: uppercase; font-size: .75rem; font-weight: 800; letter-spacing: .04em; }
     .report-table th, .report-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid #F1F5F9; white-space: nowrap; }
+=======
+    .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: visible; }
+    .page-card-body { padding: 1.5rem; }
+    .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
+    .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; overflow-y: visible; background: #fff; }
+    .report-table { width: 100%; border-collapse: collapse; min-width: 0; table-layout: fixed; }
+    .report-table thead { background: #F8FAFC; color: #64748B; text-transform: uppercase; font-size: .75rem; font-weight: 800; letter-spacing: .04em; }
+    .report-table th, .report-table td { padding: .95rem 1rem; text-align: left; border-bottom: 1px solid #F1F5F9; white-space: normal; vertical-align: middle; }
+>>>>>>> 2a3988f (bismillah)
     .report-table td { font-size: .875rem; color: #374151; }
     .report-table tr:hover td { background: #F8FAFC; }
     .text-center { text-align: center !important; }
@@ -95,15 +127,39 @@
     .laporan-search input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: #2C3E50; font-size: .875rem; }
     .laporan-search input::placeholder { color: #9AA9BA; }
     .laporan-search svg { width: 22px; height: 22px; fill: none; stroke: #52657A; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
+<<<<<<< HEAD
     .laporan-table-wrap { border-radius: 1.5rem; }
     .laporan-table { min-width: 1180px; }
     .laporan-description { max-width: 230px; overflow: hidden; text-overflow: ellipsis; }
     .laporan-status { min-width: 116px; height: 28px; padding: 0 9px 0 12px; display: inline-flex; align-items: center; justify-content: space-between; gap: 8px; border-radius: 7px; font-size: 13px; font-weight: 700; line-height: 1; white-space: nowrap; }
+=======
+    .laporan-table-wrap { border-radius: 1.5rem; overflow-x: visible; }
+    .laporan-table { width: 100%; min-width: 0; table-layout: fixed; }
+    .laporan-description { max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+    .laporan-status { min-width: 104px; height: 28px; padding: 0 9px 0 12px; display: inline-flex; align-items: center; justify-content: space-between; gap: 8px; border-radius: 7px; font-size: 12px; font-weight: 700; line-height: 1; white-space: nowrap; }
+>>>>>>> 2a3988f (bismillah)
     .laporan-status.progress { color: #756000; background: #FFD400; }
     .laporan-status.done { color: #187C28; background: #59FF45; }
     .laporan-status.new { color: #095E9C; background: #D8ECFF; }
     .status-arrow { font-size: 12px; opacity: .75; }
 
+<<<<<<< HEAD
+=======
+    .laporan-table th:nth-child(1), .laporan-table td:nth-child(1) { width: 13%; }
+    .laporan-table th:nth-child(2), .laporan-table td:nth-child(2) { width: 15%; }
+    .laporan-table th:nth-child(3), .laporan-table td:nth-child(3) { width: 13%; }
+    .laporan-table th:nth-child(4), .laporan-table td:nth-child(4) { width: 16%; }
+    .laporan-table th:nth-child(5), .laporan-table td:nth-child(5) { width: 24%; }
+    .laporan-table th:nth-child(6), .laporan-table td:nth-child(6) { width: 12%; }
+    .laporan-table th:nth-child(7), .laporan-table td:nth-child(7) { width: 7%; }
+    @media (max-width: 1100px) {
+        .laporan-table-wrap { overflow-x: auto; }
+        .laporan-table { min-width: 920px; }
+        .report-table th, .report-table td { white-space: nowrap; }
+    }
+
+
+>>>>>>> 2a3988f (bismillah)
     .modal-backdrop { position: fixed; inset: 0; z-index: 60; padding: 20px; background: rgba(15, 23, 42, .35); display: grid; place-items: center; }
     .modal-backdrop[hidden] { display: none !important; }
     .modal-card { width: min(520px, 96vw); max-height: 92vh; overflow: hidden; border-radius: 1.5rem; background: #fff; box-shadow: 0 18px 35px rgba(0,0,0,.18); }
@@ -185,6 +241,12 @@
                 }
             @endphp
 
+<<<<<<< HEAD
+=======
+            @php
+                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
+            @endphp
+>>>>>>> 2a3988f (bismillah)
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -337,6 +399,7 @@
         </div>
     </div>
 </div>
+<<<<<<< HEAD
 
 </main>
 </div>
@@ -490,4 +553,158 @@
 </script>
 
 @endsection
+=======
+>>>>>>> 2a3988f (bismillah)
 
+</main>
+</div>
+
+<script>
+    function handleResponsiveSidebar() {
+        const sidebar = document.getElementById('sidebar-menu');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        if (!sidebar || !overlay) return;
+
+        if (window.innerWidth < 850) {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        } else {
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.add('hidden');
+        }
+    }
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar-menu');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        if (!sidebar || !overlay) return;
+
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+    }
+
+    window.addEventListener('resize', handleResponsiveSidebar);
+    window.addEventListener('load', handleResponsiveSidebar);
+
+    (function () {
+        const modal = document.getElementById('detailModal');
+        const modalContent = document.getElementById('modalContent');
+
+        if (!modal || !modalContent) return;
+
+        function closeModal() {
+            modal.hidden = true;
+            modalContent.innerHTML = '';
+        }
+
+        function esc(value) {
+            return String(value ?? '-')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function renderDetail(data) {
+            const fotoItems = Array.isArray(data.fotos) && data.fotos.length
+                ? data.fotos
+                : (data.foto ? [{ url: data.foto }] : []);
+
+            const foto = fotoItems.length
+                ? fotoItems.map((item, index) => {
+                    const url = typeof item === 'string' ? item : item.url;
+                    return url
+                        ? `<img src="${esc(url)}" alt="Foto kerusakan ${index + 1}" class="modal-photo" loading="lazy">`
+                        : '';
+                }).join('')
+                : `<div class="modal-photo-placeholder">Tidak ada foto</div>`;
+
+            const statusClass = esc(data.statusClass || 'new');
+            const statusLabel = esc(data.statusLabel || data.status);
+
+            return `
+                <div class="detail-photo-wrap">${foto}</div>
+                <div class="detail-panel">
+                    <div class="modal-row"><span class="modal-label">ID</span><span>:</span><span>${esc(data.id)}</span></div>
+                    <div class="modal-row"><span class="modal-label">Status</span><span>:</span><span><mark class="status-badge ${statusClass}">${statusLabel}</mark></span></div>
+                    <div class="modal-row"><span class="modal-label">Pelapor</span><span>:</span><span>${esc(data.pelapor)}</span></div>
+                    <div class="modal-row"><span class="modal-label">Lokasi</span><span>:</span><span>${esc(data.lokasi)}</span></div>
+                    <div class="modal-row"><span class="modal-label">Fasilitas</span><span>:</span><span>${esc(data.fasilitas)}</span></div>
+                    <div class="modal-row"><span class="modal-label">Tgl Lapor</span><span>:</span><span>${esc(data.tanggal)}</span></div>
+                    <div class="modal-row modal-row-description"><span class="modal-label">Deskripsi</span><span>:</span><div class="description-box">${esc(data.deskripsi)}</div></div>
+                </div>
+            `;
+        }
+
+        document.addEventListener('click', async function (event) {
+            const detailButton = event.target.closest('.detail-btn');
+            const closeButton = event.target.closest('[data-close-modal]');
+
+            if (closeButton || event.target === modal) {
+                closeModal();
+                return;
+            }
+
+            if (!detailButton) return;
+
+            const url = detailButton.dataset.detailUrl;
+            modal.hidden = false;
+            modalContent.innerHTML = '<div class="loading-line"></div><div class="loading-line short"></div><div class="loading-line"></div>';
+
+            if (!url || url === '#') {
+                modalContent.innerHTML = '<p>URL detail belum tersedia.</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Gagal mengambil detail laporan.');
+                const data = await response.json();
+                modalContent.innerHTML = renderDetail(data);
+            } catch (error) {
+                modalContent.innerHTML = '<p>Detail laporan belum bisa ditampilkan. Pastikan route detail pengaduan sudah benar.</p>';
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') closeModal();
+        });
+    })();
+
+    (function () {
+        const searchInput = document.querySelector('[data-laporan-search]');
+        const table = document.querySelector('[data-laporan-table]');
+
+        if (!searchInput || !table) return;
+
+        const rows = Array.from(table.querySelectorAll('[data-laporan-row]'));
+        const emptyRow = table.querySelector('[data-empty-row]');
+
+        searchInput.addEventListener('input', function () {
+            const keyword = this.value.trim().toLowerCase();
+            let visibleCount = 0;
+
+            rows.forEach(function (row) {
+                const text = row.textContent.toLowerCase();
+                const isMatch = text.includes(keyword);
+                row.hidden = !isMatch;
+                if (isMatch) visibleCount += 1;
+            });
+
+            if (emptyRow && rows.length > 0) {
+                emptyRow.hidden = visibleCount !== 0;
+            }
+        });
+    })();
+</script>
+
+@endsection

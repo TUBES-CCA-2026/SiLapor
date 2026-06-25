@@ -34,6 +34,18 @@
     }
 
     /* Penyesuaian layout responsive di breakpoint khusus 850px */
+
+    .tindak-status-on-progress { background: #FBBF24; color: #fff; }
+    .tindak-status-done { background: #4ADE80; color: #fff; }
+    .tindak-status-cancel { background: #EF4444; color: #fff; }
+    .tindak-status-no-sparepart { background: #E5E7EB; color: #374151; }
+    .tindak-popup-backdrop { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 1rem; background: rgba(15, 23, 42, .35); }
+    .tindak-popup-card { width: min(420px, 94vw); overflow: hidden; border-radius: 1.5rem; background: #fff; box-shadow: 0 20px 45px rgba(15, 23, 42, .20); }
+    .tindak-popup-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid #E5E7EB; }
+    .tindak-popup-title { margin: 0; color: #2C3E50; font-size: 1rem; font-weight: 800; }
+    .tindak-popup-close { border: 0; background: transparent; color: #64748B; font-size: 1.8rem; line-height: 1; cursor: pointer; }
+    .tindak-popup-body { padding: 1.5rem; text-align: center; }
+
     @media (min-width: 850px) {
         .sidebar-desktop {
             transform: translateX(0) !important;
@@ -64,47 +76,64 @@
 
             <!-- List Menu Navigasi -->
             @php
-                $activeMenu = 'tindak-lanjut';
-                $routeSafe = function (string $name, string $fallback = '#') {
-                    return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
-                };
-                $sidebarUser = auth()->user();
-                $sidebarRole = $sidebarUser?->role;
+    $user = auth()->user();
+    $role = $user?->role;
+    $sidebarUser = $user;
+    $sidebarRole = $role;
+    $activeMenu = 'tindak-lanjut';
+    $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
 
-                if ($sidebarRole === 'laboran' || $sidebarRole === 'admin') {
-                    $menuItems = [
-                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-                        ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
-                        ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-                        ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
-                        ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-                    ];
-                } elseif ($sidebarRole === 'koordinator_lab') {
-                    $menuItems = [
-                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-                        ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
-                        ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
-                        ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-                    ];
-                } elseif ($sidebarRole === 'asisten') {
-                    $menuItems = [
-                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-                        ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
-                        ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
-                        ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-                        ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-                    ];
-                } else {
-                    $menuItems = [
-                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-                    ];
-                }
+    $routeSafe = function (string $name, string $fallback = '#') {
+        return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
+    };
+
+    $roleLabel = match($role) {
+        'laboran' => 'Laboran',
+        'koordinator_lab' => 'Koordinator Lab',
+        'asisten' => 'Asisten Lab',
+        'admin' => 'Admin',
+        default => 'User',
+    };
+
+    if ($role === 'laboran') {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
+            ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
+            ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
+            ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
+            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
+            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    } elseif ($role === 'koordinator_lab') {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
+            ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
+            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    } elseif ($role === 'asisten') {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
+            ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
+            ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
+            ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    } else {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    }
+@endphp
+
+            @php
+                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
             @endphp
-
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -220,11 +249,20 @@
                                     <form method="POST" action="{{ route('tindak-lanjut.update', $t->id_tindak_lanjut) }}" id="form-status-{{ $t->id_tindak_lanjut }}">
                                         @csrf
                                         @method('PATCH')
+                                        @php
+                                            $statusSelectClass = match($t->status_penanganan) {
+                                                'DONE' => 'tindak-status-done',
+                                                'CANCEL' => 'tindak-status-cancel',
+                                                'NO SPAREPART' => 'tindak-status-no-sparepart',
+                                                default => 'tindak-status-on-progress',
+                                            };
+                                        @endphp
                                         <select name="status_penanganan" onchange="document.getElementById('form-status-{{ $t->id_tindak_lanjut }}').submit()" 
-                                            class="inline-block text-xs font-bold px-3 py-1.5 rounded-md text-center appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0090F5]/30
-                                            {{ $t->status_penanganan === 'DONE' ? 'bg-[#4ADE80] text-white' : 'bg-[#FBBF24] text-white' }}">
+                                            class="inline-block text-xs font-bold px-3 py-1.5 rounded-md text-center appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0090F5]/30 {{ $statusSelectClass }}">
                                             <option value="ON PROGRES" {{ $t->status_penanganan === 'ON PROGRES' ? 'selected' : '' }}>On Progress ▼</option>
                                             <option value="DONE" {{ $t->status_penanganan === 'DONE' ? 'selected' : '' }}>Done ▼</option>
+                                            <option value="CANCEL" {{ $t->status_penanganan === 'CANCEL' ? 'selected' : '' }}>Cancel ▼</option>
+                                            <option value="NO SPAREPART" {{ $t->status_penanganan === 'NO SPAREPART' ? 'selected' : '' }}>No Sparepart ▼</option>
                                         </select>
                                     </form>
                                 </td>
@@ -314,7 +352,7 @@
                 </table>
             </div>
         </section>
-    </main>
+</main>
 </div>
 
 <script>

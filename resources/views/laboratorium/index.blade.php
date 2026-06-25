@@ -4,10 +4,19 @@
 
 @section('content')
 @php
+<<<<<<< HEAD
     $activeMenu = 'laboratorium';
     $pageTitle = 'LABORATORIUM';
     $user = auth()->user();
     $role = $user?->role;
+=======
+    $user = auth()->user();
+    $role = $user?->role;
+    $sidebarUser = $user;
+    $sidebarRole = $role;
+    $activeMenu = 'laboratorium';
+    $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
+>>>>>>> 2a3988f (bismillah)
 
     $routeSafe = function (string $name, string $fallback = '#') {
         return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
@@ -21,13 +30,22 @@
         default => 'User',
     };
 
+<<<<<<< HEAD
     if ($role === 'laboran' || $role === 'admin') {
+=======
+    if ($role === 'laboran') {
+>>>>>>> 2a3988f (bismillah)
         $menuItems = [
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
             ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
+<<<<<<< HEAD
+=======
+            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
+            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
+>>>>>>> 2a3988f (bismillah)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'koordinator_lab') {
@@ -35,7 +53,11 @@
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
+<<<<<<< HEAD
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
+=======
+            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
+>>>>>>> 2a3988f (bismillah)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'asisten') {
@@ -64,10 +86,17 @@
     .custom-scrollbar::-webkit-scrollbar-track { background: #F1F5F9; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
 .dashboard-card,
+<<<<<<< HEAD
     .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: hidden; }
     .page-card-body { padding: 1.5rem; }
     .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
     .table-wrap { width: 100%; overflow-x: auto; background: #fff; }
+=======
+    .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: visible; }
+    .page-card-body { padding: 1.5rem; }
+    .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
+    .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; overflow-y: visible; background: #fff; }
+>>>>>>> 2a3988f (bismillah)
     .report-table { width: 100%; border-collapse: collapse; min-width: 900px; }
     .report-table thead { background: #F8FAFC; color: #64748B; text-transform: uppercase; font-size: .75rem; font-weight: 800; letter-spacing: .04em; }
     .report-table th, .report-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid #F1F5F9; white-space: nowrap; }
@@ -185,6 +214,12 @@
                 }
             @endphp
 
+<<<<<<< HEAD
+=======
+            @php
+                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
+            @endphp
+>>>>>>> 2a3988f (bismillah)
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -247,6 +282,7 @@
                 <a href="{{ route('fasilitas.index') }}" style="color: #0090F5; text-decoration: none; font-weight: 700;">halaman Fasilitas</a>.
             </p>
         </div>
+<<<<<<< HEAD
 
         @if ($errors->any())
             <div style="margin-bottom: 1rem; padding: .85rem 1rem; border-radius: 1rem; background: #FEE2E2; color: #991B1B; font-weight: 700;">
@@ -255,19 +291,31 @@
         @endif
 
         <form method="POST" action="{{ route('laboratorium.store') }}" class="laboratorium-form-admin-like" style="background: #fff; border: 1px solid #E5E7EB; border-radius: 1rem; padding: 1.25rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem; margin-bottom: 1.5rem;">
+=======
+<form method="POST" action="{{ route('laboratorium.store') }}" class="laboratorium-form-admin-like" style="background: #fff; border: 1px solid #E5E7EB; border-radius: 1rem; padding: 1.25rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem; margin-bottom: 1.5rem;">
+>>>>>>> 2a3988f (bismillah)
             @csrf
             <input name="nama_laboratorium" placeholder="Nama lab (cth: Lab RPL)" required class="form-control" style="font-size: .9rem;">
             <input name="kode_laboratorium" placeholder="Kode (cth: LAB-RPL)" class="form-control" style="font-size: .9rem;">
             <input name="lokasi" placeholder="Lokasi (cth: Gedung A Lantai 2)" class="form-control" style="font-size: .9rem;">
 
             <select name="id_koordinator" class="form-control" style="font-size: .9rem;">
+<<<<<<< HEAD
                 <option value="">Koordinator (opsional)</option>
                 @foreach ($koordinators as $k)
+=======
+                <option value="">Penanggung jawab (role asisten)</option>
+                @foreach (($penanggungJawabs ?? $koordinators) as $k)
+>>>>>>> 2a3988f (bismillah)
                     <option value="{{ $k->id_user }}">{{ $k->nama }}</option>
                 @endforeach
             </select>
 
+<<<<<<< HEAD
             <input type="number" name="kapasitas" placeholder="Kapasitas unit (opsional)" min="0" class="form-control" style="font-size: .9rem;">
+=======
+            <input name="keterangan" placeholder="Keterangan (opsional)" class="form-control" style="font-size: .9rem;">
+>>>>>>> 2a3988f (bismillah)
 
             <button class="btn-primary" style="font-size: .9rem; border-radius: .85rem;">
                 + Tambah Laboratorium
@@ -276,6 +324,7 @@
 
         <div style="background: #fff; border: 1px solid #E5E7EB; border-radius: 1rem; overflow: hidden;">
             @forelse ($laboratoriums as $lab)
+<<<<<<< HEAD
                 <div style="padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: {{ $loop->last ? '0' : '1px solid #F1F5F9' }};">
                     <div>
                         <p style="margin: 0; color: #111827; font-weight: 800;">
@@ -292,6 +341,57 @@
                     </div>
 
                     <span style="color: #94A3B8; font-size: .8rem; font-weight: 700; white-space: nowrap;">{{ $lab->fasilitas()->count() }} fasilitas</span>
+=======
+                <div style="padding: 1rem 1.25rem; border-bottom: {{ $loop->last ? '0' : '1px solid #F1F5F9' }};">
+                    <div class="laboratorium-row-main" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                        <div>
+                            <p style="margin: 0; color: #111827; font-weight: 800;">
+                                {{ $lab->nama_laboratorium }}
+                                @if ($lab->kode_laboratorium)
+                                    <span style="color: #94A3B8; font-size: .78rem; font-weight: 600;">({{ $lab->kode_laboratorium }})</span>
+                                @endif
+                            </p>
+                            <p style="margin: .25rem 0 0; color: #64748B; font-size: .86rem;">{{ $lab->lokasi ?? '—' }}</p>
+                            <p style="margin: .2rem 0 0; color: #94A3B8; font-size: .78rem;">
+                                Penanggung Jawab: {{ $lab->koordinator?->nama ?? 'Belum ditentukan' }} · {{ $lab->fasilitas_count }} fasilitas
+                            </p>
+                            @if($lab->keterangan)
+                                <p style="margin: .2rem 0 0; color: #64748B; font-size: .78rem;">{{ $lab->keterangan }}</p>
+                            @endif
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;">
+                            <button type="button" class="btn-outline-blue" onclick="document.getElementById('edit-lab-{{ $lab->id_laboratorium }}').toggleAttribute('hidden')">
+                                <i class="fa-solid fa-pen" style="margin-right: .4rem;"></i>Edit
+                            </button>
+                            <form method="POST" action="{{ route('laboratorium.destroy', $lab) }}" onsubmit="return confirm('Hapus laboratorium {{ addslashes($lab->nama_laboratorium) }}?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-danger-soft" {{ $lab->fasilitas_count > 0 ? 'disabled' : '' }} title="{{ $lab->fasilitas_count > 0 ? 'Hapus seluruh fasilitasnya terlebih dahulu' : 'Hapus laboratorium' }}">
+                                    <i class="fa-solid fa-trash" style="margin-right: .4rem;"></i>Hapus
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="edit-lab-{{ $lab->id_laboratorium }}" hidden style="margin-top: 1rem; padding: 1rem; border: 1px solid #DCE6F1; border-radius: 1rem; background: #F8FAFC;">
+                        <form method="POST" action="{{ route('laboratorium.update', $lab) }}" class="laboratorium-form-admin-like" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem;">
+                            @csrf
+                            @method('PATCH')
+                            <input name="nama_laboratorium" value="{{ $lab->nama_laboratorium }}" required class="form-control" placeholder="Nama laboratorium">
+                            <input name="kode_laboratorium" value="{{ $lab->kode_laboratorium }}" class="form-control" placeholder="Kode laboratorium">
+                            <input name="lokasi" value="{{ $lab->lokasi }}" class="form-control" placeholder="Lokasi">
+                            <select name="id_koordinator" class="form-control">
+                                <option value="">Penanggung jawab</option>
+                                @foreach (($penanggungJawabs ?? $koordinators) as $k)
+                                    <option value="{{ $k->id_user }}" {{ (string) $lab->id_koordinator === (string) $k->id_user ? 'selected' : '' }}>{{ $k->nama }}</option>
+                                @endforeach
+                            </select>
+                            <input name="keterangan" value="{{ $lab->keterangan }}" class="form-control" placeholder="Keterangan">
+                            <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk" style="margin-right: .45rem;"></i>Simpan Perubahan</button>
+                        </form>
+                    </div>
+>>>>>>> 2a3988f (bismillah)
                 </div>
             @empty
                 <p style="margin: 0; padding: 1.5rem; color: #94A3B8; font-size: .9rem;">Belum ada data laboratorium.</p>
@@ -305,6 +405,19 @@
     .laboratorium-form-admin-like {
         grid-template-columns: 1fr !important;
     }
+<<<<<<< HEAD
+=======
+
+    .laboratorium-row-main {
+        align-items: flex-start !important;
+        flex-direction: column;
+    }
+}
+
+.btn-danger-soft:disabled {
+    cursor: not-allowed;
+    opacity: .45;
+>>>>>>> 2a3988f (bismillah)
 }
 </style>
 

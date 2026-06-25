@@ -4,10 +4,13 @@
 
 @section('content')
 @php
-    $activeMenu = 'profil';
-    $pageTitle = 'EDIT USER';
+    $editingUser = $user;
     $user = auth()->user();
     $role = $user?->role;
+    $sidebarUser = $user;
+    $sidebarRole = $role;
+    $activeMenu = 'users';
+    $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
 
     $routeSafe = function (string $name, string $fallback = '#') {
         return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
@@ -21,13 +24,15 @@
         default => 'User',
     };
 
-    if ($role === 'laboran' || $role === 'admin') {
+    if ($role === 'laboran') {
         $menuItems = [
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
             ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
+            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
+            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'koordinator_lab') {
@@ -35,7 +40,7 @@
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
-            ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
+            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'asisten') {
@@ -64,10 +69,10 @@
     .custom-scrollbar::-webkit-scrollbar-track { background: #F1F5F9; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
 .dashboard-card,
-    .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: hidden; }
+    .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: visible; }
     .page-card-body { padding: 1.5rem; }
     .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
-    .table-wrap { width: 100%; overflow-x: auto; background: #fff; }
+    .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; overflow-y: visible; background: #fff; }
     .report-table { width: 100%; border-collapse: collapse; min-width: 900px; }
     .report-table thead { background: #F8FAFC; color: #64748B; text-transform: uppercase; font-size: .75rem; font-weight: 800; letter-spacing: .04em; }
     .report-table th, .report-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid #F1F5F9; white-space: nowrap; }
@@ -144,7 +149,7 @@
             </a>
 
             @php
-                $activeMenu = 'profil';
+                $activeMenu = 'users';
                 $routeSafe = function (string $name, string $fallback = '#') {
                     return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
                 };
@@ -185,6 +190,9 @@
                 }
             @endphp
 
+            @php
+                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
+            @endphp
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -238,34 +246,29 @@
         </div>
     </header>
 
-<section class="page-card" style="max-width: 720px;">
+<section class="page-card" style="max-width: 720px; margin: 0 auto; width: 100%;">
     <div class="page-card-body">
-        <h2 class="section-title" style="margin-bottom: .35rem;">{{ $user->nama }}</h2>
-        <p style="margin: 0 0 1.5rem; color: #64748B; font-size: .9rem;">{{ $user->email }}</p>
-
-        @if ($errors->any())
-            <div style="margin-bottom: 1rem; padding: .85rem 1rem; border-radius: 1rem; background: #FEE2E2; color: #991B1B; font-weight: 700;">{{ $errors->first() }}</div>
-        @endif
-
-        <div style="display: grid; gap: 1.5rem;">
-            <form method="POST" action="{{ route('admin.users.update', $user->id_user) }}" style="display: grid; gap: 1rem;">
+        <h2 class="section-title" style="margin-bottom: .35rem;">{{ $editingUser->nama }}</h2>
+        <p style="margin: 0 0 1.5rem; color: #64748B; font-size: .9rem;">{{ $editingUser->email }}</p>
+<div style="display: grid; gap: 1.5rem;">
+            <form method="POST" action="{{ route('admin.users.update', $editingUser->id_user) }}" style="display: grid; gap: 1rem;">
                 @csrf
                 @method('PUT')
                 <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800;">Edit Profil</h3>
-                <div><label class="field-label">Nama</label><input name="nama" value="{{ old('nama', $user->nama) }}" required class="form-control"></div>
-                <div><label class="field-label">Email</label><input type="email" name="email" value="{{ old('email', $user->email) }}" required class="form-control"></div>
-                <div><label class="field-label">Role</label><select name="role" required class="form-control">@foreach ($roles as $r)<option value="{{ $r }}" {{ old('role', $user->role) === $r ? 'selected' : '' }}>{{ $r }}</option>@endforeach</select></div>
+                <div><label class="field-label">Nama</label><input name="nama" value="{{ old('nama', $editingUser->nama) }}" required class="form-control"></div>
+                <div><label class="field-label">Email</label><input type="email" name="email" value="{{ old('email', $editingUser->email) }}" required class="form-control"></div>
+                <div><label class="field-label">Role</label><select name="role" id="role-select" required class="form-control">@foreach ($roles as $r)<option value="{{ $r }}" {{ old('role', $editingUser->role) === $r ? 'selected' : '' }}>{{ $r }}</option>@endforeach</select></div>
                 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem;">
-                    <div><label class="field-label">No. HP</label><input name="phone" value="{{ old('phone', $user->phone) }}" class="form-control"></div>
-                    <div><label class="field-label">NIM</label><input name="nim" value="{{ old('nim', $user->nim) }}" class="form-control"></div>
-                    <div><label class="field-label">Jurusan</label><input name="jurusan" value="{{ old('jurusan', $user->jurusan) }}" class="form-control"></div>
-                    <div><label class="field-label">Peminatan</label><input name="peminatan" value="{{ old('peminatan', $user->peminatan) }}" class="form-control"></div>
-                    <div style="grid-column: 1 / -1;"><label class="field-label">Penanggung Jawab</label><input name="penanggung_jawab" value="{{ old('penanggung_jawab', $user->penanggung_jawab) }}" class="form-control"></div>
+                    <div><label class="field-label">No. HP</label><input name="phone" value="{{ old('phone', $editingUser->phone) }}" class="form-control"></div>
+                    <div data-asisten-only><label class="field-label">NIM</label><input name="nim" value="{{ old('nim', $editingUser->nim) }}" class="form-control"></div>
+                    <div data-asisten-only><label class="field-label">Jurusan</label><input name="jurusan" value="{{ old('jurusan', $editingUser->jurusan) }}" class="form-control"></div>
+                    <div data-asisten-only><label class="field-label">Peminatan</label><input name="peminatan" value="{{ old('peminatan', $editingUser->peminatan) }}" class="form-control"></div>
+                    <div data-asisten-only style="grid-column: 1 / -1;"><label class="field-label">Penanggung Jawab</label><input name="penanggung_jawab" value="{{ old('penanggung_jawab', $editingUser->penanggung_jawab) }}" class="form-control"></div>
                 </div>
                 <button type="submit" class="btn-primary" style="width: 100%;">Simpan Profil</button>
             </form>
 
-            <form method="POST" action="{{ route('admin.users.reset-password', $user->id_user) }}" style="display: grid; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid #E5E7EB;">
+            <form method="POST" action="{{ route('admin.users.reset-password', $editingUser->id_user) }}" style="display: grid; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid #E5E7EB;">
                 @csrf
                 <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800;">Buat Password Baru</h3>
                 <p style="margin: 0; color: #64748B; font-size: .9rem;">Password baru langsung aktif setelah disimpan.</p>
@@ -274,8 +277,8 @@
                 <button type="submit" class="btn-primary" style="width: 100%; background: #F59E0B;">Ganti Password</button>
             </form>
 
-            @if ($user->id_user !== auth()->id())
-                <form method="POST" action="{{ route('admin.users.destroy', $user->id_user) }}" onsubmit="return confirm('Yakin hapus user {{ $user->nama }}? Tindakan ini tidak bisa dibatalkan.');">
+            @if ($editingUser->id_user !== auth()->id())
+                <form method="POST" action="{{ route('admin.users.destroy', $editingUser->id_user) }}" onsubmit="return confirm('Yakin hapus user {{ $editingUser->nama }}? Tindakan ini tidak bisa dibatalkan.');">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn-danger-soft" style="width: 100%;">Hapus user ini</button>
@@ -436,6 +439,72 @@
             }
         });
     })();
+</script>
+
+
+
+<div id="role-limit-modal" class="modal-backdrop" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true">
+        <div class="modal-header">
+            <h2>Role Tidak Tersedia</h2>
+            <button type="button" class="modal-close" onclick="closeRoleLimitModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="role-limit-message" style="margin:0 0 1rem;color:#374151;font-weight:700;line-height:1.6;"></p>
+            <button type="button" class="btn-primary" style="width:100%;" onclick="closeRoleLimitModal()">Mengerti</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const roleSelect = document.getElementById('role-select');
+    const asistenOnlyFields = Array.from(document.querySelectorAll('[data-asisten-only]'));
+    const roleCounts = @json($roleCounts ?? []);
+    const roleLimits = @json($roleLimits ?? []);
+    const currentRole = @json(old('role', $editingUser->role ?? ''));
+    const message = document.getElementById('role-limit-message');
+    const modal = document.getElementById('role-limit-modal');
+
+    window.closeRoleLimitModal = function () {
+        if (modal) modal.hidden = true;
+    };
+
+    function humanRole(role) {
+        return String(role || '').replaceAll('_', ' ');
+    }
+
+    function applyRoleFields(role) {
+        const showProfileFields = role === 'asisten';
+        asistenOnlyFields.forEach((field) => {
+            field.style.display = showProfileFields ? '' : 'none';
+            field.querySelectorAll('input').forEach((input) => {
+                if (!showProfileFields) input.value = '';
+            });
+        });
+    }
+
+    function showRoleLimit(role) {
+        if (!modal || !message) return;
+        message.textContent = `Role ${humanRole(role)} sudah mencapai batas maksimal akun. Pilih role lain.`;
+        modal.hidden = false;
+    }
+
+    if (roleSelect) {
+        applyRoleFields(roleSelect.value || currentRole);
+
+        roleSelect.addEventListener('change', function () {
+            const role = this.value;
+            applyRoleFields(role);
+
+            if (roleLimits[role] && Number(roleCounts[role] || 0) >= Number(roleLimits[role] || 0)) {
+                showRoleLimit(role);
+                this.value = currentRole && currentRole !== role ? currentRole : '';
+                applyRoleFields(this.value);
+            }
+        });
+    }
+})();
 </script>
 
 @endsection

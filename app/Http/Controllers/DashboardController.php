@@ -9,6 +9,7 @@ use App\Models\Pengaduan;
 use App\Models\TindakLanjut;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -64,9 +65,11 @@ class DashboardController extends Controller
     /**
      * Halaman menu Detail Laporan / Rekapsulasi.
      */
-    public function detailLaporan()
+    public function detailLaporan(Request $request)
     {
-        $pengaduanList = Pengaduan::with([
+        $isKoordinator = $request->user()?->role === 'koordinator_lab';
+
+        $query = Pengaduan::with([
                 'fasilitas.laboratorium',
                 'pelapor',
                 'statusData',
@@ -74,11 +77,55 @@ class DashboardController extends Controller
                 'fotos',
                 'tindakLanjut.asisten',
                 'tindakLanjut.penugas',
-            ])
-            ->orderBy('id_pengaduan')
-            ->get();
+            ]);
 
-        return view('detail-laporan.index', compact('pengaduanList'));
+        if ($isKoordinator) {
+            // Detail Laporan adalah antrean aktif: laporan selesai tidak ditampilkan.
+            $query->whereHas('statusData', fn ($status) => $status->where('kode_status', '!=', 'DONE'));
+            $query->orderByDesc('tanggal_lapor')->orderByDesc('id_pengaduan');
+        } else {
+            if ($request->filled('status')) {
+                $query->statusKode($request->string('status')->toString());
+            }
+
+            if ($request->filled('id_laboratorium')) {
+                $query->whereHas('fasilitas', function ($q) use ($request) {
+                    $q->where('id_laboratorium', $request->integer('id_laboratorium'));
+                });
+            }
+
+            if ($request->filled('id_fasilitas')) {
+                $query->where('id_fasilitas', $request->integer('id_fasilitas'));
+            }
+
+            if ($request->filled('id_penanggung_jawab')) {
+                $query->whereHas('tindakLanjut', function ($q) use ($request) {
+                    $q->where('id_petugas', $request->integer('id_penanggung_jawab'));
+                });
+            }
+
+            if ($request->filled('q')) {
+                $keyword = trim($request->string('q')->toString());
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('deskripsi_kerusakan', 'like', "%{$keyword}%")
+                        ->orWhereHas('pelapor', fn ($u) => $u->where('nama', 'like', "%{$keyword}%"))
+                        ->orWhereHas('fasilitas', fn ($f) => $f->where('nama_fasilitas', 'like', "%{$keyword}%"));
+                });
+            }
+
+            $sort = $request->input('sort', 'terbaru');
+            $sort === 'terlama'
+                ? $query->orderBy('tanggal_lapor')->orderBy('id_pengaduan')
+                : $query->orderByDesc('tanggal_lapor')->orderByDesc('id_pengaduan');
+        }
+
+        $pengaduanList = $query->get();
+        $laboratoriums = Laboratorium::orderBy('nama_laboratorium')->get();
+        $fasilitasList = FasilitasLab::orderBy('nama_fasilitas')->get();
+        $penanggungJawabs = User::role('asisten')->orderBy('nama')->get();
+        $filters = $request->only(['status', 'id_laboratorium', 'id_fasilitas', 'id_penanggung_jawab', 'sort', 'q']);
+
+        return view('detail-laporan.index', compact('pengaduanList', 'laboratoriums', 'fasilitasList', 'penanggungJawabs', 'filters'));
     }
 
     /**

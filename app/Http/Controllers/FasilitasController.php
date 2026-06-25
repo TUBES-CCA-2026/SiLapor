@@ -32,9 +32,11 @@ class FasilitasController extends Controller
         $validated['qr_code'] = Str::uuid()->toString(); // token unik untuk QR
         $validated['qr_generated_date'] = now();
 
-        FasilitasLab::create($validated);
+        $fasilitas = FasilitasLab::create($validated);
 
-        return back()->with('success', 'Fasilitas baru berhasil ditambahkan & QR siap dicetak.');
+        return back()
+            ->with('success', 'Fasilitas baru berhasil ditambahkan & QR siap dicetak.')
+            ->with('new_fasilitas_id', $fasilitas->id_fasilitas);
     }
 
     /**
@@ -48,6 +50,8 @@ class FasilitasController extends Controller
             'qr_generated_date' => now(),
         ]);
 
-        return back()->with('success', 'QR Code untuk ' . $fasilitas->nama_fasilitas . ' berhasil diperbarui.');
+        return back()
+            ->with('success', 'QR Code untuk ' . $fasilitas->nama_fasilitas . ' berhasil diperbarui.')
+            ->with('new_fasilitas_id', $fasilitas->id_fasilitas);
     }
 }

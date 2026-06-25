@@ -3,11 +3,22 @@
 @section('title', 'Fasilitas | SiLapor')
 
 @section('content')
+<<<<<<< HEAD
 @php
     $activeMenu = 'laboratorium';
     $pageTitle = 'FASILITAS';
     $user = auth()->user();
     $role = $user?->role;
+=======
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+@php
+    $user = auth()->user();
+    $role = $user?->role;
+    $sidebarUser = $user;
+    $sidebarRole = $role;
+    $activeMenu = 'fasilitas';
+    $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
+>>>>>>> 2a3988f (bismillah)
 
     $routeSafe = function (string $name, string $fallback = '#') {
         return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
@@ -21,13 +32,22 @@
         default => 'User',
     };
 
+<<<<<<< HEAD
     if ($role === 'laboran' || $role === 'admin') {
+=======
+    if ($role === 'laboran') {
+>>>>>>> 2a3988f (bismillah)
         $menuItems = [
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
             ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
+<<<<<<< HEAD
+=======
+            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
+            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
+>>>>>>> 2a3988f (bismillah)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'koordinator_lab') {
@@ -35,7 +55,11 @@
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
+<<<<<<< HEAD
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
+=======
+            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
+>>>>>>> 2a3988f (bismillah)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'asisten') {
@@ -64,10 +88,17 @@
     .custom-scrollbar::-webkit-scrollbar-track { background: #F1F5F9; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
 .dashboard-card,
+<<<<<<< HEAD
     .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: hidden; }
     .page-card-body { padding: 1.5rem; }
     .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
     .table-wrap { width: 100%; overflow-x: auto; background: #fff; }
+=======
+    .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: visible; }
+    .page-card-body { padding: 1.5rem; }
+    .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
+    .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; overflow-y: visible; background: #fff; }
+>>>>>>> 2a3988f (bismillah)
     .report-table { width: 100%; border-collapse: collapse; min-width: 900px; }
     .report-table thead { background: #F8FAFC; color: #64748B; text-transform: uppercase; font-size: .75rem; font-weight: 800; letter-spacing: .04em; }
     .report-table th, .report-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid #F1F5F9; white-space: nowrap; }
@@ -144,7 +175,11 @@
             </a>
 
             @php
+<<<<<<< HEAD
                 $activeMenu = 'laboratorium';
+=======
+                $activeMenu = 'fasilitas';
+>>>>>>> 2a3988f (bismillah)
                 $routeSafe = function (string $name, string $fallback = '#') {
                     return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
                 };
@@ -185,6 +220,12 @@
                 }
             @endphp
 
+<<<<<<< HEAD
+=======
+            @php
+                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
+            @endphp
+>>>>>>> 2a3988f (bismillah)
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -247,6 +288,7 @@
             </div>
             <a href="{{ route('laboratorium.index') }}" class="btn-outline-blue">Kelola Laboratorium</a>
         </div>
+<<<<<<< HEAD
 
         @if ($errors->any())
             <div style="margin-bottom: 1rem; padding: .85rem 1rem; border-radius: 1rem; background: #FEE2E2; color: #991B1B; font-weight: 700;">
@@ -255,6 +297,9 @@
         @endif
 
         <form method="POST" action="{{ route('fasilitas.store') }}" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+=======
+<form method="POST" action="{{ route('fasilitas.store') }}" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+>>>>>>> 2a3988f (bismillah)
             @csrf
             <input name="nama_fasilitas" placeholder="Nama fasilitas" required class="form-control">
             <select name="id_laboratorium" required class="form-control">
@@ -266,6 +311,7 @@
             <input name="no_fasilitas" placeholder="Kode aset" class="form-control">
             <button class="btn-primary">+ Tambah Fasilitas</button>
         </form>
+<<<<<<< HEAD
 
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
             @forelse ($fasilitas as $f)
@@ -282,6 +328,40 @@
                         @csrf
                         <button class="btn-outline-blue" type="submit">Regenerasi QR</button>
                     </form>
+=======
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
+            @forelse ($fasilitas as $f)
+                <div id="fasilitas-card-{{ $f->id_fasilitas }}" style="background: #fff; border: {{ session('new_fasilitas_id') == $f->id_fasilitas ? '2px solid #0090F5' : '1px solid #E5E7EB' }}; border-radius: 1.25rem; padding: 1.25rem; text-align: center;">
+                    <p style="margin: 0; font-weight: 800; color: #2C3E50;">{{ $f->nama_fasilitas }}</p>
+                    <p style="margin: .25rem 0 1rem; color: #64748B; font-size: .82rem;">{{ $f->laboratorium->nama_laboratorium }}</p>
+                    <div class="qr-print-area" data-fasilitas-name="{{ $f->nama_fasilitas }}" data-fasilitas-lab="{{ $f->laboratorium->nama_laboratorium ?? '-' }}" data-fasilitas-url="{{ $f->scanUrl() }}" style="display: flex; justify-content: center; margin-bottom: 1rem; min-height: 140px; align-items: center;" id="qr-{{ $f->id_fasilitas }}"></div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const target = document.getElementById('qr-{{ $f->id_fasilitas }}');
+                            if (!target) return;
+                            target.innerHTML = '';
+                            if (window.QRCode) {
+                                new QRCode(target, {
+                                    text: @json($f->scanUrl()),
+                                    width: 140,
+                                    height: 140,
+                                    correctLevel: QRCode.CorrectLevel.H
+                                });
+                            } else {
+                                target.innerHTML = '<p style="font-size:.75rem;color:#64748B;word-break:break-all;">' + @json($f->scanUrl()) + '</p>';
+                            }
+                        });
+                    </script>
+                    <div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;">
+                        <form method="POST" action="{{ route('fasilitas.regenerate-qr', $f->id_fasilitas) }}">
+                            @csrf
+                            <button class="btn-outline-blue" type="submit">Regenerasi QR</button>
+                        </form>
+                        <button type="button" class="btn-outline-blue" onclick="printQr('qr-{{ $f->id_fasilitas }}')">
+                            <i class="fa-solid fa-print" style="margin-right:.35rem;"></i>Cetak QR
+                        </button>
+                    </div>
+>>>>>>> 2a3988f (bismillah)
                 </div>
             @empty
                 <p class="empty-state">Belum ada fasilitas.</p>
@@ -294,6 +374,54 @@
 </div>
 
 <script>
+<<<<<<< HEAD
+=======
+
+    function printQr(id) {
+        const target = document.getElementById(id);
+        if (!target) return;
+
+        const name = target.dataset.fasilitasName || 'Fasilitas';
+        const lab = target.dataset.fasilitasLab || '-';
+        const url = target.dataset.fasilitasUrl || '';
+        const qrHtml = target.innerHTML;
+        const printWindow = window.open('', '_blank', 'width=420,height=560');
+        if (!printWindow) return;
+
+        printWindow.document.write(`
+            <html><head><title>Cetak QR ${name}</title>
+            <style>
+                body { font-family: Arial, sans-serif; display: grid; place-items: center; min-height: 100vh; margin: 0; }
+                .card { width: 320px; border: 1px solid #E5E7EB; border-radius: 18px; padding: 24px; text-align: center; }
+                .brand { color:#0090F5; font-weight:800; font-size:22px; margin-bottom: 12px; }
+                .name { font-weight:800; color:#111827; margin: 12px 0 4px; }
+                .lab { color:#64748B; font-size: 13px; margin-bottom: 12px; }
+                .qr { display:flex; justify-content:center; margin: 16px 0; }
+                .url { word-break: break-all; color:#64748B; font-size: 11px; }
+            </style></head><body>
+                <div class="card">
+                    <div class="brand">SiLapor</div>
+                    <div class="qr">${qrHtml}</div>
+                    <div class="name">${name}</div>
+                    <div class="lab">${lab}</div>
+                    <div class="url">${url}</div>
+                </div>
+            </body></html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => printWindow.print(), 350);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const newId = @json(session('new_fasilitas_id'));
+        if (newId) {
+            const card = document.getElementById('fasilitas-card-' + newId);
+            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+
+>>>>>>> 2a3988f (bismillah)
     function handleResponsiveSidebar() {
         const sidebar = document.getElementById('sidebar-menu');
         const overlay = document.getElementById('sidebar-overlay');

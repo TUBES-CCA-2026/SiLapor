@@ -4,10 +4,19 @@
 
 @section('content')
 @php
+<<<<<<< HEAD
     $activeMenu = 'penugasan';
     $pageTitle = 'PENUGASAN';
     $user = auth()->user();
     $role = $user?->role;
+=======
+    $user = auth()->user();
+    $role = $user?->role;
+    $sidebarUser = $user;
+    $sidebarRole = $role;
+    $activeMenu = 'penugasan';
+    $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
+>>>>>>> 2a3988f (bismillah)
 
     $routeSafe = function (string $name, string $fallback = '#') {
         return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
@@ -21,13 +30,22 @@
         default => 'User',
     };
 
+<<<<<<< HEAD
     if ($role === 'laboran' || $role === 'admin') {
+=======
+    if ($role === 'laboran') {
+>>>>>>> 2a3988f (bismillah)
         $menuItems = [
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
             ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
+<<<<<<< HEAD
+=======
+            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
+            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
+>>>>>>> 2a3988f (bismillah)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'koordinator_lab') {
@@ -35,7 +53,11 @@
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
+<<<<<<< HEAD
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
+=======
+            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
+>>>>>>> 2a3988f (bismillah)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'asisten') {
@@ -64,10 +86,17 @@
     .custom-scrollbar::-webkit-scrollbar-track { background: #F1F5F9; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
 .dashboard-card,
+<<<<<<< HEAD
     .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: hidden; }
     .page-card-body { padding: 1.5rem; }
     .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
     .table-wrap { width: 100%; overflow-x: auto; background: #fff; }
+=======
+    .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: visible; }
+    .page-card-body { padding: 1.5rem; }
+    .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
+    .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; overflow-y: visible; background: #fff; }
+>>>>>>> 2a3988f (bismillah)
     .report-table { width: 100%; border-collapse: collapse; min-width: 900px; }
     .report-table thead { background: #F8FAFC; color: #64748B; text-transform: uppercase; font-size: .75rem; font-weight: 800; letter-spacing: .04em; }
     .report-table th, .report-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid #F1F5F9; white-space: nowrap; }
@@ -130,6 +159,12 @@
         .sidebar-desktop { transform: translateX(0) !important; }
         .hide-on-desktop { display: none !important; }
     }
+<<<<<<< HEAD
+=======
+
+    .penugasan-page { overflow: visible !important; }
+    .penugasan-table-wrap { max-width: 100%; overflow-x: auto; overflow-y: visible; }
+>>>>>>> 2a3988f (bismillah)
 </style>
 @endonce
 
@@ -185,6 +220,12 @@
                 }
             @endphp
 
+<<<<<<< HEAD
+=======
+            @php
+                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
+            @endphp
+>>>>>>> 2a3988f (bismillah)
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -408,16 +449,6 @@
 <section class="dashboard-card penugasan-page">
     <h2 class="section-title penugasan-title">Tugaskan Teknisi</h2>
 
-    @if(session('success'))
-        <div class="penugasan-alert success">{{ session('success') }}</div>
-    @endif
-
-    @if($errors->any())
-        <div class="penugasan-alert error">
-            {{ $errors->first() }}
-        </div>
-    @endif
-
     <div class="table-wrap penugasan-table-wrap">
         <table class="report-table penugasan-table">
             <thead>
@@ -490,6 +521,10 @@
     <p class="penugasan-note">Pilih nama teknisi/asisten pada kolom Teknisi untuk memberikan tugas perbaikan. Status akan berubah menjadi On Progress setelah penugasan berhasil disimpan.</p>
 </section>
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2a3988f (bismillah)
 </main>
 </div>
 
@@ -662,13 +697,28 @@
         const form = select.closest('[data-assign-form]');
         if (!form) return;
 
-        const confirmed = window.confirm('Tugaskan laporan ini ke ' + selectedText + '?');
-        if (!confirmed) {
+        const modal = document.getElementById('assign-confirm-modal');
+        const message = document.getElementById('assign-confirm-message');
+        const yesButton = document.getElementById('assign-confirm-yes');
+        const noButton = document.getElementById('assign-confirm-no');
+
+        if (!modal || !message || !yesButton || !noButton) {
             select.value = originalValue;
             return;
         }
 
-        form.submit();
+        message.textContent = 'Tugaskan laporan ini ke ' + selectedText + '?';
+        modal.hidden = false;
+
+        yesButton.onclick = function () {
+            modal.hidden = true;
+            form.submit();
+        };
+
+        noButton.onclick = function () {
+            modal.hidden = true;
+            select.value = originalValue;
+        };
     });
 })();
 </script>

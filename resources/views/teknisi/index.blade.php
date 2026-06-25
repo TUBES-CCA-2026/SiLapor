@@ -28,47 +28,64 @@
             </div>
 
             @php
-                $activeMenu = 'teknisi';
-                $routeSafe = function (string $name, string $fallback = '#') {
-                    return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
-                };
-                $sidebarUser = auth()->user();
-                $sidebarRole = $sidebarUser?->role;
+    $user = auth()->user();
+    $role = $user?->role;
+    $sidebarUser = $user;
+    $sidebarRole = $role;
+    $activeMenu = 'teknisi';
+    $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
 
-                if ($sidebarRole === 'laboran' || $sidebarRole === 'admin') {
-                    $menuItems = [
-                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-                        ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
-                        ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-                        ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
-                        ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-                    ];
-                } elseif ($sidebarRole === 'koordinator_lab') {
-                    $menuItems = [
-                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-                        ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
-                        ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
-                        ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-                    ];
-                } elseif ($sidebarRole === 'asisten') {
-                    $menuItems = [
-                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-                        ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
-                        ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
-                        ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-                        ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-                    ];
-                } else {
-                    $menuItems = [
-                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-                    ];
-                }
+    $routeSafe = function (string $name, string $fallback = '#') {
+        return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
+    };
+
+    $roleLabel = match($role) {
+        'laboran' => 'Laboran',
+        'koordinator_lab' => 'Koordinator Lab',
+        'asisten' => 'Asisten Lab',
+        'admin' => 'Admin',
+        default => 'User',
+    };
+
+    if ($role === 'laboran') {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
+            ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
+            ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
+            ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
+            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
+            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    } elseif ($role === 'koordinator_lab') {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
+            ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
+            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    } elseif ($role === 'asisten') {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
+            ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
+            ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
+            ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    } else {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    }
+@endphp
+
+            @php
+                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
             @endphp
-
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)

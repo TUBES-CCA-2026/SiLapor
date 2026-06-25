@@ -6,36 +6,85 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-@php
-    $selectedFacilityId = (string) old('id_fasilitas', '');
-    $selectedFacility = $facilities->firstWhere('id_fasilitas', old('id_fasilitas'));
-    $selectedKodeBarang = $selectedFacility?->no_fasilitas ?: '-';
-    $selectedNamaFasilitas = $selectedFacility?->nama_fasilitas ?: '-';
-    $selectedLabName = $selectedFacility?->laboratorium?->nama_laboratorium ?: '-';
-    $selectedLabLocation = $selectedFacility?->laboratorium?->lokasi;
-    $selectedLokasiLab = $selectedLabLocation ? $selectedLabName . ' - ' . $selectedLabLocation : $selectedLabName;
-@endphp
-
 <style>
     .font-figma { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .shadow-figma-container { box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); }
+    .shadow-figma-container { box-shadow: 0 15px 50px rgba(0, 0, 0, .05); }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
     @media (min-width: 850px) {
         .sidebar-desktop { transform: translateX(0) !important; }
         .hide-on-desktop { display: none !important; }
     }
 </style>
 
+@php
+    $user = auth()->user();
+    $role = $user?->role;
+    $sidebarUser = $user;
+    $sidebarRole = $role;
+    $activeMenu = 'pengaduan';
+    $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
+
+    $routeSafe = function (string $name, string $fallback = '#') {
+        return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
+    };
+
+    $roleLabel = match($role) {
+        'laboran' => 'Laboran',
+        'koordinator_lab' => 'Koordinator Lab',
+        'asisten' => 'Asisten Lab',
+        'admin' => 'Admin',
+        default => 'User',
+    };
+
+    if ($role === 'laboran') {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
+            ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
+            ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
+            ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
+            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
+            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    } elseif ($role === 'koordinator_lab') {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
+            ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
+            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    } elseif ($role === 'asisten') {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
+            ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
+            ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
+            ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    } else {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    }
+@endphp
+
 <div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
     <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop md:sticky md:top-0 md:h-screen rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
-        <div class="p-8 flex-1 flex flex-col overflow-y-auto">
-            <div class="flex items-center gap-3 px-4">
+        <div class="p-8 flex-1 flex flex-col overflow-y-auto custom-scrollbar">
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
                     <i class="fa-solid fa-square-poll-vertical text-xl"></i>
                 </div>
                 <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-[#0090F5] to-[#1E3A8A] bg-clip-text text-transparent">SiLapor</span>
-            </div>
+            </a>
 
             @php
+<<<<<<< HEAD
                 $activeMenu = 'pengaduan';
                 $routeSafe = function (string $name, string $fallback = '#') {
                     return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
@@ -77,6 +126,10 @@
                 }
             @endphp
 
+=======
+                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole);
+            @endphp
+>>>>>>> 2a3988f (bismillah)
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -137,14 +190,7 @@
                 <h2 class="text-xl font-extrabold text-gray-800">Form Pengaduan Kerusakan</h2>
                 <p class="text-sm text-gray-500 mt-1">Nama pelapor otomatis dari akun login. Pilih fasilitas agar kode barang, nama fasilitas, dan lokasi lab terisi otomatis.</p>
             </div>
-
-            @if ($errors->any())
-                <div class="mb-5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3">
-                    {{ $errors->first() }}
-                </div>
-            @endif
-
-            <form action="{{ route('pengaduan.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+<form action="{{ route('pengaduan.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -155,11 +201,31 @@
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Fasilitas yang Dilaporkan</label>
+                        @php
+                                $selectedFacilityId = (string) old(
+                                    'id_fasilitas',
+                                    request('id_fasilitas', '')
+                                );
+
+                                $selectedFacility = collect($facilities ?? [])->first(function ($facility) use ($selectedFacilityId) {
+                                    return (string) $facility->id_fasilitas === $selectedFacilityId;
+                                });
+
+                                $selectedKodeBarang = $selectedFacility?->no_fasilitas ?? '-';
+                                $selectedNamaFasilitas = $selectedFacility?->nama_fasilitas ?? '-';
+
+                                $selectedLabName = $selectedFacility?->laboratorium?->nama_laboratorium ?? '-';
+                                $selectedLabLocation = $selectedFacility?->laboratorium?->lokasi;
+
+                                $selectedLokasiLab = $selectedLabLocation
+                                    ? $selectedLabName . ' - ' . $selectedLabLocation
+                                    : $selectedLabName;
+                            @endphp
                         <select id="id_fasilitas" name="id_fasilitas" required
                                 class="w-full border border-gray-200 rounded-2xl px-5 py-4 focus:ring-2 focus:ring-[#0090F5] bg-[#F8FAFC]">
                             <option value="">— Pilih fasilitas —</option>
                             @foreach ($facilities as $item)
-                                <option value="{{ $item->id_fasilitas }}" {{ $selectedFacilityId === (string) $item->id_fasilitas ? 'selected' : '' }}>
+                                <option value="{{ $item->id_fasilitas }}" @selected((string) $selectedFacilityId === (string) $item->id_fasilitas)>
                                     {{ $item->nama_fasilitas }}
                                     @if ($item->no_fasilitas)
                                         ({{ $item->no_fasilitas }})
@@ -174,18 +240,33 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Kode Barang</label>
-                        <input id="kode_barang" type="text" value="{{ $selectedKodeBarang }}" readonly
-                               class="w-full border border-gray-200 rounded-2xl px-5 py-4 bg-gray-100 text-gray-600">
+                        <input
+                                id="kode_barang"
+                                type="text"
+                                value="{{ $selectedKodeBarang }}"
+                                readonly
+                                class="w-full border border-gray-200 rounded-2xl px-5 py-4 bg-gray-100 text-gray-600"
+                            >
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Nama Fasilitas</label>
-                        <input id="nama_fasilitas" type="text" value="{{ $selectedNamaFasilitas }}" readonly
-                               class="w-full border border-gray-200 rounded-2xl px-5 py-4 bg-gray-100 text-gray-600">
-                    </div>
+                        <input
+                            id="nama_fasilitas"
+                            type="text"
+                            value="{{ $selectedNamaFasilitas }}"
+                            readonly
+                            class="w-full border border-gray-200 rounded-2xl px-5 py-4 bg-gray-100 text-gray-600"
+                        >                    
+            </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Lokasi Lab</label>
-                        <input id="lokasi_lab" type="text" value="{{ $selectedLokasiLab }}" readonly
-                               class="w-full border border-gray-200 rounded-2xl px-5 py-4 bg-gray-100 text-gray-600">
+                        <input
+                            id="lokasi_lab"
+                            type="text"
+                            value="{{ $selectedLokasiLab }}"
+                            readonly
+                            class="w-full border border-gray-200 rounded-2xl px-5 py-4 bg-gray-100 text-gray-600"
+                        >
                     </div>
                 </div>
 

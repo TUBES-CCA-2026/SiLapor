@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+<<<<<<< HEAD
 @section('title', 'Rekapsulasi | SiLapor')
 
 @section('content')
@@ -8,6 +9,18 @@
     $pageTitle = 'REKAPSULASI';
     $user = auth()->user();
     $role = $user?->role;
+=======
+@section('title', auth()->user()?->role === 'koordinator_lab' ? 'Detail Laporan | SiLapor' : 'Rekapsulasi | SiLapor')
+
+@section('content')
+@php
+    $user = auth()->user();
+    $role = $user?->role;
+    $sidebarUser = $user;
+    $sidebarRole = $role;
+    $activeMenu = $sidebarRole === 'koordinator_lab' ? 'detail-laporan' : 'rekapsulasi';
+    $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
+>>>>>>> 2a3988f (bismillah)
 
     $routeSafe = function (string $name, string $fallback = '#') {
         return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
@@ -21,13 +34,22 @@
         default => 'User',
     };
 
+<<<<<<< HEAD
     if ($role === 'laboran' || $role === 'admin') {
+=======
+    if ($role === 'laboran') {
+>>>>>>> 2a3988f (bismillah)
         $menuItems = [
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
             ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
+<<<<<<< HEAD
+=======
+            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
+            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
+>>>>>>> 2a3988f (bismillah)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'koordinator_lab') {
@@ -35,7 +57,11 @@
             ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
             ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
             ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
+<<<<<<< HEAD
             ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
+=======
+            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
+>>>>>>> 2a3988f (bismillah)
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } elseif ($role === 'asisten') {
@@ -64,10 +90,17 @@
     .custom-scrollbar::-webkit-scrollbar-track { background: #F1F5F9; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
 .dashboard-card,
+<<<<<<< HEAD
     .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: hidden; }
     .page-card-body { padding: 1.5rem; }
     .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
     .table-wrap { width: 100%; overflow-x: auto; background: #fff; }
+=======
+    .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: visible; }
+    .page-card-body { padding: 1.5rem; }
+    .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
+    .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; overflow-y: visible; background: #fff; }
+>>>>>>> 2a3988f (bismillah)
     .report-table { width: 100%; border-collapse: collapse; min-width: 900px; }
     .report-table thead { background: #F8FAFC; color: #64748B; text-transform: uppercase; font-size: .75rem; font-weight: 800; letter-spacing: .04em; }
     .report-table th, .report-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid #F1F5F9; white-space: nowrap; }
@@ -144,7 +177,11 @@
             </a>
 
             @php
+<<<<<<< HEAD
                 $activeMenu = 'rekapsulasi';
+=======
+                $activeMenu = $sidebarRole === 'koordinator_lab' ? 'detail-laporan' : 'rekapsulasi';
+>>>>>>> 2a3988f (bismillah)
                 $routeSafe = function (string $name, string $fallback = '#') {
                     return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
                 };
@@ -185,6 +222,12 @@
                 }
             @endphp
 
+<<<<<<< HEAD
+=======
+            @php
+                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
+            @endphp
+>>>>>>> 2a3988f (bismillah)
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -224,7 +267,11 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
+<<<<<<< HEAD
             <h1 class="text-lg sm:text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-tight uppercase">REKAPSULASI</h1>
+=======
+            <h1 class="text-lg sm:text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-tight uppercase">{{ $sidebarRole === 'koordinator_lab' ? 'DETAIL LAPORAN' : 'REKAPSULASI' }}</h1>
+>>>>>>> 2a3988f (bismillah)
         </div>
 
         <div class="bg-[#1E90FF] text-white px-5 py-3 rounded-[22px] flex items-center gap-4 shadow-md w-full sm:w-auto">
@@ -261,25 +308,30 @@
 
 <style>
     .detail-laporan-page {
+        overflow: visible !important;
         padding-top: 4px;
     }
 
     .detail-laporan-table-wrap {
         border-radius: 24px;
         overflow-x: auto;
-        overflow-y: visible;
+        overflow-y: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: #94A3B8 #E2E8F0;
     }
 
     .detail-laporan-table {
-        min-width: 1180px;
-        table-layout: auto;
+        width: 100%;
+        min-width: 900px;
+        table-layout: fixed;
     }
 
     .detail-laporan-table th,
     .detail-laporan-table td {
         padding-left: 18px;
         padding-right: 18px;
-        white-space: nowrap;
+        white-space: normal;
+        overflow-wrap: anywhere;
     }
 
     .detail-laporan-table th {
@@ -301,9 +353,7 @@
     }
 
     .detail-laporan-table .lokasi-cell {
-        max-width: 210px;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        max-width: none;
     }
 
     .detail-status {
@@ -385,19 +435,20 @@
     }
 
     .detail-modal-card {
-        width: min(520px, 96vw);
+        width: min(760px, 96vw);
         max-height: 92vh;
         overflow: hidden;
-        border: 1.5px solid #2f2f2f;
-        border-radius: 24px;
+        border: 1px solid #DCE6F1;
+        border-radius: 28px;
         background: #fff;
-        box-shadow: 0 18px 35px rgba(0, 0, 0, .18);
+        box-shadow: 0 28px 70px rgba(30, 64, 175, .18);
     }
 
     .detail-modal-header {
-        height: 58px;
-        padding: 0 20px;
-        border-bottom: 1.5px solid #2f2f2f;
+        min-height: 68px;
+        padding: 0 24px;
+        border-bottom: 0;
+        background: linear-gradient(135deg, #0090F5, #2563EB);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -405,16 +456,16 @@
 
     .detail-modal-header h2 {
         margin: 0;
-        color: #404040;
-        font-size: 16px;
+        color: #fff;
+        font-size: 18px;
         font-weight: 800;
     }
 
     .detail-modal-close {
         border: 0;
         background: transparent;
-        color: #4a4a4a;
-        font-size: 38px;
+        color: #fff;
+        font-size: 32px;
         font-weight: 800;
         line-height: 1;
         cursor: pointer;
@@ -422,21 +473,29 @@
     }
 
     .detail-modal-body {
-        padding: 34px 32px 36px;
+        padding: 24px;
         overflow-y: auto;
-        max-height: calc(92vh - 58px);
+        max-height: calc(92vh - 68px);
+        background: #F8FAFC;
+    }
+
+    .detail-modal-grid {
+        display: grid;
+        grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+        gap: 20px;
+        align-items: start;
     }
 
     .detail-modal-photo-wrap {
         display: grid;
         gap: 10px;
-        width: min(100%, 280px);
+        width: 100%;
         max-height: 360px;
-        margin: 0 auto 20px;
-        border: 1.5px solid #2f2f2f;
+        margin: 0;
+        border: 1px solid #DCE6F1;
         border-radius: 18px;
         overflow-y: auto;
-        background: #f1f1f1;
+        background: #fff;
         padding: 8px;
     }
 
@@ -459,12 +518,12 @@
     }
 
     .detail-modal-panel {
-        width: min(100%, 420px);
-        margin: 0 auto;
-        border: 1.5px solid #2f2f2f;
+        width: 100%;
+        margin: 0;
+        border: 1px solid #DCE6F1;
         border-radius: 20px;
         overflow: hidden;
-        background: #f7f7f7;
+        background: #fff;
     }
 
     .detail-modal-row {
@@ -473,13 +532,14 @@
         grid-template-columns: 96px 12px 1fr;
         align-items: center;
         padding: 0 16px;
-        background: #f0f0f0;
-        color: #555;
+        background: #fff;
+        color: #475569;
         font-size: 14px;
+        border-bottom: 1px solid #EEF2F7;
     }
 
     .detail-modal-row:nth-child(even) {
-        background: #e8e8e8;
+        background: #F8FAFC;
     }
 
     .detail-modal-label {
@@ -522,10 +582,10 @@
     .detail-modal-description {
         min-height: 76px;
         padding: 14px;
-        border: 1.5px solid #555;
+        border: 1px solid #DCE6F1;
         border-radius: 18px;
         background: #fff;
-        color: #555;
+        color: #475569;
         line-height: 1.45;
         white-space: pre-wrap;
     }
@@ -541,82 +601,95 @@
         width: 60%;
     }
 
+    .btn-print-report:hover {
+        border-color: #DC2626 !important;
+        background: #DC2626 !important;
+        color: #fff !important;
+    }
+
+    .btn-excel-report:hover {
+        border-color: #16A34A !important;
+        background: #16A34A !important;
+        color: #fff !important;
+    }
+
     @media (max-width: 820px) {
         .detail-laporan-table {
-            min-width: 1080px;
+            min-width: 900px;
+        }
+
+        .detail-modal-grid {
+            grid-template-columns: 1fr;
         }
     }
 </style>
 
-<section class="dashboard-card detail-laporan-page">
-    <div class="table-wrap detail-laporan-table-wrap">
-        <table class="report-table detail-laporan-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>ID PGD</th>
-                    <th>Pelapor</th>
-                    <th>PJ</th>
-                    <th>Lokasi Masalah</th>
-                    <th>Fasilitas</th>
-                    <th>Status</th>
-                    <th>Tanggal<br>Lapor</th>
-                    <th>Tanggal<br>Selesai</th>
-                    <th class="text-center"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($rows as $laporan)
-                    @php
-                        $tindak = $laporan->tindakLanjut;
-                        $status = $statusMeta($laporan->status_pengaduan ?? null);
-                        $tanggalLapor = $laporan->tanggal_lapor
-                            ? \Carbon\Carbon::parse($laporan->tanggal_lapor)->format('d/m/Y')
-                            : '-';
-                        $tanggalSelesai = ($laporan->status_pengaduan === 'DONE' && data_get($tindak, 'tanggal_penanganan'))
-                            ? \Carbon\Carbon::parse(data_get($tindak, 'tanggal_penanganan'))->format('d-m-Y')
-                            : 'mm/dd/yyyy';
-                        $idTindak = $formatTdl(data_get($tindak, 'id_tindak_lanjut'));
-                        $idPgd = $formatPgd($laporan->id_pengaduan);
-                        $pelapor = data_get($laporan, 'pelapor.nama', 'Guest');
-                        $pj = data_get($tindak, 'asisten.nama')
-                            ?: data_get($tindak, 'penugas.nama')
-                            ?: '-';
-                        $lokasi = data_get($laporan, 'fasilitas.laboratorium.nama_laboratorium', '-');
-                        $fasilitas = data_get($laporan, 'fasilitas.nama_fasilitas', '-');
-                        $detailUrl = route('dashboard.pengaduan.detail', $laporan);
-                    @endphp
-                    <tr>
-                        <td>{{ $idTindak }}</td>
-                        <td>{{ $idPgd }}</td>
-                        <td>{{ $pelapor }}</td>
-                        <td>{{ $pj }}</td>
-                        <td class="cell-left lokasi-cell" title="{{ $lokasi }}">{{ $lokasi }}</td>
-                        <td>{{ $fasilitas }}</td>
-                        <td>
-                            <span class="detail-status {{ $status['class'] }}">
-                                {{ $status['label'] }}
-                                <span class="status-arrow">▾</span>
-                            </span>
-                        </td>
-                        <td>{{ $tanggalLapor }}</td>
-                        <td>{{ $tanggalSelesai }}</td>
-                        <td class="text-center">
-                            <button type="button" class="detail-laporan-btn" data-detail-laporan-url="{{ $detailUrl }}">
-                                Detail
-                            </button>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="10" class="empty-state">Belum ada detail laporan pengaduan.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+
+@php
+    $isKoordinator = auth()->user()?->role === 'koordinator_lab';
+    $filterAction = $isKoordinator ? route('detail-laporan.index') : route('rekapsulasi.index');
+    $groupedRows = $isKoordinator
+        ? $rows->groupBy(fn ($item) => data_get($item, 'fasilitas.laboratorium.nama_laboratorium', 'Tanpa Lokasi Lab'))
+        : collect(['Daftar Laporan' => $rows]);
+@endphp
+
+<section class="dashboard-card detail-laporan-page" style="padding: 1.5rem;">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+        <div>
+            <h2 class="section-title" style="margin: 0; font-size: 1.5rem;">{{ $isKoordinator ? 'Detail Laporan' : 'Rekap Laporan' }}</h2>
+            <p style="margin: .35rem 0 0; color: #64748B; font-size: .9rem;">{{ $isKoordinator ? 'Seluruh laporan aktif ditampilkan otomatis berdasarkan laboratorium. Laporan selesai tidak ditampilkan.' : 'Filter dan pantau seluruh riwayat laporan berdasarkan lokasi, fasilitas, dan status.' }}</p>
+        </div>
+        @unless($isKoordinator)
+        <div style="display: flex; gap: .75rem; flex-wrap: wrap;">
+            <button type="button" onclick="window.print()" class="btn-outline-blue btn-print-report"><i class="fa-solid fa-print" style="margin-right:.4rem"></i> Print Laporan</button>
+            <button type="button" onclick="window.print()" class="btn-outline-blue btn-excel-report"><i class="fa-solid fa-download" style="margin-right:.4rem"></i> Unduh File Excel</button>
+        </div>
+        @endunless
     </div>
 
-    <p class="detail-laporan-note">Menu ini menampilkan rekap detail pengaduan, penanggung jawab/teknisi, status penanganan, tanggal lapor, dan tanggal selesai.</p>
+    @unless($isKoordinator)
+    <form method="GET" action="{{ $filterAction }}" style="border: 1px solid #D1D5DB; border-radius: 1.25rem; padding: 1rem; background: #F8FAFC; margin-bottom: 1.5rem;">
+        <h3 style="margin: 0 0 1rem; font-size: 1.15rem; font-weight: 800; color: #374151;">Filter Laporan</h3>
+        <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; align-items: end;">
+            <div><label class="field-label">Penanggung Jawab</label><select name="id_penanggung_jawab" class="form-control"><option value="">Semua Penanggung Jawab</option>@foreach(($penanggungJawabs ?? collect()) as $pj)<option value="{{ $pj->id_user }}" {{ (string)($filters['id_penanggung_jawab'] ?? '') === (string)$pj->id_user ? 'selected' : '' }}>{{ $pj->nama }}</option>@endforeach</select></div>
+            <div><label class="field-label">Lokasi Masalah</label><select name="id_laboratorium" class="form-control"><option value="">Semua Lokasi</option>@foreach(($laboratoriums ?? collect()) as $lab)<option value="{{ $lab->id_laboratorium }}" {{ (string)($filters['id_laboratorium'] ?? '') === (string)$lab->id_laboratorium ? 'selected' : '' }}>{{ $lab->nama_laboratorium }}</option>@endforeach</select></div>
+            <div><label class="field-label">Fasilitas</label><select name="id_fasilitas" class="form-control"><option value="">Semua Fasilitas</option>@foreach(($fasilitasList ?? collect()) as $fasilitas)<option value="{{ $fasilitas->id_fasilitas }}" {{ (string)($filters['id_fasilitas'] ?? '') === (string)$fasilitas->id_fasilitas ? 'selected' : '' }}>{{ $fasilitas->nama_fasilitas }}</option>@endforeach</select></div>
+            <div><label class="field-label">Cari Laporan</label><input name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Cari laporan..." class="form-control"></div>
+            <div><label class="field-label">Urutkan</label><select name="sort" class="form-control"><option value="terbaru" {{ ($filters['sort'] ?? 'terbaru') === 'terbaru' ? 'selected' : '' }}>Terbaru</option><option value="terlama" {{ ($filters['sort'] ?? '') === 'terlama' ? 'selected' : '' }}>Terlama</option></select></div>
+            <div><label class="field-label">Status Laporan</label><select name="status" class="form-control"><option value="">Semua Status</option><option value="NEW" {{ ($filters['status'] ?? '') === 'NEW' ? 'selected' : '' }}>Baru</option><option value="HANDLED" {{ ($filters['status'] ?? '') === 'HANDLED' ? 'selected' : '' }}>On Progress</option><option value="DONE" {{ ($filters['status'] ?? '') === 'DONE' ? 'selected' : '' }}>Done</option></select></div>
+            <div style="display: flex; gap: .75rem; align-items: center;"><button type="submit" class="btn-primary">Terapkan</button><a href="{{ $filterAction }}" class="btn-danger-soft">Reset</a></div>
+        </div>
+    </form>
+    @endunless
+
+    <div style="display: grid; gap: 1.5rem;">
+        @forelse($groupedRows as $groupName => $items)
+            @if($isKoordinator)<h3 style="margin: 0; color: #2C3E50; font-size: 1.1rem; font-weight: 800;">Lokasi Lab: {{ $groupName }}</h3>@endif
+            <div class="table-wrap detail-laporan-table-wrap" style="border: 1px solid #D1D5DB; border-radius: 1.25rem; overflow-x: auto; overflow-y: visible;">
+                <table class="report-table detail-laporan-table">
+                    <thead><tr><th>Tanggal</th><th>Penanggung Jawab</th><th>Lokasi Masalah</th><th>Fasilitas</th><th>Status</th><th class="text-center">Aksi</th></tr></thead>
+                    <tbody>
+                        @forelse($items as $laporan)
+                            @php
+                                $tindak = $laporan->tindakLanjut;
+                                $status = $statusMeta($laporan->status_pengaduan ?? null);
+                                $tanggal = $laporan->tanggal_lapor ? \Carbon\Carbon::parse($laporan->tanggal_lapor)->format('d-m-Y') : '-';
+                                $pj = data_get($tindak, 'asisten.nama') ?: data_get($tindak, 'penugas.nama') ?: '-';
+                                $lokasi = data_get($laporan, 'fasilitas.laboratorium.nama_laboratorium', '-');
+                                $fasilitas = data_get($laporan, 'fasilitas.nama_fasilitas', '-');
+                                $detailUrl = route('dashboard.pengaduan.detail', $laporan);
+                            @endphp
+                            <tr><td>{{ $tanggal }}</td><td>{{ $pj }}</td><td>{{ $lokasi }}</td><td>{{ $fasilitas }}</td><td><span class="detail-status {{ $status['class'] }}">{{ $status['label'] }} <span class="status-arrow">▾</span></span></td><td class="text-center"><button type="button" class="detail-laporan-btn" data-detail-laporan-url="{{ $detailUrl }}">Detail</button></td></tr>
+                        @empty
+                            <tr><td colspan="6" class="empty-state">Belum ada laporan pada kelompok ini.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        @empty
+            <div class="empty-state page-card">Belum ada detail laporan pengaduan.</div>
+        @endforelse
+    </div>
 </section>
 
 <div class="detail-modal-backdrop" id="detailLaporanModal" hidden>
@@ -831,8 +904,9 @@
         const statusLabel = esc(data.statusLabel || data.status || '-');
 
         return `
-            <div class="detail-modal-photo-wrap">${foto}</div>
-            <div class="detail-modal-panel">
+            <div class="detail-modal-grid">
+                <div class="detail-modal-photo-wrap">${foto}</div>
+                <div class="detail-modal-panel">
                 <div class="detail-modal-row">
                     <span class="detail-modal-label">ID</span>
                     <span>:</span>
@@ -867,6 +941,7 @@
                     <span class="detail-modal-label">Deskripsi</span>
                     <span>:</span>
                     <div class="detail-modal-description">${esc(data.deskripsi)}</div>
+                </div>
                 </div>
             </div>
         `;

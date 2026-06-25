@@ -26,48 +26,80 @@
 </style>
 
 @php
-    // --- DETEKSI RUTE SECARA DINAMIS AGAR ANTI-CRASH ---
-    $dashboardRoute = Route::has('dashboard') ? route('dashboard') : '#';
-    
-    $pengaduanRoute = '#';
-    if (Route::has('pengaduan.index')) {
-        $pengaduanRoute = route('pengaduan.index');
-    } elseif (Route::has('pengaduans.index')) {
-        $pengaduanRoute = route('pengaduans.index');
-    }
+    $user = auth()->user();
+    $role = $user?->role;
+    $sidebarUser = $user;
+    $sidebarRole = $role;
+    $activeMenu = 'dashboard';
+    $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
 
-    $tindakLanjutRoute = '#';
-    if (Route::has('tindak-lanjut.index')) {
-        $tindakLanjutRoute = route('tindak-lanjut.index');
-    } elseif (Route::has('tindak_lanjut.index')) {
-        $tindakLanjutRoute = route('tindak_lanjut.index');
-    } elseif (Route::has('tindaklanjut.index')) {
-        $tindakLanjutRoute = route('tindaklanjut.index');
-    }
+    $routeSafe = function (string $name, string $fallback = '#') {
+        return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
+    };
 
-    $buatPengaduanRoute = '#';
-    if (Route::has('pengaduan.manual.create')) {
-        $buatPengaduanRoute = route('pengaduan.manual.create');
-    } elseif (Route::has('pengaduan.create')) {
-        $buatPengaduanRoute = route('pengaduan.create');
-    } elseif (Route::has('pengaduans.create')) {
-        $buatPengaduanRoute = route('pengaduans.create');
-    }
+    $roleLabel = match($role) {
+        'laboran' => 'Laboran',
+        'koordinator_lab' => 'Koordinator Lab',
+        'asisten' => 'Asisten Lab',
+        'admin' => 'Admin',
+        default => 'User',
+    };
 
+    if ($role === 'laboran') {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
+            ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
+            ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
+            ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
+            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
+            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    } elseif ($role === 'koordinator_lab') {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
+            ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
+            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    } elseif ($role === 'asisten') {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
+            ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
+            ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
+            ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    } else {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    }
 @endphp
 
 <div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
+<<<<<<< HEAD
     <!-- SIDEBAR KIRI (SINKRON DENGAN HALAMAN TINDAK LANJUT) -->
     <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop md:sticky md:top-0 md:h-screen rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
         <div class="p-8 flex-1 flex flex-col overflow-y-auto">
             <!-- Brand Logo SiLapor -->
             <div class="flex items-center gap-3 px-4">
+=======
+    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop md:sticky md:top-0 md:h-screen rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
+        <div class="p-8 flex-1 flex flex-col overflow-y-auto custom-scrollbar">
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4">
+>>>>>>> 2a3988f (bismillah)
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
                     <i class="fa-solid fa-square-poll-vertical text-xl"></i>
                 </div>
                 <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-[#0090F5] to-[#1E3A8A] bg-clip-text text-transparent">SiLapor</span>
-            </div>
+            </a>
 
+<<<<<<< HEAD
             <!-- List Menu Navigasi -->
             @php
                 $activeMenu = 'dashboard';
@@ -111,6 +143,11 @@
                 }
             @endphp
 
+=======
+            @php
+                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole);
+            @endphp
+>>>>>>> 2a3988f (bismillah)
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -180,12 +217,17 @@
             </div>
             <div class="ml-4">
                 <p class="text-xs text-gray-500 font-bold">{{ $s[0] }}</p>
-                <p class="text-2xl md:text-3xl font-extrabold text-[#2C3E50]">{{ str_pad($s[1], 3, '0', STR_PAD_LEFT) }}</p>
+                <p class="text-2xl md:text-3xl font-extrabold text-[#2C3E50]">{{ ((int) $s[1]) > 0 ? (string) ((int) $s[1]) : '-' }}</p>
             </div>
         </div>
         @endforeach
     </section>
 
+    @php
+    $buatPengaduanRoute = Route::has('pengaduan.create')
+        ? route('pengaduan.create')
+        : (Route::has('pengaduan.index') ? route('pengaduan.index') : '#');
+    @endphp
 
         <!-- TABEL -->
         <section class="bg-white border rounded-[32px] overflow-hidden shadow-figma-container">
@@ -230,8 +272,16 @@
                                 <td class="py-5 px-6 text-sm text-gray-800 font-semibold">{{ $t->pengaduan?->fasilitas?->nama_fasilitas ?? 'Komputer 01' }}</td>
                                 <td class="py-5 px-6 text-sm text-gray-500">{{ $t->pengaduan?->created_at ? $t->pengaduan->created_at->format('d/m/Y') : '13/06/2026' }}</td>
                                 <td class="py-5 px-6">
-                                    <span class="inline-block text-xs font-bold px-4 py-1.5 rounded-md text-center {{ $t->status_penanganan === 'DONE' ? 'bg-[#E6F9EE] text-[#22C55E]' : 'bg-[#FFF9E6] text-[#FBBF24]' }}">
-                                        {{ $t->status_penanganan === 'DONE' ? 'Done' : 'On Progress' }}
+                                    @php
+                                            $badgeClass = match($t->status_penanganan) {
+                                                'DONE' => 'bg-[#E6F9EE] text-[#22C55E]',
+                                                'CANCEL' => 'bg-[#FEE2E2] text-[#DC2626]',
+                                                'NO SPAREPART' => 'bg-[#E5E7EB] text-[#374151]',
+                                                default => 'bg-[#FFF9E6] text-[#FBBF24]',
+                                            };
+                                        @endphp
+                                        <span class="inline-block text-xs font-bold px-4 py-1.5 rounded-md text-center {{ $badgeClass }}">
+                                        {{ match($t->status_penanganan) { 'DONE' => 'Done', 'CANCEL' => 'Cancel', 'NO SPAREPART' => 'No Sparepart', default => 'On Progress' } }}
                                     </span>
                                 </td>
                                 <td class="py-5 px-6 text-center">
@@ -265,6 +315,8 @@
                                             <select name="status_penanganan" class="w-full border border-gray-200 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#0090F5]/20 bg-white">
                                                 <option value="ON PROGRES" {{ $t->status_penanganan == 'ON PROGRES' ? 'selected' : '' }}>On Progress</option>
                                                 <option value="DONE" {{ $t->status_penanganan == 'DONE' ? 'selected' : '' }}>Done</option>
+                                                <option value="CANCEL" {{ $t->status_penanganan == 'CANCEL' ? 'selected' : '' }}>Cancel</option>
+                                                <option value="NO SPAREPART" {{ $t->status_penanganan == 'NO SPAREPART' ? 'selected' : '' }}>No Sparepart</option>
                                             </select>
                                             <button type="submit" class="bg-[#0090F5] hover:bg-blue-600 transition-colors text-white px-6 py-3 rounded-2xl font-bold text-sm w-full">Simpan Perubahan</button>
                                         </div>
