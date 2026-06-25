@@ -62,6 +62,31 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengaduan', [PengaduanController::class, 'index'])->name('pengaduan.index');
     Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store');
     Route::get('/pengaduan/create', [PengaduanController::class, 'create'])->name('pengaduan.create');
+    Route::get('/penugasan', [DashboardController::class, 'penugasan'])
+        ->middleware('role:koordinator_lab')
+        ->name('penugasan.index');
+
+    Route::get('/detail-laporan', [DashboardController::class, 'detailLaporan'])
+        ->middleware('role:koordinator_lab')
+        ->name('detail-laporan.index');
+
+    Route::get('/dashboard/pengaduan/{pengaduan}/detail', [DashboardController::class, 'detailPengaduan'])
+        ->middleware('role:koordinator_lab')
+        ->name('dashboard.pengaduan.detail');
+    
+    Route::get('/profil', function () {
+    return view('profil.index');
+    })
+    ->middleware('role:koordinator_lab')
+    ->name('profil.index');
+
+    Route::post('/pengaduan/{pengaduan}/assign', [TindakLanjutController::class, 'assign'])
+        ->middleware('role:koordinator_lab')
+        ->name('tindak-lanjut.assign');
+
+    Route::post('/notifikasi/{notifikasi}/kirim-ulang', [TindakLanjutController::class, 'kirimUlang'])
+        ->middleware('role:koordinator_lab')
+        ->name('notifikasi.kirim-ulang');
 
     Route::get('/tindak-lanjut', [TindakLanjutController::class, 'index'])->name('tindak-lanjut.index');
     Route::patch('/tindak-lanjut/{tindakLanjut}', [TindakLanjutController::class, 'update'])
