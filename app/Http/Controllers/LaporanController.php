@@ -2,31 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\models\pengaduan;
 use Illuminate\Http\Request;
+use App\Models\Pengaduan; // Kepala lab tetap membaca data dari tabel pengaduan/laporan
 
 class LaporanController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->input('search');
+        $search = $request->get('search');
 
-        // Mengambil data pengaduan beserta relasi pelapor & laboratoriumnya
-        $query = Pengaduan::with(['pelapor', 'fasilitas.laboratorium']);
+        // Mengambil semua data pengaduan/laporan untuk dipantau Kepala Lab
+        $daftarLaporan = Pengaduan::with(['fasilitas.laboratorium'])
+            ->when($search, function($query) use ($search) {
+                return $query->where('deskripsi_kerusakan', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(10); // Amankan pagination dengan ->paginate()
 
-        // Logika fitur pencarian
-        if ($search) {
-            $query->where('deskripsi_kerusakan', 'like', "%{$search}%")
-                  ->orWhereHas('pelapor', function($q) use ($search) {
-                      $q->where('nama', 'like', "%{$search}%");
-                  });
-        }
+        return view('laporan.index', compact('daftarLaporan', 'search'));
+    }
 
-        // Ambil data dengan pembatasan 10 data per halaman
-        $laporanTerbaru = $query->latest()->paginate(10);
-
-        // Mengarahkan ke file view laporan yang berada di folder views/pengaduan/
-        // UBAH BARIS 29 MENJADI SEPERTI INI:
-        return view('dashboard.kepalalab', compact('laporanTerbaru', 'search'));
+    public function show($id)
+    {
+        $laporan = Pengaduan::with(['fasilitas.laboratorium'])->findOrFail($id);
+        return view('laporan.show', compact('laporan'));
     }
 }

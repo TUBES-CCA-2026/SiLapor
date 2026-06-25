@@ -208,22 +208,19 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::middleware(
-        'role:koordinator_lab,laboran,kepala_lab'
-    )->group(function () {
-        Route::get('/laporan', [
-            DashboardController::class,
-            'laporan',
-        ])->name('laporan.index');
-    });
+    Route::middleware('role:koordinator_lab,laboran,kepala_lab')
+        ->group(function () {
+            Route::get('/laporan', [
+                DashboardController::class,
+                'laporan',
+            ])->name('laporan.index');
+        });
 
-    Route::get(
-        '/dashboard/pengaduan/{pengaduan}/detail',
-        [DashboardController::class, 'detailPengaduan']
-    )
-        ->middleware(
-            'role:asisten,koordinator_lab,laboran,kepala_lab'
-        )
+    Route::get('/dashboard/pengaduan/{pengaduan}/detail', [
+        DashboardController::class,
+        'detailPengaduan',
+    ])
+        ->middleware('role:asisten,koordinator_lab,laboran,kepala_lab')
         ->name('dashboard.pengaduan.detail');
 
     /*
@@ -249,10 +246,10 @@ Route::middleware('auth')->group(function () {
                 'assign',
             ])->name('tindak-lanjut.assign');
 
-            Route::post(
-                '/notifikasi/{notifikasi}/kirim-ulang',
-                [TindakLanjutController::class, 'kirimUlang']
-            )->name('notifikasi.kirim-ulang');
+            Route::post('/notifikasi/{notifikasi}/kirim-ulang', [
+                TindakLanjutController::class,
+                'kirimUlang',
+            ])->name('notifikasi.kirim-ulang');
         });
 
     /*
@@ -278,10 +275,10 @@ Route::middleware('auth')->group(function () {
                 'store',
             ])->name('fasilitas.store');
 
-            Route::post(
-                '/fasilitas/{fasilitas}/regenerate-qr',
-                [FasilitasController::class, 'regenerateQr']
-            )->name('fasilitas.regenerate-qr');
+            Route::post('/fasilitas/{fasilitas}/regenerate-qr', [
+                FasilitasController::class,
+                'regenerateQr',
+            ])->name('fasilitas.regenerate-qr');
 
             Route::get('/laboratorium', [
                 LaboratoriumController::class,
@@ -331,10 +328,10 @@ Route::middleware('auth')->group(function () {
                         'update',
                     ])->name('users.update');
 
-                    Route::post(
-                        '/users/{user}/reset-password',
-                        [AdminUserController::class, 'resetPassword']
-                    )->name('users.reset-password');
+                    Route::post('/users/{user}/reset-password', [
+                        AdminUserController::class,
+                        'resetPassword',
+                    ])->name('users.reset-password');
 
                     Route::delete('/users/{user}', [
                         AdminUserController::class,
