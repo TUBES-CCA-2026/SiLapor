@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Riwayat - SiLapor')
+@section('title', 'Daftar Teknisi - SiLapor')
 
 @section('content')
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,6 +16,7 @@
 </style>
 
 <div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
+    
     <!-- SIDEBAR KIRI -->
     <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
         <div class="p-8 flex-1 flex flex-col overflow-y-auto">
@@ -36,14 +37,14 @@
                 <a href="{{ route('tindak-lanjut.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
                     <i class="fa-solid fa-screwdriver-wrench text-lg"></i> <span>Tindak Lanjut</span>
                 </a>
-                <a href="{{ route('riwayat.index') }}" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm transition-all">
+                <a href="{{ route('riwayat.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
+                    <i class="fa-solid fa-clock-rotate-left text-lg"></i> <span>Riwayat</span>
+                </a>
+                <a href="{{ route('teknisi.index') }}" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm transition-all">
                     <div class="flex items-center gap-3.5">
-                        <i class="fa-solid fa-clock-rotate-left text-lg text-[#0090F5]"></i> <span>Riwayat</span>
+                        <i class="fa-solid fa-triangle-exclamation text-lg text-[#0090F5]"></i> <span>Teknisi</span>
                     </div>
                     <div class="w-1.5 h-6 rounded-full bg-[#0090F5]"></div>
-                </a>
-                <a href="{{ route('teknisi.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-solid fa-triangle-exclamation text-lg"></i> <span>Teknisi</span>
                 </a>
                 <a href="{{ route('profile.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
                     <i class="fa-regular fa-user text-lg"></i> <span>Profil</span>
@@ -61,48 +62,39 @@
 
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 z-40 hidden md:hidden" onclick="toggleSidebar()"></div>
 
-    <!-- MAIN CONTENT -->
-    <main class="flex-1 px-4 py-6 md:px-10 md:py-8">
-        <header class="flex items-center justify-between pb-8 border-b border-gray-100/50 mb-6">
+    <main class="flex-1 px-4 py-6 md:px-10 md:py-8 space-y-6">
+        <header class="flex items-center justify-between pb-4 border-b border-gray-100/50">
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="md:hidden p-2 text-gray-600">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </button>
-                <h1 class="text-2xl font-extrabold text-[#2C3E50] uppercase tracking-wider">RIWAYAT</h1>
+                <h1 class="text-2xl font-extrabold text-[#2C3E50] uppercase tracking-wider">Daftar Teknisi</h1>
             </div>
         </header>
 
-        <section class="bg-white rounded-[32px] shadow-figma-container border border-gray-150 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="bg-[#F8FAFC] text-gray-700">
-                        <tr>
-                            <th class="px-8 py-5 font-bold text-sm">ID</th>
-                            <th class="px-6 py-5 font-bold text-sm">Lokasi Masalah</th>
-                            <th class="px-6 py-5 font-bold text-sm">Tanggal Lapor</th>
-                            <th class="px-6 py-5 font-bold text-sm">Tanggal Selesai</th>
-                            <th class="px-6 py-5 font-bold text-sm text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100">
-                        @forelse($riwayat as $item)
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-8 py-5 text-sm text-gray-600 font-bold">{{ $item->id }}</td>
-                            <td class="px-6 py-5 text-sm text-gray-600">{{ $item->fasilitas->nama_fasilitas ?? 'N/A' }}</td>
-                            <td class="px-6 py-5 text-sm text-gray-600">{{ $item->created_at->format('d-m-Y') }}</td>
-                            <td class="px-6 py-5 text-sm text-gray-600">{{ $item->updated_at->format('d-m-Y') }}</td>
-                            <td class="px-6 py-5 text-center">
-                                <a href="#" class="px-6 py-2 border border-[#0090F5] text-[#0090F5] text-xs font-bold rounded-xl hover:bg-[#0090F5] hover:text-white transition-all">Detail</a>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="px-8 py-10 text-center text-gray-400">Belum ada riwayat pengaduan.</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+        <section class="bg-white border border-gray-150 rounded-[32px] overflow-hidden shadow-figma-container p-6">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-[#F8FAFC] text-[#64748B] text-xs font-extrabold uppercase tracking-wider border-b border-gray-150">
+                        <th class="py-5 px-6">ID Teknisi</th>
+                        <th class="py-5 px-6">Nama Teknisi</th>
+                        <th class="py-5 px-6">Keahlian</th>
+                        <th class="py-5 px-6">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @forelse ($teknisi as $t)
+                    <tr class="hover:bg-slate-50">
+                        <td class="py-5 px-6 font-medium text-gray-500">TKN-{{ str_pad($t->id_teknisi, 3, '0', STR_PAD_LEFT) }}</td>
+                        <td class="py-5 px-6 font-semibold text-gray-800">{{ $t->nama_teknisi }}</td>
+                        <td class="py-5 px-6 text-gray-600">{{ $t->keahlian }}</td>
+                        <td class="py-5 px-6"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">Tersedia</span></td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="4" class="py-10 text-center text-gray-400">Data teknisi belum tersedia.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
         </section>
     </main>
 </div>

@@ -38,7 +38,7 @@ class DashboardController extends Controller
      */
     public function laporan()
     {
-        $pengaduanList = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten', 'statusData', 'fotoUtama'])
+        $pengaduanList = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten', 'statusData', 'fotoUtama', 'fotos'])
             ->orderByDesc('id_pengaduan')
             ->get();
 
@@ -50,7 +50,7 @@ class DashboardController extends Controller
      */
     public function penugasan()
     {
-        $pengaduanList = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten', 'statusData', 'fotoUtama'])
+        $pengaduanList = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten', 'statusData', 'fotoUtama', 'fotos'])
             ->orderByDesc('id_pengaduan')
             ->get();
 
@@ -69,6 +69,9 @@ class DashboardController extends Controller
         $pengaduanList = Pengaduan::with([
                 'fasilitas.laboratorium',
                 'pelapor',
+                'statusData',
+                'fotoUtama',
+                'fotos',
                 'tindakLanjut.asisten',
                 'tindakLanjut.penugas',
             ])
@@ -85,18 +88,18 @@ class DashboardController extends Controller
      */
     protected function dashboardKoordinator($user)
     {
-        $pengaduanBaru = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'statusData', 'fotoUtama'])
+        $pengaduanBaru = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'statusData', 'fotoUtama', 'fotos'])
             ->statusKode('NEW')
             ->orderByDesc('id_pengaduan')
             ->get();
 
-        $pengaduanDitangani = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten', 'statusData', 'fotoUtama'])
+        $pengaduanDitangani = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten', 'statusData', 'fotoUtama', 'fotos'])
             ->statusKode(['HANDLED', 'DONE'])
             ->orderByDesc('id_pengaduan')
             ->get();
 
         // Data utama untuk tabel dashboard koordinator.
-        $pengaduanList = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten', 'statusData', 'fotoUtama'])
+        $pengaduanList = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten', 'statusData', 'fotoUtama', 'fotos'])
             ->orderByDesc('id_pengaduan')
             ->take(50)
             ->get();
@@ -123,7 +126,7 @@ class DashboardController extends Controller
      */
     public function detailPengaduan(Pengaduan $pengaduan): JsonResponse
     {
-        $pengaduan->load(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten', 'statusData', 'fotoUtama']);
+        $pengaduan->load(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten', 'statusData', 'fotoUtama', 'fotos']);
 
         $statusLabel = match ($pengaduan->status_pengaduan) {
             'NEW' => 'Baru',
@@ -151,20 +154,19 @@ class DashboardController extends Controller
                 ? $pengaduan->tanggal_lapor->format('d/m/Y')
                 : '-',
             'deskripsi' => $pengaduan->deskripsi_kerusakan ?? '-',
-            // URL LENGKAP (bukan path relatif) — ini format yang dipakai modal
-            // global di layouts/silapor-dashboard.blade.php (dipakai halaman
-            // Dashboard & Laporan). Jangan diubah ke path relatif lagi, karena
-            // akan merusak modal di halaman-halaman itu.
-            'foto' => $pengaduan->foto_kerusakan
-                ? asset('storage/' . $pengaduan->foto_kerusakan)
-                : null,
+            // URL siap pakai untuk semua modal/detail.
+            'foto' => $pengaduan->foto_kerusakan_url,
+            'fotos' => collect($pengaduan->foto_urls)
+                ->map(fn ($url) => ['url' => $url])
+                ->values()
+                ->all(),
         ]);
     }
 
     protected function dashboardAsisten($user)
     {
         // Tugas perbaikan yang ditugaskan ke asisten ini
-        $tugas = TindakLanjut::with('pengaduan.fasilitas')
+        $tugas = TindakLanjut::with(['pengaduan.fasilitas.laboratorium', 'pengaduan.user', 'pengaduan.statusData', 'pengaduan.fotoUtama', 'pengaduan.fotos', 'statusData'])
             ->where('id_petugas', $user->id_user)
             ->orderByDesc('id_tindak_lanjut')
             ->get();

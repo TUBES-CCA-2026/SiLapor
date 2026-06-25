@@ -16,7 +16,7 @@ class TindakLanjutController extends Controller
 {
     public function index()
     {
-        $tugas = TindakLanjut::with(['pengaduan.user', 'pengaduan.fasilitas.laboratorium', 'asisten', 'statusData'])
+        $tugas = TindakLanjut::with(['pengaduan.user', 'pengaduan.fasilitas.laboratorium', 'pengaduan.fotoUtama', 'pengaduan.fotos', 'asisten', 'statusData'])
             ->latest('id_tindak_lanjut')
             ->get();
 

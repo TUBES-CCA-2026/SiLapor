@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\FasilitasLab;
 use App\Models\Pengaduan;
+use App\Models\PengaduanFoto;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Throwable;
 
@@ -178,10 +178,11 @@ class PengaduanController extends Controller
         array $validated,
         FasilitasLab $fasilitas
     ): RedirectResponse {
-        $path = $request->file('foto_kerusakan')->store('pengaduan', 'public');
+        $uploadedPhoto = $request->file('foto_kerusakan');
+        $photoBinary = file_get_contents($uploadedPhoto->getRealPath());
 
         try {
-            $pengaduan = DB::transaction(function () use ($validated, $fasilitas, $path) {
+            $pengaduan = DB::transaction(function () use ($validated, $fasilitas, $uploadedPhoto, $photoBinary) {
                 $pengaduan = Pengaduan::create([
                     'deskripsi_kerusakan' => $validated['deskripsi_kerusakan'],
                     'tanggal_lapor' => now()->toDateString(),
@@ -191,14 +192,21 @@ class PengaduanController extends Controller
                 ]);
 
                 $pengaduan->foto()->create([
-                    'file_path' => $path,
+                    // Nilai ini dipertahankan supaya database lama yang masih mewajibkan
+                    // kolom file_path tetap bisa menerima insert baru. File foto sebenarnya
+                    // disimpan sebagai binary pada kolom file_data di tabel pengaduan_foto.
+                    'file_path' => 'database',
+                    'file_data' => $photoBinary,
+                    'file_base64' => null,
+                    'mime_type' => $uploadedPhoto->getMimeType(),
+                    'original_name' => $uploadedPhoto->getClientOriginalName(),
+                    'file_size' => $uploadedPhoto->getSize(),
                     'created_at' => now(),
                 ]);
 
                 return $pengaduan;
             });
         } catch (Throwable $exception) {
-            Storage::disk('public')->delete($path);
             Log::error('Gagal menyimpan pengaduan: ' . $exception->getMessage());
             throw $exception;
         }
@@ -206,5 +214,21 @@ class PengaduanController extends Controller
         return redirect()
             ->route('pengaduan.success', $pengaduan)
             ->with('success', 'Pengaduan berhasil dikirim.');
+    }
+
+    public function showFoto(PengaduanFoto $foto)
+    {
+        $binary = $foto->file_data;
+
+        if ($binary === null && !blank($foto->file_base64)) {
+            $binary = base64_decode($foto->file_base64, true);
+        }
+
+        abort_if($binary === null || $binary === false || $binary === '', 404);
+
+        return response($binary, 200)
+            ->header('Content-Type', $foto->mime_type ?: 'image/jpeg')
+            ->header('Content-Length', (string) strlen($binary))
+            ->header('Cache-Control', 'private, max-age=86400');
     }
 }

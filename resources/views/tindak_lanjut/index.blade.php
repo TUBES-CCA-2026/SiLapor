@@ -87,7 +87,7 @@
                 </a>
 
                 <!-- Riwayat -->
-                <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
+                <a href="{{ route('riwayat.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
                     <i class="fa-solid fa-clock-rotate-left text-lg"></i>
                     <span>Riwayat</span>
                 </a>
@@ -242,11 +242,16 @@
                                                 <p class="text-sm text-gray-600 leading-relaxed">
                                                     {{ $t->pengaduan?->deskripsi_kerusakan ?? 'Kerusakan pada unit hardware atau software.' }}
                                                 </p>
-                                                @if($t->pengaduan?->foto_kerusakan)
+                                                @php
+                                                    $fotoKerusakanUrl = $t->pengaduan?->foto_kerusakan_url;
+                                                @endphp
+                                                @if($fotoKerusakanUrl)
                                                     <div class="mt-2">
                                                         <span class="text-xs font-extrabold text-[#0090F5]">Foto Bukti:</span>
-                                                        <img src="{{ asset('storage/' . $t->pengaduan->foto_kerusakan) }}" alt="Foto Kerusakan" class="mt-1 rounded-xl max-h-40 object-cover shadow-sm">
+                                                        <img src="{{ $fotoKerusakanUrl }}" alt="Foto Kerusakan" class="mt-1 rounded-xl max-h-40 object-cover shadow-sm">
                                                     </div>
+                                                @else
+                                                    <div class="mt-2 text-xs font-semibold text-gray-400">Tidak ada foto kerusakan.</div>
                                                 @endif
                                             </div>
                                         </div>

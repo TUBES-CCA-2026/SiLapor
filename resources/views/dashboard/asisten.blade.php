@@ -88,19 +88,19 @@
                 </a>
 
                 <!-- Riwayat -->
-                <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
+                <a href="{{ route('riwayat.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
                     <i class="fa-solid fa-clock-rotate-left text-lg"></i>
                     <span>Riwayat</span>
                 </a>
 
                 <!-- Teknisi -->
-                <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
+                <a href="{{ route('teknisi.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
                     <i class="fa-solid fa-triangle-exclamation text-lg"></i>
                     <span>Teknisi</span>
                 </a>
 
                 <!-- Profil -->
-                <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
+                <a href="{{ route('profile.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
                     <i class="fa-regular fa-user text-lg"></i>
                     <span>Profil</span>
                 </a>
@@ -223,6 +223,15 @@
                                             <div class="bg-white p-4 rounded-2xl border border-gray-200 text-sm text-gray-600 italic">
                                                 "{{ $t->pengaduan?->deskripsi_kerusakan ?? 'Tidak ada deskripsi.' }}"
                                             </div>
+                                            @php
+                                                $fotoKerusakanUrl = $t->pengaduan?->foto_kerusakan_url;
+                                            @endphp
+                                            @if($fotoKerusakanUrl)
+                                                <div class="mt-4">
+                                                    <p class="text-sm font-bold text-gray-700 mb-2">Foto Kerusakan</p>
+                                                    <img src="{{ $fotoKerusakanUrl }}" alt="Foto Kerusakan" class="w-full max-h-48 object-cover rounded-2xl border border-gray-200 shadow-sm">
+                                                </div>
+                                            @endif
                                             <p class="text-sm font-bold text-gray-700 mt-4 mb-2">Catatan Perbaikan</p>
                                             <textarea name="catatan_perbaikan" class="w-full border border-gray-200 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#0090F5]/20" rows="3" required>{{ $t->catatan_perbaikan }}</textarea>
                                         </div>

@@ -89,6 +89,21 @@ class User extends Authenticatable
         return $this->profile?->penanggung_jawab;
     }
 
+    public function getNameAttribute(): ?string
+    {
+        return $this->nama;
+    }
+
+    public function getNoHpAttribute(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function getPjAttribute(): ?string
+    {
+        return $this->penanggung_jawab;
+    }
+
     public function scopeRole($query, string $role)
     {
         return $query->whereHas('roleData', fn ($q) => $q->where('nama_role', $role));

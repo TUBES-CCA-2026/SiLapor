@@ -195,25 +195,29 @@
     }
 
     .detail-modal-photo-wrap {
-        width: 240px;
-        height: 160px;
+        display: grid;
+        gap: 10px;
+        width: min(100%, 280px);
+        max-height: 360px;
         margin: 0 auto 20px;
         border: 1.5px solid #2f2f2f;
         border-radius: 18px;
-        overflow: hidden;
+        overflow-y: auto;
         background: #f1f1f1;
+        padding: 8px;
     }
 
     .detail-modal-photo {
         width: 100%;
-        height: 100%;
+        height: 160px;
         display: block;
         object-fit: cover;
+        border-radius: 12px;
     }
 
     .detail-modal-photo-placeholder {
         width: 100%;
-        height: 100%;
+        min-height: 160px;
         display: grid;
         place-items: center;
         color: #777;
@@ -425,8 +429,17 @@
     }
 
     function renderDetail(data) {
-        const foto = data.foto
-            ? `<img src="${esc(data.foto)}" alt="Foto kerusakan" class="detail-modal-photo">`
+        const fotoItems = Array.isArray(data.fotos) && data.fotos.length
+            ? data.fotos
+            : (data.foto ? [{ url: data.foto }] : []);
+
+        const foto = fotoItems.length
+            ? fotoItems.map((item, index) => {
+                const url = typeof item === 'string' ? item : item.url;
+                return url
+                    ? `<img src="${esc(url)}" alt="Foto kerusakan ${index + 1}" class="detail-modal-photo" loading="lazy">`
+                    : '';
+            }).join('')
             : `<div class="detail-modal-photo-placeholder">Tidak ada foto</div>`;
 
         const statusClass = esc(data.statusClass || 'new');
