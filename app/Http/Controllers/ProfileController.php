@@ -6,6 +6,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -26,29 +27,43 @@ class ProfileController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
-        $user = Auth::user();
+        $user = Auth::user()->load('profile');
 
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:120'],
+            'name' => ['nullable', 'string', 'max:120'],
+            'nama' => ['nullable', 'string', 'max:120'],
             'email' => ['required', 'email', 'max:120', 'unique:users,email,' . $user->id_user . ',id_user'],
             'no_hp' => ['nullable', 'string', 'max:15'],
+            'phone' => ['nullable', 'string', 'max:15'],
             'nim' => ['nullable', 'string', 'max:12'],
             'jurusan' => ['nullable', 'string', 'max:20'],
             'peminatan' => ['nullable', 'string', 'max:20'],
             'pj' => ['nullable', 'string', 'max:20'],
+            'foto' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:4096'],
         ]);
 
-        $hideProfileFields = in_array($user->role, ['koordinator_lab', 'laboran', 'kepala_lab'], true);
+        $nama = $validated['name'] ?? $validated['nama'] ?? $user->nama;
+        $phone = $validated['no_hp'] ?? $validated['phone'] ?? $user->phone;
 
-        $user->update([
-            'nama' => $validated['name'],
+        $payload = [
+            'nama' => $nama,
             'email' => $validated['email'],
-            'phone' => $hideProfileFields ? $user->phone : ($validated['no_hp'] ?? $user->phone),
-        ]);
+            'phone' => $phone,
+        ];
 
-        if ($hideProfileFields) {
-            $user->profile?->delete();
-        } else {
+        if ($request->hasFile('foto')) {
+            if ($user->foto) {
+                Storage::disk('public')->delete($user->foto);
+            }
+
+            $payload['foto'] = $request->file('foto')->store('profiles', 'public');
+        }
+
+        $user->update($payload);
+
+        $showProfileFields = in_array($user->role, ['asisten'], true);
+
+        if ($showProfileFields) {
             $profile = [
                 'nim' => $validated['nim'] ?? $user->profile?->nim,
                 'jurusan' => $validated['jurusan'] ?? $user->profile?->jurusan,

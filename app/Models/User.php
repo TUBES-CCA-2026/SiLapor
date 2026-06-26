@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -14,11 +15,18 @@ class User extends Authenticatable
     protected $primaryKey = 'id_user';
 
     protected $fillable = [
-        'id_role', 'nama', 'email', 'password', 'phone', 'role',
+        'id_role',
+        'nama',
+        'email',
+        'password',
+        'phone',
+        'foto',
+        'role',
     ];
 
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
     protected $casts = [
@@ -67,6 +75,29 @@ class User extends Authenticatable
         }
 
         return $this->roleData()->value('nama_role');
+    }
+
+    public function getRoleLabelAttribute(): string
+    {
+        return match ($this->role) {
+            'kepala_lab' => 'Kepala Lab',
+            'koordinator_lab' => 'Koordinator Lab',
+            'laboran' => 'Laboran',
+            'asisten' => 'Asisten Lab',
+            'admin' => 'Admin',
+            default => 'User',
+        };
+    }
+
+    public function getProfilePhotoUrlAttribute(): string
+    {
+        if ($this->foto) {
+            return Storage::disk('public')->url($this->foto);
+        }
+
+        $name = urlencode($this->nama ?: $this->email ?: 'User');
+
+        return "https://ui-avatars.com/api/?name={$name}&background=FFFFFF&color=0090F5";
     }
 
     public function getNimAttribute(): ?string

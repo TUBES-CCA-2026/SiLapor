@@ -1,134 +1,63 @@
 @extends('layouts.app')
 
-@section('title', 'Profil | SiLapor')
+@section('title', 'Profil - SiLapor')
 
 @section('content')
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 @php
-    $user = auth()->user();
-    $role = $user?->role;
-    $sidebarUser = $user;
-    $sidebarRole = $role;
+    $user = $user ?? auth()->user();
+    $user->loadMissing('profile', 'roleData');
     $activeMenu = 'profil';
-    $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
 
     $routeSafe = function (string $name, string $fallback = '#') {
         return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
     };
 
-    $roleLabel = match($role) {
-        'laboran' => 'Laboran',
+    $menuItems = \App\Support\SidebarMenu::forRole($user?->role);
+
+    $roleLabel = match($user?->role) {
+        'kepala_lab' => 'Kepala Lab',
         'koordinator_lab' => 'Koordinator Lab',
+        'laboran' => 'Laboran',
         'asisten' => 'Asisten Lab',
         'admin' => 'Admin',
         default => 'User',
     };
 
-    if ($role === 'laboran') {
-        $menuItems = [
-            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-            ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
-            ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-            ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
-            ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
-            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
-            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
-            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-        ];
-    } elseif ($role === 'koordinator_lab') {
-        $menuItems = [
-            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-            ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
-            ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
-            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
-            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-        ];
-    } elseif ($role === 'asisten') {
-        $menuItems = [
-            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-            ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
-            ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
-            ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-            ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
-            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-        ];
-    } else {
-        $menuItems = [
-            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-        ];
-    }
+    $nameFieldLabel = match($user?->role) {
+        'kepala_lab' => 'Nama Kepala Lab',
+        'koordinator_lab' => 'Nama Koordinator Lab',
+        'laboran' => 'Nama Laboran',
+        'asisten' => 'Nama Asisten Lab',
+        'admin' => 'Nama Admin',
+        default => 'Nama User',
+    };
+
+    $idFieldLabel = match($user?->role) {
+        'kepala_lab' => 'ID Kepala Lab',
+        'koordinator_lab' => 'ID Koordinator Lab',
+        'laboran' => 'ID Laboran',
+        'asisten' => 'ID Asisten Lab',
+        'admin' => 'ID Admin',
+        default => 'ID User',
+    };
+
+    $avatarUrl = $user?->foto
+        ? asset('storage/' . $user->foto)
+        : 'https://ui-avatars.com/api/?name=' . urlencode($user?->nama ?? 'User') . '&background=F3F4F6&color=9CA3AF';
 @endphp
 
 @once
 <style>
     .font-figma { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .shadow-figma-card { box-shadow: 0px 10px 35px rgba(0, 0, 0, 0.03); }
     .shadow-figma-container { box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); }
     .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: #F1F5F9; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
-.dashboard-card,
-    .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: visible; }
-    .page-card-body { padding: 1.5rem; }
-    .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
-    .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; overflow-y: visible; background: #fff; }
-    .report-table { width: 100%; border-collapse: collapse; min-width: 900px; }
-    .report-table thead { background: #F8FAFC; color: #64748B; text-transform: uppercase; font-size: .75rem; font-weight: 800; letter-spacing: .04em; }
-    .report-table th, .report-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid #F1F5F9; white-space: nowrap; }
-    .report-table td { font-size: .875rem; color: #374151; }
-    .report-table tr:hover td { background: #F8FAFC; }
-    .text-center { text-align: center !important; }
-    .empty-state { padding: 2rem !important; text-align: center !important; color: #94A3B8 !important; }
-    .detail-btn, .btn-outline-blue { border: 1px solid #0090F5; color: #0090F5; background: #EEF8FF; border-radius: .5rem; padding: .4rem .9rem; font-size: .8rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
-    .detail-btn:hover, .btn-outline-blue:hover { background: #0090F5; color: #fff; }
-    .btn-primary { background: #0090F5; color: #fff; border: 0; border-radius: .875rem; padding: .75rem 1rem; font-weight: 800; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
-    .btn-primary:hover { background: #007CD5; }
-    .btn-danger-soft { background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; border-radius: .875rem; padding: .65rem 1rem; font-weight: 700; text-decoration: none; cursor: pointer; }
-    .form-control { width: 100%; border: 1px solid #D1D5DB; border-radius: .875rem; padding: .75rem 1rem; background: #fff; outline: none; }
-    .form-control:focus { border-color: #0090F5; box-shadow: 0 0 0 3px rgba(0, 144, 245, .14); }
-    .field-label { display: block; margin-bottom: .45rem; font-size: .75rem; color: #6B7280; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
-    .info-box { padding: 1rem; background: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 1rem; font-weight: 700; color: #374151; }
-    .status-chip { display: inline-flex; align-items: center; gap: .35rem; padding: .35rem .7rem; border-radius: .5rem; font-size: .75rem; font-weight: 800; }
-    .status-chip.progress { background: #FFD400; color: #7A6200; }
-    .status-chip.done { background: #4DFF41; color: #128A2B; }
-    .status-chip.new { background: #DCEEFF; color: #0D5D9C; }
-
-    .laporan-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
-    .laporan-title { margin-bottom: 0; }
-    .laporan-search { width: min(280px, 100%); height: 42px; padding: 0 .9rem 0 1rem; display: flex; align-items: center; gap: .65rem; border: 1px solid #D8E1EC; border-radius: 999px; background: #fff; }
-    .laporan-search input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: #2C3E50; font-size: .875rem; }
-    .laporan-search input::placeholder { color: #9AA9BA; }
-    .laporan-search svg { width: 22px; height: 22px; fill: none; stroke: #52657A; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
-    .laporan-table-wrap { border-radius: 1.5rem; }
-    .laporan-table { min-width: 1180px; }
-    .laporan-description { max-width: 230px; overflow: hidden; text-overflow: ellipsis; }
-    .laporan-status { min-width: 116px; height: 28px; padding: 0 9px 0 12px; display: inline-flex; align-items: center; justify-content: space-between; gap: 8px; border-radius: 7px; font-size: 13px; font-weight: 700; line-height: 1; white-space: nowrap; }
-    .laporan-status.progress { color: #756000; background: #FFD400; }
-    .laporan-status.done { color: #187C28; background: #59FF45; }
-    .laporan-status.new { color: #095E9C; background: #D8ECFF; }
-    .status-arrow { font-size: 12px; opacity: .75; }
-
-    .modal-backdrop { position: fixed; inset: 0; z-index: 60; padding: 20px; background: rgba(15, 23, 42, .35); display: grid; place-items: center; }
-    .modal-backdrop[hidden] { display: none !important; }
-    .modal-card { width: min(520px, 96vw); max-height: 92vh; overflow: hidden; border-radius: 1.5rem; background: #fff; box-shadow: 0 18px 35px rgba(0,0,0,.18); }
-    .modal-header { height: 58px; padding: 0 20px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between; }
-    .modal-header h2 { margin: 0; color: #404040; font-size: 16px; font-weight: 800; }
-    .modal-close { border: 0; background: transparent; color: #4a4a4a; font-size: 38px; font-weight: 800; line-height: 1; cursor: pointer; padding: 0; }
-    .modal-body { padding: 34px 32px 36px; overflow-y: auto; max-height: calc(92vh - 58px); }
-    .detail-photo-wrap { display: grid; gap: 10px; width: min(100%, 280px); max-height: 360px; margin: 0 auto 20px; border: 1px solid #E5E7EB; border-radius: 18px; overflow-y: auto; background: #f1f1f1; padding: 8px; }
-    .modal-photo { width: 100%; height: 160px; display: block; object-fit: cover; border-radius: 12px; }
-    .modal-photo-placeholder { width: 100%; min-height: 160px; display: grid; place-items: center; color: #777; font-size: 13px; font-weight: 700; }
-    .detail-panel { width: min(100%, 420px); margin: 0 auto; border: 1px solid #E5E7EB; border-radius: 20px; overflow: hidden; background: #f7f7f7; }
-    .modal-row { min-height: 38px; display: grid; grid-template-columns: 96px 12px 1fr; align-items: center; padding: 0 16px; background: #f0f0f0; color: #555; font-size: 14px; }
-    .modal-row:nth-child(even) { background: #e8e8e8; }
-    .status-badge { display: inline-block; padding: 2px 8px; border-radius: 5px; font-size: 11px; line-height: 1.25; color: #6b5700; background: #ffe03d; }
-    .status-badge.new { color: #0b5b9c; background: #d8ecff; }
-    .status-badge.done { color: #0f7433; background: #d9f7e3; }
-    .status-badge.progress { color: #6b5700; background: #ffe03d; }
-    .modal-row-description { min-height: 116px; align-items: start; padding-top: 14px; padding-bottom: 14px; }
-    .description-box { min-height: 76px; padding: 14px; border: 1px solid #E5E7EB; border-radius: 18px; background: #fff; color: #555; line-height: 1.45; white-space: pre-wrap; }
-    .loading-line { height: 13px; margin: 13px 0; border-radius: 30px; background: linear-gradient(90deg, #edf2f7, #f8fbff, #edf2f7); }
-    .loading-line.short { width: 60%; }
+    [x-cloak] { display: none !important; }
 
     @media (min-width: 850px) {
         .sidebar-desktop { transform: translateX(0) !important; }
@@ -137,61 +66,16 @@
 </style>
 @endonce
 
-<div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
+<div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row" x-data="{ openEdit: {{ $errors->hasBag('default') && old('_form') === 'profile' ? 'true' : 'false' }}, openPassword: {{ $errors->any() && old('_form') === 'password' ? 'true' : 'false' }} }">
     <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop md:sticky md:top-0 md:h-screen rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
         <div class="p-8 flex-1 flex flex-col overflow-y-auto custom-scrollbar">
-            <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 text-decoration-none">
+            <a href="{{ $routeSafe('dashboard') }}" class="flex items-center gap-3 px-4">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
                     <i class="fa-solid fa-square-poll-vertical text-xl"></i>
                 </div>
                 <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-[#0090F5] to-[#1E3A8A] bg-clip-text text-transparent">SiLapor</span>
             </a>
 
-            @php
-                $activeMenu = 'profil';
-                $routeSafe = function (string $name, string $fallback = '#') {
-                    return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
-                };
-                $sidebarUser = auth()->user();
-                $sidebarRole = $sidebarUser?->role;
-
-                if ($sidebarRole === 'laboran' || $sidebarRole === 'admin') {
-                    $menuItems = [
-                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-                        ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
-                        ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-                        ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
-                        ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-                    ];
-                } elseif ($sidebarRole === 'koordinator_lab') {
-                    $menuItems = [
-                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-                        ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
-                        ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
-                        ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-                    ];
-                } elseif ($sidebarRole === 'asisten') {
-                    $menuItems = [
-                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-                        ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
-                        ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
-                        ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-                        ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-                    ];
-                } else {
-                    $menuItems = [
-                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-                    ];
-                }
-            @endphp
-
-            @php
-                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
-            @endphp
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -223,352 +107,213 @@
 
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 z-40 hidden" onclick="toggleSidebar()"></div>
 
-<main class="w-full min-w-0 px-4 py-6 md:px-8 md:py-8 space-y-6">
-    <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2">
-        <div class="flex items-center gap-3">
-            <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 focus:outline-none hide-on-desktop">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
-            <h1 class="text-lg sm:text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-tight uppercase">PROFIL</h1>
-        </div>
-
-        <div class="bg-[#1E90FF] text-white px-5 py-3 rounded-[22px] flex items-center gap-4 shadow-md w-full sm:w-auto">
-            <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#1E90FF] shrink-0">
-                <i class="fa-solid fa-user text-lg"></i>
-            </div>
-            <div class="text-left overflow-hidden">
-                <span class="text-[11px] opacity-80 block uppercase tracking-wider">Selamat datang</span>
-                <span class="text-xl font-extrabold block truncate">{{ $user->name ?? $user->nama ?? 'User' }}</span>
-            </div>
-        </div>
-    </header>
-
-@php
-    $roleLabel = match($user->role) {
-        'laboran' => 'Laboran',
-        'koordinator_lab' => 'Koordinator Lab',
-        'asisten' => 'Asisten Lab',
-        'admin' => 'Admin',
-        default => 'User',
-    };
-
-    $nameLabel = match($user->role) {
-        'laboran' => 'Nama Laboran',
-        'koordinator_lab' => 'Nama Koordinator',
-        'asisten' => 'Nama Asisten',
-        'admin' => 'Nama Admin',
-        default => 'Nama User',
-    };
-
-    $hideExtendedIdentity = in_array($user->role, ['koordinator_lab', 'laboran', 'kepala_lab'], true);
-@endphp
-
-<section class="page-card">
-    <div class="page-card-body">
-<div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
-            <div>
-                <h2 class="section-title" style="margin-bottom: .35rem;">Profil {{ $roleLabel }}</h2>
-                <p style="margin: 0; color: #64748B; font-size: .9rem;">Data profil mengikuti akun yang sedang login, bukan profil Asisten tetap.</p>
-            </div>
-            <button type="button" onclick="toggleProfileModal(true)" class="btn-primary">
-                <i class="fa-solid fa-pencil" style="margin-right: .5rem;"></i> Edit Profil
-            </button>
-        </div>
-
-        <div style="display: grid; grid-template-columns: minmax(180px, 240px) 1fr; gap: 2rem; align-items: start;">
-            <div style="display: grid; justify-items: center; gap: 1rem;">
-                <div style="width: 150px; height: 150px; border-radius: 2rem; background: #EAF5FE; color: #0090F5; display: grid; place-items: center; font-size: 3rem; border: 1px solid #D8ECFF;">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-                <div style="background: #F3F4F6; color: #374151; padding: .55rem 1rem; border-radius: .85rem; font-weight: 800;">{{ $roleLabel }}</div>
+    <main class="w-full min-w-0 px-4 py-6 md:px-8 md:py-8 space-y-6 overflow-x-hidden">
+        <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 focus:outline-none hide-on-desktop">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <h1 class="text-lg sm:text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-tight uppercase">PROFIL</h1>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 1.25rem;">
+            @include('partials.user-welcome-box', ['user' => $user])
+        </header>
+
+        @if($errors->any())
+            <div class="rounded-2xl border border-red-200 bg-red-50 text-red-700 px-5 py-4 text-sm font-semibold">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
+        <div class="bg-white border border-gray-100 rounded-[36px] p-8 shadow-figma-container">
+            <div class="flex flex-col sm:flex-row justify-between gap-4 mb-8">
                 <div>
-                    <label class="field-label">{{ $nameLabel }}</label>
-                    <div class="info-box">{{ $user->name ?? $user->nama ?? '-' }}</div>
+                    <h2 class="text-xl font-extrabold text-[#2C3E50]">Profil Pengguna</h2>
+                    <p class="text-sm text-gray-500 mt-1">Foto profil, identitas, dan akses akun berlaku untuk semua role.</p>
                 </div>
-                <div>
-                    <label class="field-label">ID User</label>
-                    <div class="info-box">{{ $user->id_user ?? auth()->id() ?? '-' }}</div>
-                </div>
-                <div style="grid-column: 1 / -1;">
-                    <label class="field-label">Email</label>
-                    <div class="info-box">{{ $user->email ?? '-' }}</div>
-                </div>
-                @unless($hideExtendedIdentity)
-                    <div>
-                        <label class="field-label">No HP</label>
-                        <div class="info-box">{{ $user->no_hp ?? '-' }}</div>
+                <button @click="openEdit = true" class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 font-bold text-sm rounded-xl hover:bg-gray-50 shadow-sm transition-all flex items-center gap-2">
+                    Edit Profil <i class="fa-solid fa-pen text-xs"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-[28px] border border-gray-100">
+                    <div class="w-32 h-32 bg-white rounded-[32px] overflow-hidden flex items-center justify-center text-gray-400 mb-4 border-2 border-gray-100 shadow-inner">
+                        <img src="{{ $avatarUrl }}" alt="Foto Profil" class="w-full h-full object-cover rounded-[24px]">
                     </div>
-                @endunless
-                <div>
-                    <label class="field-label">Role</label>
-                    <div class="info-box">{{ $roleLabel }}</div>
+                    <span class="px-4 py-1.5 bg-[#0090F5] text-white text-xs font-bold rounded-full uppercase tracking-wider">
+                        {{ $roleLabel }}
+                    </span>
                 </div>
-                @unless($hideExtendedIdentity)
+
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="field-label">NIM</label>
-                        <div class="info-box">{{ $user->nim ?? '-' }}</div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{{ $nameFieldLabel }}</label>
+                        <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $user->nama ?? '-' }}</div>
                     </div>
                     <div>
-                        <label class="field-label">Jurusan</label>
-                        <div class="info-box">{{ $user->jurusan ?? '-' }}</div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{{ $idFieldLabel }}</label>
+                        <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $user->id_user ?? '-' }}</div>
                     </div>
-                @endunless
-                @unless($hideExtendedIdentity)
-                <div style="grid-column: 1 / -1;">
-                    <label class="field-label">Penanggung Jawab LAB</label>
-                    <div class="info-box">{{ $user->pj ?? '-' }}</div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Email</label>
+                        <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $user->email ?? '-' }}</div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">No. HP</label>
+                        <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $user->phone ?? '-' }}</div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Role</label>
+                        <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $roleLabel }}</div>
+                    </div>
+
+                    @if($user->role === 'asisten')
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">NIM</label>
+                            <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $user->profile?->nim ?? '-' }}</div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Jurusan</label>
+                            <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $user->profile?->jurusan ?? '-' }}</div>
+                        </div>
+                    @endif
                 </div>
-                @endunless
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-gray-100 flex justify-end">
+                <button @click="openPassword = true" class="px-6 py-3 bg-[#034C5F] text-white font-bold rounded-2xl hover:bg-[#023a48] transition-all shadow-lg flex items-center gap-2">
+                    Ubah Password <i class="fa-solid fa-gear"></i>
+                </button>
             </div>
         </div>
-    </div>
-</section>
+    </main>
 
+    <div x-show="openEdit" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" x-cloak>
+        <div @click.away="openEdit = false" class="bg-white rounded-[40px] shadow-2xl w-full max-w-lg overflow-hidden" x-show="openEdit" x-transition>
+            <div class="flex items-center justify-between px-8 py-6 border-b border-gray-50">
+                <h3 class="text-lg font-extrabold text-[#2C3E50]">Edit Profil</h3>
+                <button @click="openEdit = false" class="text-gray-400 hover:text-gray-600 transition-colors" type="button">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
 
-<section class="page-card">
-    <div class="page-card-body">
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap;">
-            <div>
-                <h2 class="section-title" style="margin-bottom: .35rem;">Ubah Kata Sandi</h2>
-                <p style="margin: 0; color: #64748B; font-size: .9rem;">Gunakan fitur ini untuk mengganti password akun yang sedang login.</p>
-            </div>
-        </div>
-
-        <form action="{{ route('profile.password.update') }}" method="POST" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; align-items: end;">
-            @csrf
-            @method('PUT')
-            <div>
-                <label class="field-label">Password Lama</label>
-                <input type="password" name="current_password" required class="form-control">
-            </div>
-            <div>
-                <label class="field-label">Password Baru</label>
-                <input type="password" name="password" required class="form-control">
-            </div>
-            <div>
-                <label class="field-label">Konfirmasi Password Baru</label>
-                <input type="password" name="password_confirmation" required class="form-control">
-            </div>
-            <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end;">
-                <button type="submit" class="btn-primary">Ubah Kata Sandi</button>
-            </div>
-        </form>
-    </div>
-</section>
-
-<div id="profile-modal" class="modal-backdrop" hidden>
-    <div class="modal-card" role="dialog" aria-modal="true">
-        <div class="modal-header">
-            <h2>Edit Profil</h2>
-            <button type="button" class="modal-close" onclick="toggleProfileModal(false)">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form action="{{ route('profile.update') }}" method="POST" style="display: grid; gap: 1rem;">
+            <form action="{{ $routeSafe('profile.update') }}" method="POST" enctype="multipart/form-data" class="p-8 space-y-5">
                 @csrf
                 @method('PUT')
+                <input type="hidden" name="_form" value="profile">
+
+                <div class="flex flex-col items-center mb-6">
+                    <div class="w-24 h-24 bg-gray-50 rounded-[24px] overflow-hidden border-2 border-gray-100 mb-3 flex items-center justify-center text-gray-400 shadow-inner">
+                        <img id="preview-foto" src="{{ $avatarUrl }}" alt="Preview Foto" class="w-full h-full object-cover rounded-[24px]">
+                    </div>
+                    <label class="cursor-pointer bg-white border border-gray-200 px-4 py-1.5 rounded-xl text-[11px] font-bold text-gray-600 hover:bg-gray-50 transition-all shadow-sm">
+                        Ganti Profil
+                        <input type="file" name="foto" accept="image/*" class="hidden" onchange="previewImage(this)">
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-1">
+                        <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">{{ $nameFieldLabel }}</label>
+                        <input type="text" name="name" value="{{ old('name', $user->nama) }}" required class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">{{ $idFieldLabel }}</label>
+                        <input type="text" value="{{ $user->id_user }}" disabled class="w-full mt-1.5 p-3.5 bg-gray-100 border border-gray-200 rounded-2xl font-medium text-sm text-gray-400 cursor-not-allowed">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email</label>
+                        <input type="email" name="email" value="{{ old('email', $user->email) }}" required class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">No Hp</label>
+                        <input type="text" name="no_hp" value="{{ old('no_hp', $user->phone) }}" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Role</label>
+                        <input type="text" value="{{ $roleLabel }}" disabled class="w-full mt-1.5 p-3.5 bg-gray-100 border border-gray-200 rounded-2xl font-medium text-sm text-gray-400 cursor-not-allowed">
+                    </div>
+
+                    @if($user->role === 'asisten')
+                        <div class="col-span-1">
+                            <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">NIM</label>
+                            <input type="text" name="nim" value="{{ old('nim', $user->profile?->nim) }}" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800">
+                        </div>
+                        <div class="col-span-1">
+                            <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Jurusan</label>
+                            <input type="text" name="jurusan" value="{{ old('jurusan', $user->profile?->jurusan) }}" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800">
+                        </div>
+                    @endif
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full py-4 bg-white border-2 border-gray-800 text-gray-800 font-extrabold rounded-2xl hover:bg-gray-800 hover:text-white transition-all flex items-center justify-center gap-3 shadow-sm">
+                        Simpan <i class="fa-solid fa-floppy-disk text-sm"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div x-show="openPassword" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" x-cloak>
+        <div @click.away="openPassword = false" class="bg-white rounded-[32px] shadow-2xl w-full max-w-md overflow-hidden p-8 border border-gray-100" x-show="openPassword" x-transition>
+            <div class="flex items-center justify-center pb-6 relative">
+                <h3 class="text-sm font-bold text-gray-800 tracking-wide">Ubah Password</h3>
+                <button @click="openPassword = false" class="text-gray-400 hover:text-gray-600 transition-colors absolute right-0" type="button">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form action="{{ $routeSafe('profile.password.update') }}" method="POST" class="space-y-5">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="_form" value="password">
 
                 <div>
-                    <label class="field-label">Nama</label>
-                    <input type="text" name="name" value="{{ old('name', $user->name) }}" required class="form-control">
+                    <label class="text-[11px] font-semibold text-gray-700 block mb-1.5">Password Lama</label>
+                    <input type="password" name="current_password" required class="w-full p-2.5 bg-white border border-gray-400 rounded-xl focus:outline-none focus:border-[#0090F5] text-sm text-gray-800">
                 </div>
                 <div>
-                    <label class="field-label">Email</label>
-                    <input type="email" name="email" value="{{ old('email', $user->email) }}" required class="form-control">
+                    <label class="text-[11px] font-semibold text-gray-700 block mb-1.5">Password Baru</label>
+                    <input type="password" name="password" required class="w-full p-2.5 bg-white border border-gray-400 rounded-xl focus:outline-none focus:border-[#0090F5] text-sm text-gray-800">
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem;">
-                    @unless($hideExtendedIdentity)
-                    <div>
-                        <label class="field-label">No HP</label>
-                        <input type="text" name="no_hp" value="{{ old('no_hp', $user->no_hp) }}" class="form-control">
-                    </div>
-                    <div>
-                        <label class="field-label">NIM</label>
-                        <input type="text" name="nim" value="{{ old('nim', $user->nim) }}" class="form-control">
-                    </div>
-                    <div>
-                        <label class="field-label">Jurusan</label>
-                        <input type="text" name="jurusan" value="{{ old('jurusan', $user->jurusan) }}" class="form-control">
-                    </div>
-                    <div>
-                        <label class="field-label">Peminatan</label>
-                        <input type="text" name="peminatan" value="{{ old('peminatan', $user->peminatan) }}" class="form-control">
-                    </div>
-                    <div style="grid-column: 1 / -1;">
-                        <label class="field-label">Penanggung Jawab LAB</label>
-                        <input type="text" name="pj" value="{{ old('pj', $user->pj) }}" class="form-control">
-                    </div>
-                    @endunless
+                <div>
+                    <label class="text-[11px] font-semibold text-gray-700 block mb-1.5">Konfirmasi Password Baru</label>
+                    <input type="password" name="password_confirmation" required class="w-full p-2.5 bg-white border border-gray-400 rounded-xl focus:outline-none focus:border-[#0090F5] text-sm text-gray-800">
                 </div>
-                <button type="submit" class="btn-primary" style="width: 100%;">Simpan Perubahan</button>
+
+                <div class="pt-4 flex justify-start">
+                    <button type="submit" class="px-6 py-2 bg-white border border-gray-700 text-gray-800 font-bold text-xs rounded-xl hover:bg-gray-800 hover:text-white transition-all flex items-center gap-4 shadow-sm">
+                        <span>Simpan</span>
+                        <i class="fa-solid fa-floppy-disk text-xs"></i>
+                    </button>
+                </div>
             </form>
         </div>
     </div>
 </div>
 
-</main>
-</div>
-
 <script>
-    function handleResponsiveSidebar() {
-        const sidebar = document.getElementById('sidebar-menu');
-        const overlay = document.getElementById('sidebar-overlay');
-
-        if (!sidebar || !overlay) return;
-
-        if (window.innerWidth < 850) {
-            sidebar.classList.add('-translate-x-full');
-            overlay.classList.add('hidden');
-        } else {
-            sidebar.classList.remove('-translate-x-full');
-            overlay.classList.add('hidden');
-        }
-    }
-
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar-menu');
         const overlay = document.getElementById('sidebar-overlay');
-
         if (!sidebar || !overlay) return;
 
         sidebar.classList.toggle('-translate-x-full');
         overlay.classList.toggle('hidden');
     }
 
-    window.addEventListener('resize', handleResponsiveSidebar);
-    window.addEventListener('load', handleResponsiveSidebar);
-
-    (function () {
-        const modal = document.getElementById('detailModal');
-        const modalContent = document.getElementById('modalContent');
-
-        if (!modal || !modalContent) return;
-
-        function closeModal() {
-            modal.hidden = true;
-            modalContent.innerHTML = '';
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview-foto').src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
         }
-
-        function esc(value) {
-            return String(value ?? '-')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-
-        function renderDetail(data) {
-            const fotoItems = Array.isArray(data.fotos) && data.fotos.length
-                ? data.fotos
-                : (data.foto ? [{ url: data.foto }] : []);
-
-            const foto = fotoItems.length
-                ? fotoItems.map((item, index) => {
-                    const url = typeof item === 'string' ? item : item.url;
-                    return url
-                        ? `<img src="${esc(url)}" alt="Foto kerusakan ${index + 1}" class="modal-photo" loading="lazy">`
-                        : '';
-                }).join('')
-                : `<div class="modal-photo-placeholder">Tidak ada foto</div>`;
-
-            const statusClass = esc(data.statusClass || 'new');
-            const statusLabel = esc(data.statusLabel || data.status);
-
-            return `
-                <div class="detail-photo-wrap">${foto}</div>
-                <div class="detail-panel">
-                    <div class="modal-row"><span class="modal-label">ID</span><span>:</span><span>${esc(data.id)}</span></div>
-                    <div class="modal-row"><span class="modal-label">Status</span><span>:</span><span><mark class="status-badge ${statusClass}">${statusLabel}</mark></span></div>
-                    <div class="modal-row"><span class="modal-label">Pelapor</span><span>:</span><span>${esc(data.pelapor)}</span></div>
-                    <div class="modal-row"><span class="modal-label">Lokasi</span><span>:</span><span>${esc(data.lokasi)}</span></div>
-                    <div class="modal-row"><span class="modal-label">Fasilitas</span><span>:</span><span>${esc(data.fasilitas)}</span></div>
-                    <div class="modal-row"><span class="modal-label">Tgl Lapor</span><span>:</span><span>${esc(data.tanggal)}</span></div>
-                    <div class="modal-row modal-row-description"><span class="modal-label">Deskripsi</span><span>:</span><div class="description-box">${esc(data.deskripsi)}</div></div>
-                </div>
-            `;
-        }
-
-        document.addEventListener('click', async function (event) {
-            const detailButton = event.target.closest('.detail-btn');
-            const closeButton = event.target.closest('[data-close-modal]');
-
-            if (closeButton || event.target === modal) {
-                closeModal();
-                return;
-            }
-
-            if (!detailButton) return;
-
-            const url = detailButton.dataset.detailUrl;
-            modal.hidden = false;
-            modalContent.innerHTML = '<div class="loading-line"></div><div class="loading-line short"></div><div class="loading-line"></div>';
-
-            if (!url || url === '#') {
-                modalContent.innerHTML = '<p>URL detail belum tersedia.</p>';
-                return;
-            }
-
-            try {
-                const response = await fetch(url, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (!response.ok) throw new Error('Gagal mengambil detail laporan.');
-                const data = await response.json();
-                modalContent.innerHTML = renderDetail(data);
-            } catch (error) {
-                modalContent.innerHTML = '<p>Detail laporan belum bisa ditampilkan. Pastikan route detail pengaduan sudah benar.</p>';
-            }
-        });
-
-        document.addEventListener('keydown', function (event) {
-            if (event.key === 'Escape') closeModal();
-        });
-    })();
-
-    (function () {
-        const searchInput = document.querySelector('[data-laporan-search]');
-        const table = document.querySelector('[data-laporan-table]');
-
-        if (!searchInput || !table) return;
-
-        const rows = Array.from(table.querySelectorAll('[data-laporan-row]'));
-        const emptyRow = table.querySelector('[data-empty-row]');
-
-        searchInput.addEventListener('input', function () {
-            const keyword = this.value.trim().toLowerCase();
-            let visibleCount = 0;
-
-            rows.forEach(function (row) {
-                const text = row.textContent.toLowerCase();
-                const isMatch = text.includes(keyword);
-                row.hidden = !isMatch;
-                if (isMatch) visibleCount += 1;
-            });
-
-            if (emptyRow && rows.length > 0) {
-                emptyRow.hidden = visibleCount !== 0;
-            }
-        });
-    })();
-</script>
-
-@endsection
-
-@push('scripts')
-<script>
-    function toggleProfileModal(show) {
-        const modal = document.getElementById('profile-modal');
-        if (!modal) return;
-        modal.hidden = !show;
     }
 </script>
-@endpush
+@endsection
