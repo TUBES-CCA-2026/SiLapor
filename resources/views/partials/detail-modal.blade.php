@@ -1,7 +1,7 @@
 <div class="modal-backdrop" id="detailModal" hidden>
-    <div class="modal-card" role="dialog" aria-modal="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="detailModalTitle">
         <div class="modal-header">
-            <h2>Detail Pengaduan</h2>
+            <h2 id="detailModalTitle">Detail Pengaduan</h2>
             <button type="button" class="modal-close" data-close-modal aria-label="Tutup">×</button>
         </div>
         <div class="modal-body" id="modalContent"></div>
@@ -10,29 +10,154 @@
 
 @once
 <style>
-    .modal-backdrop { position: fixed; inset: 0; z-index: 60; padding: 20px; background: rgba(15,23,42,.35); display: grid; place-items: center; }
+    .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        padding: 20px;
+        background: rgba(15, 23, 42, .34);
+        backdrop-filter: blur(4px);
+        display: grid;
+        place-items: center;
+    }
     .modal-backdrop[hidden] { display: none !important; }
-    .modal-card { width: min(520px, 96vw); max-height: 92vh; overflow: hidden; border-radius: 1.5rem; background: #fff; box-shadow: 0 18px 35px rgba(0,0,0,.18); }
-    .modal-header { height: 58px; padding: 0 20px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between; }
-    .modal-header h2 { margin: 0; color: #404040; font-size: 16px; font-weight: 800; }
-    .modal-close { border: 0; background: transparent; color: #4a4a4a; font-size: 38px; font-weight: 800; line-height: 1; cursor: pointer; padding: 0; }
-    .modal-body { padding: 34px 32px 36px; overflow-y: auto; max-height: calc(92vh - 58px); }
-    .detail-photo-wrap { display: grid; gap: 10px; width: min(100%, 280px); max-height: 360px; margin: 0 auto 20px; border: 1px solid #E5E7EB; border-radius: 18px; overflow-y: auto; background: #f1f1f1; padding: 8px; }
-    .modal-photo { width: 100%; height: 160px; display: block; object-fit: cover; border-radius: 12px; }
-    .modal-photo-placeholder { width: 100%; min-height: 160px; display: grid; place-items: center; color: #777; font-size: 13px; font-weight: 700; }
-    .detail-panel { width: min(100%, 420px); margin: 0 auto; border: 1px solid #E5E7EB; border-radius: 20px; overflow: hidden; background: #f7f7f7; }
-    .modal-row { min-height: 38px; display: grid; grid-template-columns: 96px 12px 1fr; align-items: center; padding: 0 16px; background: #f0f0f0; color: #555; font-size: 14px; }
-    .modal-row:nth-child(even) { background: #e8e8e8; }
-    .status-badge { display: inline-block; padding: 2px 8px; border-radius: 5px; font-size: 11px; line-height: 1.25; color: #6b5700; background: #ffe03d; }
+    .modal-card {
+        width: min(780px, 96vw);
+        max-height: 92vh;
+        overflow: hidden;
+        border: 1px solid #DCE6F1;
+        border-radius: 28px;
+        background: #fff;
+        box-shadow: 0 28px 70px rgba(30, 64, 175, .18);
+    }
+    .modal-header {
+        min-height: 68px;
+        padding: 0 24px;
+        border-bottom: 0;
+        background: linear-gradient(135deg, #0090F5, #2563EB);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .modal-header h2 {
+        margin: 0;
+        color: #fff;
+        font-size: 18px;
+        font-weight: 800;
+    }
+    .modal-close {
+        border: 0;
+        background: transparent;
+        color: #fff;
+        font-size: 32px;
+        font-weight: 800;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0;
+    }
+    .modal-body {
+        padding: 24px;
+        overflow-y: auto;
+        max-height: calc(92vh - 68px);
+        background: #F8FAFC;
+    }
+    .detail-grid {
+        display: grid;
+        grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+        gap: 20px;
+        align-items: start;
+    }
+    .detail-photo-wrap {
+        display: grid;
+        gap: 10px;
+        width: 100%;
+        max-height: 360px;
+        margin: 0;
+        border: 1px solid #DCE6F1;
+        border-radius: 18px;
+        overflow-y: auto;
+        background: #fff;
+        padding: 8px;
+    }
+    .modal-photo {
+        width: 100%;
+        height: 160px;
+        display: block;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+    .modal-photo-placeholder {
+        width: 100%;
+        min-height: 160px;
+        display: grid;
+        place-items: center;
+        color: #777;
+        font-size: 13px;
+        font-weight: 700;
+    }
+    .detail-panel {
+        width: 100%;
+        margin: 0;
+        border: 1px solid #DCE6F1;
+        border-radius: 20px;
+        overflow: hidden;
+        background: #fff;
+    }
+    .modal-row {
+        min-height: 38px;
+        display: grid;
+        grid-template-columns: 96px 12px 1fr;
+        align-items: center;
+        padding: 0 16px;
+        background: #fff;
+        color: #475569;
+        font-size: 14px;
+        border-bottom: 1px solid #EEF2F7;
+    }
+    .modal-row:nth-child(even) { background: #F8FAFC; }
+    .modal-label { font-weight: 700; }
+    .status-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 5px;
+        font-size: 11px;
+        font-style: normal;
+        line-height: 1.25;
+        color: #6b5700;
+        background: #ffe03d;
+    }
     .status-badge.new { color: #0b5b9c; background: #d8ecff; }
     .status-badge.done { color: #0f7433; background: #d9f7e3; }
     .status-badge.progress { color: #6b5700; background: #ffe03d; }
     .status-badge.cancel { color: #B91C1C; background: #FEE2E2; }
     .status-badge.no-sparepart { color: #374151; background: #E5E7EB; }
-    .modal-row-description { min-height: 116px; align-items: start; padding-top: 14px; padding-bottom: 14px; }
-    .description-box { min-height: 76px; padding: 14px; border: 1px solid #E5E7EB; border-radius: 18px; background: #fff; color: #555; line-height: 1.45; white-space: pre-wrap; }
-    .loading-line { height: 13px; margin: 13px 0; border-radius: 30px; background: linear-gradient(90deg, #edf2f7, #f8fbff, #edf2f7); }
+    .modal-row-description {
+        min-height: 116px;
+        align-items: start;
+        padding-top: 14px;
+        padding-bottom: 14px;
+    }
+    .description-box {
+        min-height: 76px;
+        padding: 14px;
+        border: 1px solid #DCE6F1;
+        border-radius: 18px;
+        background: #fff;
+        color: #475569;
+        line-height: 1.45;
+        white-space: pre-wrap;
+    }
+    .loading-line {
+        height: 13px;
+        margin: 13px 0;
+        border-radius: 30px;
+        background: linear-gradient(90deg, #edf2f7, #f8fbff, #edf2f7);
+    }
     .loading-line.short { width: 60%; }
+
+    @media (max-width: 820px) {
+        .detail-grid { grid-template-columns: 1fr; }
+    }
 </style>
 @endonce
 
@@ -47,6 +172,7 @@
     function closeModal() {
         modal.hidden = true;
         modalContent.innerHTML = '';
+        document.body.style.overflow = '';
     }
 
     function esc(value) {
@@ -71,15 +197,17 @@
         const statusLabel = esc(data.statusLabel || data.status || '-');
 
         return `
-            <div class="detail-photo-wrap">${foto}</div>
-            <div class="detail-panel">
-                <div class="modal-row"><span>ID</span><span>:</span><span>${esc(data.id)}</span></div>
-                <div class="modal-row"><span>Status</span><span>:</span><span><mark class="status-badge ${statusClass}">${statusLabel}</mark></span></div>
-                <div class="modal-row"><span>Pelapor</span><span>:</span><span>${esc(data.pelapor)}</span></div>
-                <div class="modal-row"><span>Lokasi</span><span>:</span><span>${esc(data.lokasi)}</span></div>
-                <div class="modal-row"><span>Fasilitas</span><span>:</span><span>${esc(data.fasilitas)}</span></div>
-                <div class="modal-row"><span>Tgl Lapor</span><span>:</span><span>${esc(data.tanggal)}</span></div>
-                <div class="modal-row modal-row-description"><span>Deskripsi</span><span>:</span><div class="description-box">${esc(data.deskripsi)}</div></div>
+            <div class="detail-grid">
+                <div class="detail-photo-wrap">${foto}</div>
+                <div class="detail-panel">
+                    <div class="modal-row"><span class="modal-label">ID</span><span>:</span><span>${esc(data.id)}</span></div>
+                    <div class="modal-row"><span class="modal-label">Status</span><span>:</span><span><mark class="status-badge ${statusClass}">${statusLabel}</mark></span></div>
+                    <div class="modal-row"><span class="modal-label">Pelapor</span><span>:</span><span>${esc(data.pelapor)}</span></div>
+                    <div class="modal-row"><span class="modal-label">Lokasi</span><span>:</span><span>${esc(data.lokasi)}</span></div>
+                    <div class="modal-row"><span class="modal-label">Fasilitas</span><span>:</span><span>${esc(data.fasilitas)}</span></div>
+                    <div class="modal-row"><span class="modal-label">Tgl Lapor</span><span>:</span><span>${esc(data.tanggal)}</span></div>
+                    <div class="modal-row modal-row-description"><span class="modal-label">Deskripsi</span><span>:</span><div class="description-box">${esc(data.deskripsi)}</div></div>
+                </div>
             </div>`;
     }
 
@@ -96,6 +224,7 @@
         const url = detailButton.dataset.detailUrl;
         modal.hidden = false;
         modalContent.innerHTML = '<div class="loading-line"></div><div class="loading-line short"></div><div class="loading-line"></div>';
+        document.body.style.overflow = 'hidden';
 
         if (!url || url === '#') {
             modalContent.innerHTML = '<p>URL detail belum tersedia.</p>';
@@ -113,7 +242,7 @@
     });
 
     document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') closeModal();
+        if (event.key === 'Escape' && !modal.hidden) closeModal();
     });
 })();
 </script>

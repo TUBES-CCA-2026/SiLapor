@@ -133,8 +133,11 @@
     
 
     @php
-        $globalNotificationType = session('success') ? 'success' : ((session('error') || $errors->any()) ? 'error' : null);
-        $globalNotificationMessage = session('success') ?: (session('error') ?: ($errors->any() ? $errors->first() : null));
+        // Popup global hanya untuk flash success/error.
+        // Validation errors tetap tampil sebagai notifikasi inline pada halaman masing-masing,
+        // sehingga error login/password tidak muncul sebagai popup modal.
+        $globalNotificationType = session('success') ? 'success' : (session('error') ? 'error' : null);
+        $globalNotificationMessage = session('success') ?: session('error');
         $globalNotificationTitle = $globalNotificationType === 'success' ? 'Berhasil' : 'Gagal';
     @endphp
 
@@ -156,6 +159,49 @@
         </div>
     @endif
 
+
+
+<script>
+(function () {
+    document.addEventListener('submit', function (event) {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement)) return;
+        if (!form.matches('[data-confirm-delete]')) return;
+        if (form.dataset.confirmed === '1') return;
+
+        event.preventDefault();
+
+        const title = form.dataset.confirmTitle || 'Hapus data ini?';
+        const text = form.dataset.confirmText || 'Data yang dihapus tidak akan tampil lagi di halaman ini.';
+        const yesText = form.dataset.confirmYes || 'Ya';
+        const noText = form.dataset.confirmNo || 'Tidak';
+
+        function submitConfirmed() {
+            form.dataset.confirmed = '1';
+            form.submit();
+        }
+
+        if (window.Swal) {
+            Swal.fire({
+                title: title,
+                text: text,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: yesText,
+                cancelButtonText: noText,
+                confirmButtonColor: '#DC2626',
+                cancelButtonColor: '#64748B',
+                reverseButtons: true,
+            }).then((result) => {
+                if (result.isConfirmed) submitConfirmed();
+            });
+            return;
+        }
+
+        if (confirm(title)) submitConfirmed();
+    }, true);
+})();
+</script>
 
 <script>
 (function () {

@@ -35,10 +35,16 @@
 
     /* Penyesuaian layout responsive di breakpoint khusus 850px */
 
-    .tindak-status-on-progress { background: #FBBF24; color: #fff; }
-    .tindak-status-done { background: #4ADE80; color: #fff; }
-    .tindak-status-cancel { background: #EF4444; color: #fff; }
-    .tindak-status-no-sparepart { background: #E5E7EB; color: #374151; }
+    .tindak-status-on-progress { background: #FBBF24; color: #fff; transition: .18s ease; }
+    .tindak-status-on-progress:hover { background: #F59E0B; box-shadow: 0 0 0 3px rgba(245, 158, 11, .18); }
+    .tindak-status-done { background: #4ADE80; color: #fff; transition: .18s ease; }
+    .tindak-status-done:hover { background: #22C55E; box-shadow: 0 0 0 3px rgba(34, 197, 94, .18); }
+    .tindak-status-cancel { background: #EF4444; color: #fff; transition: .18s ease; }
+    .tindak-status-cancel:hover { background: #DC2626; box-shadow: 0 0 0 3px rgba(220, 38, 38, .18); }
+    .tindak-status-no-sparepart { background: #E5E7EB; color: #374151; transition: .18s ease; }
+    .tindak-status-no-sparepart:hover { background: #CBD5E1; box-shadow: 0 0 0 3px rgba(100, 116, 139, .16); }
+    .tindak-action-btn { border: 1px solid #CDE5FC; color: #0090F5; background: #fff; border-radius: .5rem; padding: .35rem .75rem; font-size: .75rem; font-weight: 800; transition: .18s ease; }
+    .tindak-action-btn:hover { background: #EFF8FF; border-color: #0090F5; }
     .tindak-popup-backdrop { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 1rem; background: rgba(15, 23, 42, .35); }
     .tindak-popup-card { width: min(420px, 94vw); overflow: hidden; border-radius: 1.5rem; background: #fff; box-shadow: 0 20px 45px rgba(15, 23, 42, .20); }
     .tindak-popup-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid #E5E7EB; }
@@ -200,7 +206,7 @@
                             <th class="py-5 px-6">Fasilitas</th>
                             <th class="py-5 px-6 text-center">Status</th>
                             <th class="py-5 px-6">Tanggal Lapor</th>
-                            <th class="py-5 px-6">Tanggal Selesai</th>
+                            <th class="py-5 px-6">Tanggal Done</th>
                             <th class="py-5 px-6 text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -247,10 +253,10 @@
                                         @endphp
                                         <select name="status_penanganan" onchange="document.getElementById('form-status-{{ $t->id_tindak_lanjut }}').submit()" 
                                             class="inline-block text-xs font-bold px-3 py-1.5 rounded-md text-center appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0090F5]/30 {{ $statusSelectClass }}">
-                                            <option value="ON PROGRES" {{ $t->status_penanganan === 'ON PROGRES' ? 'selected' : '' }}>On Progress ▼</option>
-                                            <option value="DONE" {{ $t->status_penanganan === 'DONE' ? 'selected' : '' }}>Done ▼</option>
-                                            <option value="CANCEL" {{ $t->status_penanganan === 'CANCEL' ? 'selected' : '' }}>Cancel ▼</option>
-                                            <option value="NO SPAREPART" {{ $t->status_penanganan === 'NO SPAREPART' ? 'selected' : '' }}>No Sparepart ▼</option>
+                                            <option value="ON PROGRES" {{ $t->status_penanganan === 'ON PROGRES' ? 'selected' : '' }}>On Progress</option>
+                                            <option value="DONE" {{ $t->status_penanganan === 'DONE' ? 'selected' : '' }}>Done</option>
+                                            <option value="CANCEL" {{ $t->status_penanganan === 'CANCEL' ? 'selected' : '' }}>Cancel</option>
+                                            <option value="NO SPAREPART" {{ $t->status_penanganan === 'NO SPAREPART' ? 'selected' : '' }}>No Sparepart</option>
                                         </select>
                                     </form>
                                 </td>
@@ -258,7 +264,7 @@
                                 <td class="py-5 px-6 text-gray-500">
                                     {{ $t->pengaduan?->created_at ? $t->pengaduan->created_at->format('d/m/Y') : '13/06/2026' }}
                                 </td>
-                                <!-- Tanggal Selesai -->
+                                <!-- Tanggal Done -->
                                 <td class="py-5 px-6 text-gray-500">
                                     @if($t->status_penanganan === 'DONE')
                                         {{ $t->updated_at ? $t->updated_at->format('d-m-Y') : '18-10-2026' }}
@@ -268,9 +274,17 @@
                                 </td>
                                 <!-- Tombol Aksi Detail -->
                                 <td class="py-5 px-6 text-center">
-                                    <button type="button" onclick="toggleDetails('detail-row-{{ $t->id_tindak_lanjut }}')" class="px-4 py-1 text-xs font-bold text-[#0090F5] bg-white border border-[#CDE5FC] hover:bg-sky-50 hover:border-[#0090F5] transition-all rounded-lg">
-                                        Detail
-                                    </button>
+                                    @php
+                                        $detailUrl = $t->pengaduan ? route('dashboard.pengaduan.detail', $t->pengaduan) : '#';
+                                    @endphp
+                                    <div class="inline-flex items-center justify-center gap-2">
+                                        <button type="button" data-detail-url="{{ $detailUrl }}" class="tindak-action-btn">
+                                            Detail
+                                        </button>
+                                        <button type="button" onclick="toggleDetails('detail-row-{{ $t->id_tindak_lanjut }}')" class="tindak-action-btn">
+                                            Update
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
 
@@ -317,7 +331,7 @@
                                                     </button>
                                                     <button type="submit" name="status_penanganan" value="DONE"
                                                             class="text-xs font-bold px-5 py-2.5 rounded-full bg-[#0090F5] text-white hover:bg-[#007cd5] shadow-sm transition-colors">
-                                                        Tandai Selesai
+                                                        Tandai Done
                                                     </button>
                                                 </div>
                                             </form>
@@ -340,6 +354,8 @@
                 </table>
             </div>
         </section>
+
+        @include('partials.detail-modal')
 </main>
 </div>
 

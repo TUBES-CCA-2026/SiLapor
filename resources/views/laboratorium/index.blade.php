@@ -243,7 +243,7 @@
                 <a href="{{ route('fasilitas.index') }}" style="color: #0090F5; text-decoration: none; font-weight: 700;">halaman Fasilitas</a>.
             </p>
         </div>
-<form method="POST" action="{{ route('laboratorium.store') }}" class="laboratorium-form-admin-like" style="background: #fff; border: 1px solid #E5E7EB; border-radius: 1rem; padding: 1.25rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem; margin-bottom: 1.5rem;">
+<form method="POST" action="{{ route('laboratorium.store') }}" class="laboratorium-form-admin-like" style="background: #fff; border: 1px solid #E5E7EB; border-radius: 1rem; padding: 1.25rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem; margin-bottom: 1.5rem; align-items: start;">
             @csrf
             <input name="nama_laboratorium" placeholder="Nama lab (cth: Lab RPL)" required class="form-control" style="font-size: .9rem;">
             <input name="kode_laboratorium" placeholder="Kode (cth: LAB-RPL)" class="form-control" style="font-size: .9rem;">
@@ -257,8 +257,8 @@
 
             <input name="keterangan" placeholder="Keterangan (opsional)" class="form-control" style="font-size: .9rem;">
 
-            <button class="btn-primary" style="font-size: .9rem; border-radius: .85rem;">
-                + Tambah Laboratorium
+            <button class="btn-primary lab-add-button" style="font-size: .86rem; border-radius: .75rem;">
+                <i class="fa-solid fa-plus" style="margin-right: .45rem;"></i>Tambah Lab
             </button>
         </form>
 
@@ -321,9 +321,25 @@
 </section>
 
 <style>
+.lab-add-button {
+    width: auto;
+    min-width: 150px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0 1rem !important;
+    align-self: start;
+    justify-self: start;
+    box-shadow: 0 8px 18px rgba(0, 144, 245, .16);
+}
+
 @media (max-width: 900px) {
     .laboratorium-form-admin-like {
         grid-template-columns: 1fr !important;
+    }
+
+    .lab-add-button {
+        width: 100%;
+        justify-self: stretch;
     }
 
     .laboratorium-row-main {

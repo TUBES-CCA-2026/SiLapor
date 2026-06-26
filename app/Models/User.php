@@ -48,6 +48,12 @@ class User extends Authenticatable
         return $this->hasMany(Laboratorium::class, 'id_koordinator', 'id_user');
     }
 
+    public function laboratoriumPenanggungJawab()
+    {
+        return $this->belongsToMany(Laboratorium::class, 'laboratorium_penanggung_jawab', 'id_user', 'id_laboratorium')
+            ->withTimestamps();
+    }
+
     public function pengaduanDilaporkan()
     {
         return $this->hasMany(Pengaduan::class, 'id_user', 'id_user');
@@ -90,8 +96,10 @@ class User extends Authenticatable
 
     public function getProfilePhotoUrlAttribute(): string
     {
-        if ($this->foto) {
-            return Storage::disk('public')->url($this->foto);
+        if ($this->foto && $this->getKey()) {
+            $version = $this->updated_at ? '?v=' . $this->updated_at->timestamp : '';
+
+            return url('/users/' . $this->getKey() . '/foto' . $version);
         }
 
         $name = urlencode($this->nama ?: $this->email ?: 'User');

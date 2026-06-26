@@ -251,7 +251,6 @@
                     <div><label class="field-label">No. HP</label><input name="phone" value="{{ old('phone', $editingUser->phone) }}" class="form-control"></div>
                     <div data-asisten-only><label class="field-label">NIM</label><input name="nim" value="{{ old('nim', $editingUser->nim) }}" class="form-control"></div>
                     <div data-asisten-only><label class="field-label">Jurusan</label><input name="jurusan" value="{{ old('jurusan', $editingUser->jurusan) }}" class="form-control"></div>
-                    <div data-asisten-only><label class="field-label">Peminatan</label><input name="peminatan" value="{{ old('peminatan', $editingUser->peminatan) }}" class="form-control"></div>
                     <div data-asisten-only style="grid-column: 1 / -1;"><label class="field-label">Penanggung Jawab</label><input name="penanggung_jawab" value="{{ old('penanggung_jawab', $editingUser->penanggung_jawab) }}" class="form-control"></div>
                 </div>
                 <button type="submit" class="btn-primary" style="width: 100%;">Simpan Profil</button>
@@ -267,7 +266,15 @@
             </form>
 
             @if ($editingUser->id_user !== auth()->id())
-                <form method="POST" action="{{ route('admin.users.destroy', $editingUser->id_user) }}" onsubmit="return confirm('Yakin hapus user {{ $editingUser->nama }}? Tindakan ini tidak bisa dibatalkan.');">
+                <form
+                    method="POST"
+                    action="{{ route('admin.users.destroy', $editingUser->id_user) }}"
+                    data-confirm-delete
+                    data-confirm-title="Hapus user {{ $editingUser->nama }}?"
+                    data-confirm-text="Pilih Ya untuk menghapus user ini atau Tidak untuk membatalkan."
+                    data-confirm-yes="Ya"
+                    data-confirm-no="Tidak"
+                >
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn-danger-soft" style="width: 100%;">Hapus user ini</button>
