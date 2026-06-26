@@ -98,8 +98,16 @@ class TindakLanjutController extends Controller
      */
     public function kirimUlang(Notifikasi $notifikasi)
     {
+        $notifikasi->loadMissing(['tindakLanjut.pengaduan.fasilitas', 'asisten']);
+
         $tindakLanjut = $notifikasi->tindakLanjut;
         $asisten = $notifikasi->asisten;
+
+        if (! $tindakLanjut || ! $asisten) {
+            return back()->withErrors([
+                'notifikasi' => 'Notifikasi tidak dapat dikirim ulang karena data tugas atau penerima tidak lengkap.',
+            ]);
+        }
 
         $this->kirimNotifikasiAsisten($tindakLanjut, $asisten);
 

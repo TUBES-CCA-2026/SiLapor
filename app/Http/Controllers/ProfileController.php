@@ -134,14 +134,14 @@ class ProfileController extends Controller
 
     private function passwordLooksSimilar(string $currentPassword, string $newPassword): bool
     {
-        $current = mb_strtolower(trim($currentPassword));
-        $new = mb_strtolower(trim($newPassword));
+        $current = strtolower(trim($currentPassword));
+        $new = strtolower(trim($newPassword));
 
         if ($current === $new) {
             return true;
         }
 
-        if (mb_strlen($current) >= 5 && (str_contains($new, $current) || str_contains($current, $new))) {
+        if (strlen($current) >= 5 && (str_contains($new, $current) || str_contains($current, $new))) {
             return true;
         }
 
