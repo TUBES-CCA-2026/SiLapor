@@ -109,7 +109,6 @@
    
     @endauth
 
-<<<<<<< HEAD
     <div id="app-content">
         @yield('content')
     </div>
@@ -138,9 +137,6 @@
             </div>
         </div>
     @endif
-=======
-    <main>
->>>>>>> 8778576e254630aeaef27fa90aa4bd535ad4fb0b
 
     @stack('scripts')
 </body>
