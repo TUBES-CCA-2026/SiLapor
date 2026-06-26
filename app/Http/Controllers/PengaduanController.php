@@ -67,7 +67,7 @@ class PengaduanController extends Controller
 
         $validated = $this->validateReport($request, false);
 
-        return $this->persistReport($request, $validated, $fasilitas);
+        return $this->persistReport($request, $validated, $fasilitas, Auth::check());
     }
 
     /**
@@ -178,7 +178,8 @@ class PengaduanController extends Controller
     private function persistReport(
         Request $request,
         array $validated,
-        FasilitasLab $fasilitas
+        FasilitasLab $fasilitas,
+        bool $showSuccessPopup = true
     ): RedirectResponse {
         $uploadedPhoto = $request->file('foto_kerusakan');
         $photoBinary = file_get_contents($uploadedPhoto->getRealPath());
@@ -213,9 +214,11 @@ class PengaduanController extends Controller
             throw $exception;
         }
 
-        return redirect()
-            ->route('pengaduan.success', $pengaduan)
-            ->with('success', 'Pengaduan berhasil dikirim.');
+        $redirect = redirect()->route('pengaduan.success', $pengaduan);
+
+        return $showSuccessPopup
+            ? $redirect->with('success', 'Pengaduan berhasil dikirim.')
+            : $redirect;
     }
 
     public function showFoto(PengaduanFoto $foto)

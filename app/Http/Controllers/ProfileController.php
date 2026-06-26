@@ -78,7 +78,9 @@ class ProfileController extends Controller
             }
         }
 
-        return back()->with('success', 'Profil berhasil diperbarui.');
+        return back()
+            ->with('success', 'Profil berhasil diperbarui.')
+            ->with('profile_form', 'profile');
     }
 
     public function updatePassword(Request $request): RedirectResponse
@@ -95,6 +97,8 @@ class ProfileController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        return back()->with('success', 'Kata sandi berhasil diubah.');
+        return back()
+            ->with('success', 'Kata sandi berhasil diubah.')
+            ->with('profile_form', 'password');
     }
 }

@@ -5,8 +5,9 @@
 @section('content')
 <div class="min-h-screen flex items-center justify-center p-6 bg-gray-50">
     <div class="w-full max-w-md text-center">
-        <button type="button" onclick="window.location='{{ route('login') }}'" class="w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center transition hover:shadow-md focus:outline-none focus:ring-2 focus:ring-silapor-500">
+        <div class="w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
             <div class="w-14 h-14 rounded-full bg-green-100 text-green-600 flex items-center justify-center mx-auto mb-4 text-2xl">✓</div>
+            <h1 class="font-display font-bold text-xl text-gray-900 mb-3">Pengaduan Berhasil Dikirim</h1>
             <p class="text-gray-500 text-sm mb-2">
                 Laporan kerusakan <strong>{{ $pengaduan->fasilitas->nama_fasilitas }}</strong>
                 di <strong>{{ $pengaduan->fasilitas->laboratorium->nama_laboratorium }}</strong> sudah masuk ke sistem
@@ -15,10 +16,6 @@
             <p class="text-gray-400 text-xs">
                 Dilaporkan oleh: {{ $pengaduan->pelapor?->nama ?? 'Anonim (tanpa nama)' }}
             </p>
-        </button>
-
-        <div class="mt-4 rounded-2xl bg-green-50 border border-green-200 px-4 py-3 text-green-700 text-sm font-semibold">
-            Notifikasi: pengaduan berhasil dikirim. Tekan pop-up di atas untuk kembali ke halaman login.
         </div>
 
         <div class="grid grid-cols-2 gap-3 mt-6">
@@ -29,6 +26,10 @@
                 Lapor Manual
             </a>
         </div>
+
+        <a href="{{ route('login') }}" class="inline-flex mt-4 text-sm font-semibold text-silapor-600 hover:underline">
+            Kembali ke Login
+        </a>
     </div>
 </div>
 @endsection

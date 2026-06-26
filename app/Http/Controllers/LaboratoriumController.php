@@ -32,7 +32,6 @@ class LaboratoriumController extends Controller
             'id_koordinator' => ['nullable', 'exists:users,id_user'],
             'id_penanggung_jawab' => ['nullable', 'array'],
             'id_penanggung_jawab.*' => ['exists:users,id_user'],
-            'keterangan' => ['nullable', 'string'],
         ]);
 
         $pjIds = $validated['id_penanggung_jawab'] ?? [];
@@ -57,7 +56,6 @@ class LaboratoriumController extends Controller
             'id_koordinator' => ['nullable', 'exists:users,id_user'],
             'id_penanggung_jawab' => ['nullable', 'array'],
             'id_penanggung_jawab.*' => ['exists:users,id_user'],
-            'keterangan' => ['nullable', 'string'],
         ]);
 
         $pjIds = $validated['id_penanggung_jawab'] ?? [];

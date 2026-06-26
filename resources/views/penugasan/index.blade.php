@@ -392,9 +392,58 @@
         line-height: 1.5;
     }
 
+    .penugasan-table {
+        min-width: 980px;
+        table-layout: fixed;
+    }
+
+    .penugasan-table th,
+    .penugasan-table td {
+        vertical-align: top;
+        white-space: normal;
+        line-height: 1.45;
+    }
+
+    .penugasan-table th:nth-child(1),
+    .penugasan-table td:nth-child(1) { width: 120px; }
+    .penugasan-table th:nth-child(2),
+    .penugasan-table td:nth-child(2) { width: 150px; }
+    .penugasan-table th:nth-child(3),
+    .penugasan-table td:nth-child(3) { width: 160px; }
+    .penugasan-table th:nth-child(4),
+    .penugasan-table td:nth-child(4) { width: 170px; }
+    .penugasan-table th:nth-child(5),
+    .penugasan-table td:nth-child(5) { width: 230px; }
+    .penugasan-table th:nth-child(6),
+    .penugasan-table td:nth-child(6) { width: 170px; }
+    .penugasan-table th:nth-child(7),
+    .penugasan-table td:nth-child(7) { width: 140px; }
+
+    .penugasan-description {
+        max-width: none;
+        overflow: visible;
+        text-overflow: unset;
+        word-break: break-word;
+    }
+
+    .teknisi-select-wrap {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .teknisi-select {
+        min-height: 34px;
+        height: auto;
+    }
+
+    .penugasan-status {
+        justify-content: center;
+        text-align: center;
+    }
+
     @media (max-width: 820px) {
         .penugasan-table {
-            min-width: 980px;
+            min-width: 960px;
         }
     }
 </style>
