@@ -155,6 +155,78 @@ class DashboardController extends Controller
         ));
     }
 
+
+    public function rekapsulasi(Request $request)
+    {
+        $query = Pengaduan::with([
+            'fasilitas.laboratorium',
+            'pelapor',
+            'statusData',
+            'fotoUtama',
+            'fotos',
+            'tindakLanjut.asisten',
+            'tindakLanjut.penugas',
+        ]);
+
+        if ($request->filled('tanggal')) {
+            $query->whereDate('tanggal_lapor', $request->input('tanggal'));
+        }
+
+        if ($request->filled('status')) {
+            $query->statusKode($request->string('status')->toString());
+        }
+
+        if ($request->filled('id_laboratorium')) {
+            $query->whereHas('fasilitas', function ($q) use ($request) {
+                $q->where('id_laboratorium', $request->integer('id_laboratorium'));
+            });
+        }
+
+        if ($request->filled('id_fasilitas')) {
+            $query->where('id_fasilitas', $request->integer('id_fasilitas'));
+        }
+
+        if ($request->filled('id_penanggung_jawab')) {
+            $query->whereHas('tindakLanjut', function ($q) use ($request) {
+                $q->where('id_petugas', $request->integer('id_penanggung_jawab'));
+            });
+        }
+
+        if ($request->filled('q')) {
+            $keyword = trim($request->string('q')->toString());
+
+            $query->where(function ($q) use ($keyword) {
+                $q->where('deskripsi_kerusakan', 'like', "%{$keyword}%")
+                    ->orWhereHas('pelapor', function ($u) use ($keyword) {
+                        $u->where('nama', 'like', "%{$keyword}%");
+                    })
+                    ->orWhereHas('fasilitas', function ($f) use ($keyword) {
+                        $f->where('nama_fasilitas', 'like', "%{$keyword}%");
+                    });
+            });
+        }
+
+        if ($request->input('sort') === 'terlama') {
+            $query->orderBy('tanggal_lapor')->orderBy('id_pengaduan');
+        } else {
+            $query->orderByDesc('tanggal_lapor')->orderByDesc('id_pengaduan');
+        }
+
+        $daftarLaporan = $query->paginate(10)->withQueryString();
+        $laboratoriums = Laboratorium::orderBy('nama_laboratorium')->get();
+        $fasilitasList = FasilitasLab::orderBy('nama_fasilitas')->get();
+        $penanggungJawabs = User::role('asisten')->orderBy('nama')->get();
+        $filters = $request->only(['tanggal', 'status', 'id_laboratorium', 'id_fasilitas', 'id_penanggung_jawab', 'sort', 'q']);
+
+        return view('rekapsulasi.index', compact(
+            'daftarLaporan',
+            'laboratoriums',
+            'fasilitasList',
+            'penanggungJawabs',
+            'filters'
+        ));
+    }
+
     public function detailPengaduan(Pengaduan $pengaduan): JsonResponse
     {
         $pengaduan->load([

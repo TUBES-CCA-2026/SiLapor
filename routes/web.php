@@ -105,7 +105,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware('role:laboran,kepala_lab')->group(function () {
-        Route::get('/rekapsulasi', [DashboardController::class, 'detailLaporan'])->name('rekapsulasi.index');
+        Route::get('/rekapsulasi', [DashboardController::class, 'rekapsulasi'])->name('rekapsulasi.index');
     });
 
     Route::middleware('role:laboran')->group(function () {

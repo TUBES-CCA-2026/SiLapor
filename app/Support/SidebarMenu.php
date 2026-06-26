@@ -8,14 +8,24 @@ final class SidebarMenu
 {
     public static function forRole(?string $role): array
     {
-        $url = static fn (string $name): string => Route::has($name) ? route($name) : '#';
+        $url = static function (string $name): string {
+            if (! Route::has($name)) {
+                return '#';
+            }
+
+            try {
+                return route($name);
+            } catch (\Throwable $e) {
+                return '#';
+            }
+        };
 
         return match ($role) {
-            'laboran' => [
+            'laboran', 'admin' => [
                 ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $url('dashboard')],
                 ['laporan', 'Laporan', 'fa-regular fa-file-lines', $url('laporan.index')],
                 ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $url('riwayat.index')],
-                ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $url('rekapsulasi.index')],
+                ['rekapsulasi', 'Rekapitulasi', 'fa-regular fa-rectangle-list', $url('rekapsulasi.index')],
                 ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $url('laboratorium.index')],
                 ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $url('fasilitas.index')],
                 ['users', 'Kelola User', 'fa-solid fa-users-gear', $url('admin.users.index')],
@@ -40,7 +50,7 @@ final class SidebarMenu
                 ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $url('dashboard')],
                 ['laporan', 'Laporan', 'fa-regular fa-file-lines', $url('laporan.index')],
                 ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $url('riwayat.index')],
-                ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $url('rekapsulasi.index')],
+                ['rekapsulasi', 'Rekapitulasi', 'fa-regular fa-rectangle-list', $url('rekapsulasi.index')],
                 ['profil', 'Profil', 'fa-regular fa-user', $url('profile.index')],
             ],
             default => [

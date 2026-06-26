@@ -184,17 +184,7 @@
         <h1 class="text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-wider uppercase">Tindak Lanjut</h1>
     </div>
     
-    <div class="bg-[#0090F5] text-white px-4 py-2 rounded-2xl flex items-center gap-3 shadow-md w-full sm:w-auto">
-        <div class="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#0090F5] shrink-0">
-            <i class="fa-solid fa-user text-sm"></i>
-        </div>
-        <div class="text-left overflow-hidden">
-            <span class="text-[10px] opacity-80 block uppercase tracking-wider">Selamat datang</span>
-            <span class="text-xs font-bold block truncate">
-                {{ Auth::user()->name ?? Auth::user()->nama ?? 'User' }}
-            </span>
-        </div>
-    </div>
+    @include('partials.user-welcome-box', ['user' => $user ?? auth()->user()])
     </header>
 
         <!-- CONTAINER TABEL UTAMA TINDAK LANJUT -->

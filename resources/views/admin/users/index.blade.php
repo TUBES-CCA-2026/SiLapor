@@ -234,15 +234,7 @@
             <h1 class="text-lg sm:text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-tight uppercase">KELOLA USER</h1>
         </div>
 
-        <div class="bg-[#1E90FF] text-white px-5 py-3 rounded-[22px] flex items-center gap-4 shadow-md w-full sm:w-auto">
-            <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#1E90FF] shrink-0">
-                <i class="fa-solid fa-user text-lg"></i>
-            </div>
-            <div class="text-left overflow-hidden">
-                <span class="text-[11px] opacity-80 block uppercase tracking-wider">Selamat datang</span>
-                <span class="text-xl font-extrabold block truncate">{{ $user->name ?? $user->nama ?? 'User' }}</span>
-            </div>
-        </div>
+        @include('partials.user-welcome-box', ['user' => $user ?? auth()->user()])
     </header>
 
 <section class="page-card">

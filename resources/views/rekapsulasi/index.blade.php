@@ -1,230 +1,153 @@
 @extends('layouts.app')
 
-@section('title', 'Rekapitulasi - SiLapor')
+@section('title', 'Rekapitulasi | SiLapor')
 
 @section('content')
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+@include('partials.page-styles')
 
+@php
+    $user = auth()->user();
+    $activeMenu = 'rekapsulasi';
+    $rows = $daftarLaporan ?? collect();
+    $routeSafe = function (string $name, string $fallback = '#') {
+        return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
+    };
+    $statusMeta = function ($status) {
+        return match ($status) {
+            'NEW' => ['label' => 'Baru', 'class' => 'new'],
+            'HANDLED' => ['label' => 'On Progress', 'class' => 'progress'],
+            'DONE' => ['label' => 'Selesai', 'class' => 'done'],
+            'CANCEL' => ['label' => 'Cancel', 'class' => 'cancel'],
+            'NO_SPAREPART' => ['label' => 'No Sparepart', 'class' => 'no-sparepart'],
+            default => ['label' => $status ?: '-', 'class' => 'new'],
+        };
+    };
+@endphp
+
+@once
 <style>
-    .font-figma { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .shadow-figma-container { box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); }
-    .custom-scrollbar::-webkit-scrollbar { height: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: #F1F5F9; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+    .filter-card { background:#fff; border:1px solid #E5E7EB; border-radius:2rem; box-shadow:0 15px 50px rgba(0,0,0,.05); padding:1.5rem; }
+    .table-card { background:#fff; border:1px solid #E5E7EB; border-radius:2rem; box-shadow:0 15px 50px rgba(0,0,0,.05); overflow:hidden; }
+    .form-control { width:100%; border:1px solid #D1D5DB; border-radius:.875rem; padding:.75rem 1rem; background:#fff; outline:none; font-size:.875rem; }
+    .form-control:focus { border-color:#0090F5; box-shadow:0 0 0 3px rgba(0,144,245,.14); }
+    .btn-primary { background:#0090F5; color:#fff; border:0; border-radius:.875rem; padding:.75rem 1rem; font-weight:800; cursor:pointer; }
+    .btn-secondary { background:#fff; color:#475569; border:1px solid #D1D5DB; border-radius:.875rem; padding:.75rem 1rem; font-weight:800; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; }
+    .report-table { width:100%; border-collapse:collapse; min-width:980px; }
+    .report-table thead { background:#F8FAFC; color:#64748B; text-transform:uppercase; font-size:.75rem; font-weight:800; letter-spacing:.04em; }
+    .report-table th,.report-table td { padding:1rem 1.25rem; text-align:left; border-bottom:1px solid #F1F5F9; vertical-align:middle; }
+    .report-table td { font-size:.875rem; color:#374151; }
+    .report-table tr:hover td { background:#F8FAFC; }
+    .laporan-status { min-width:112px; height:28px; padding:0 10px; display:inline-flex; align-items:center; justify-content:center; border-radius:7px; font-size:12px; font-weight:800; white-space:nowrap; }
+    .laporan-status.progress { color:#756000; background:#FFD400; }
+    .laporan-status.done { color:#187C28; background:#59FF45; }
+    .laporan-status.new { color:#095E9C; background:#D8ECFF; }
+    .laporan-status.cancel { color:#B91C1C; background:#FEE2E2; }
+    .laporan-status.no-sparepart { color:#374151; background:#E5E7EB; }
+    .detail-btn { border:1px solid #0090F5; color:#0090F5; background:#EEF8FF; border-radius:.5rem; padding:.45rem 1rem; font-size:.8rem; font-weight:800; cursor:pointer; text-decoration:none; }
+    .detail-btn:hover { background:#0090F5; color:#fff; }
 </style>
+@endonce
 
 <div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
-    
-    {{-- Sidebar --}}
-    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full md:translate-x-0 md:sticky md:top-0 md:h-screen rounded-r-[36px] shadow-sm shrink-0">
-        <div class="p-8 flex-1 flex flex-col overflow-y-auto">
-            <div class="flex items-center gap-3 px-4">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
-                    <i class="fa-solid fa-square-poll-vertical text-xl"></i>
-                </div>
-                <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-[#0090F5] to-[#1E3A8A] bg-clip-text text-transparent">SiLapor</span>
-            </div>
+    @include('partials.sidebar', ['user' => $user, 'activeMenu' => $activeMenu])
 
-            <nav class="mt-10 space-y-2">
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-solid fa-table-columns text-lg"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="{{ route('laporan.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-solid fa-file-invoice text-lg"></i>
-                    <span>Laporan</span>
-                </a>
-                <a href="{{ route('riwayat.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-solid fa-clock-rotate-left text-lg"></i>
-                    <span>Riwayat</span>
-                </a>
-                <a href="{{ route('rekapsulasi.index') }}" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm group transition-all">
-                    <div class="flex items-center gap-3.5">
-                        <i class="fa-solid fa-file-invoice text-lg text-[#0090F5]"></i>
-                        <span>Rekapsulasi</span>
-                    </div>
-                    <div class="w-1.5 h-6 rounded-full bg-[#0090F5]"></div>
-                </a>
-                <a href="{{ route('profil.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-regular fa-user text-lg"></i>
-                    <span>Profil</span>
-                </a>
-            </nav>
-        </div>
-        <div class="p-8 border-t border-gray-100 bg-white rounded-br-[36px]">
-            <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-red-50 hover:text-red-600 font-semibold text-sm transition-all" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                <i class="fa-solid fa-right-from-bracket text-lg"></i>
-                <span>Logout</span>
-            </a>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">@csrf</form>
-        </div>
-    </aside>
-
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 z-40 hidden md:hidden" onclick="toggleSidebar()"></div>
-
-    <main class="flex-1 px-6 py-6 md:px-10 md:py-8 space-y-6 overflow-x-hidden">
-        
-        <header class="flex items-center justify-between pb-2">
+    <main class="w-full min-w-0 px-4 py-6 md:px-8 md:py-8 space-y-6 overflow-x-hidden">
+        <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2">
             <div class="flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 focus:outline-none md:hidden">
+                <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 focus:outline-none hide-on-desktop">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
-                <h1 class="text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-wider uppercase font-figma">REKAPSULASI</h1>
+                <h1 class="text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-wider uppercase">Rekapitulasi</h1>
             </div>
-            
-            {{-- BADGE USER DINAMIS - OPSI 3 (NAMA | ROLE) --}}
-            <div class="bg-[#0090F5] text-white px-5 py-2.5 rounded-2xl flex items-center gap-4 shadow-lg border border-white/5 transition-all hover:shadow-xl">
-                {{-- Foto Profil (Header tetap Bulat agar kontras dengan Foto Profil di halaman utama) --}}
-                <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->nama).'&background=FFFFFF&color=0090F5' }}" 
-                    alt="Profil" 
-                    class="w-10 h-10 rounded-full object-cover border-2 border-white/30 shadow-sm shrink-0">
-                
-                <div class="text-left flex flex-col justify-center">
-                    <span class="text-[11px] font-medium opacity-70 block tracking-tight">Selamat datang,</span>
-                    
-                    <div class="flex items-center gap-3 mt-0.5">
-                        {{-- Nama Profil --}}
-                        <span class="text-sm font-extrabold block tracking-wide truncate max-w-[150px]">
-                            {{ auth()->user()->nama }}
-                        </span>
-
-                        {{-- Garis Pemisah Vertikal | --}}
-                        <div class="h-3.5 w-[1px] bg-white/30 rounded-full"></div>
-
-                        {{-- Role Profil --}}
-                        <span class="text-[10px] font-bold opacity-80 block tracking-widest uppercase">
-                            {{ auth()->user()->role ?? 'KEPALA LAB' }}
-                        </span>
-                    </div>
-                </div>
-            </div>
+            @include('partials.user-welcome-box', ['user' => $user])
         </header>
 
-        <div class="bg-white border border-gray-150 rounded-[36px] p-6 md:p-8 shadow-figma-container space-y-6">
-            
-            {{-- Filter Section --}}
-<section class="bg-gray-50 p-6 rounded-[24px] border border-gray-100">
-    <div class="mb-4">
-        <h3 class="text-sm font-bold text-gray-700">Filter Laporan</h3>
-    </div>
-    
-    <form action="{{ route('rekapsulasi.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <input type="date" name="tanggal" value="{{ request('tanggal') }}" class="p-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-[#0090F5] bg-white">
-        
-        <select name="penanggung_jawab" class="p-3 rounded-xl border border-gray-300 text-sm text-gray-600 focus:outline-none focus:border-[#0090F5] bg-white">
-            <option value="">Semua Penanggung Jawab</option>
-            @slot('pj_options') @endslot
-        </select>
-        
-        <select name="lokasi" class="p-3 rounded-xl border border-gray-300 text-sm text-gray-600 focus:outline-none focus:border-[#0090F5] bg-white">
-            <option value="">Semua Lokasi</option>
-        </select>
-        
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Laporan..." class="p-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-[#0090F5]">
-        
-        <select name="urutan" class="p-3 rounded-xl border border-gray-300 text-sm text-gray-600 focus:outline-none focus:border-[#0090F5] bg-white">
-            <option value="desc" {{ request('urutan') == 'desc' ? 'selected' : '' }}>Terbaru</option>
-            <option value="asc" {{ request('urutan') == 'asc' ? 'selected' : '' }}>Terlama</option>
-        </select>
-        
-        <select name="status" class="p-3 rounded-xl border border-gray-300 text-sm text-gray-600 focus:outline-none focus:border-[#0090F5] bg-white">
-            <option value="">Semua Status</option>
-            <option value="On Progress" {{ request('status') == 'On Progress' ? 'selected' : '' }}>On Progress</option>
-            <option value="Done" {{ request('status') == 'Done' ? 'selected' : '' }}>Done</option>
-        </select>
-        
-        <select name="fasilitas" class="p-3 rounded-xl border border-gray-300 text-sm text-gray-600 focus:outline-none focus:border-[#0090F5] bg-white">
-            <option value="">Semua Fasilitas</option>
-        </select>
-        
-        <div class="flex gap-2">
-            <button type="submit" class="flex-1 flex items-center justify-center gap-2 p-3 rounded-xl bg-[#0090F5] text-sm font-bold text-white hover:bg-sky-600 transition-all shadow-sm">
-                <i class="fa-solid fa-filter"></i> Filter
-            </button>
-            <a href="{{ route('rekapsulasi.index') }}" class="flex items-center justify-center gap-2 p-3 rounded-xl bg-white border border-gray-300 text-sm font-bold text-gray-600 hover:bg-gray-100 transition-all shadow-sm">
-                <i class="fa-solid fa-rotate-left"></i> Reset
-            </a>
-        </div>
-    </form>
-</section>
-
-            {{-- Table Section --}}
-            <section class="space-y-4">
-                <h2 class="text-lg font-bold text-[#2C3E50] tracking-tight">Daftar Hasil Rekapitulasi</h2>
-                <div class="border border-gray-300 rounded-[18px] overflow-hidden bg-white">
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="w-full text-left border-collapse min-w-[900px]">
-                            <thead>
-                                <tr class="bg-[#034C5F] text-white text-sm font-semibold tracking-wide">
-                                    <th class="py-3.5 px-6">Tanggal</th>
-                                    <th class="py-3.5 px-6">Penanggung Jawab</th>
-                                    <th class="py-3.5 px-6">Lokasi Masalah</th>
-                                    <th class="py-3.5 px-6">Fasilitas</th>
-                                    <th class="py-3.5 px-6 text-center">Status</th>
-                                    <th class="py-3.5 px-6 text-center"></th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                @forelse($daftarLaporan as $item)
-                                <tr class="hover:bg-gray-50/80 transition-colors">
-                                    <td class="py-3.5 px-6 text-sm text-gray-600">
-                                        {{ $item->created_at ? $item->created_at->format('d-m-Y') : '-' }}
-                                    </td>
-                                    <td class="py-3.5 px-6 text-sm text-gray-700 font-semibold">
-                                        {{ $item->user->nama ?? ($item->user->name ?? 'N/A') }}
-                                    </td>
-                                    <td class="py-3.5 px-6 text-sm text-gray-700 font-medium">
-                                        <div class="flex items-center gap-2">
-                                            <i class="fa-solid fa-location-dot text-[#EF4444]"></i>
-                                            <span>{{ $item->fasilitas->laboratorium->nama_laboratorium ?? ($item->lokasi_masalah ?? 'Lab Tidak Diketahui') }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-3.5 px-6 text-sm text-gray-600">
-                                        {{ $item->fasilitas->nama_fasilitas ?? ($item->fasilitas ?? '-') }}
-                                    </td>
-                                    <td class="py-3.5 px-6 text-center">
-                                        @if(($item->status ?? 'On Progress') == 'Done')
-                                            <span class="inline-flex items-center gap-1.5 text-xs font-bold bg-green-100 text-green-700 px-3 py-1 rounded-md border border-green-200 shadow-sm">
-                                                <i class="fa-solid fa-circle-check text-[10px]"></i> Done
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center gap-1.5 text-xs font-bold bg-[#FFD02B]/20 text-amber-800 px-3 py-1 rounded-md border border-amber-300 shadow-sm">
-                                                <i class="fa-solid fa-spinner animate-spin text-[10px]"></i> On Progress
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="py-3.5 px-6 text-center">
-                                        <a href="{{ route('laporan.show', $item->id_pengaduan ?? $item->id) }}" 
-                                           class="inline-block text-xs font-bold text-[#0090F5] bg-white border border-[#0090F5] hover:bg-sky-50 px-5 py-1 rounded-md transition-all shadow-sm">
-                                            Detail
-                                        </a>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="6" class="text-center py-12 text-gray-400 font-medium italic bg-white">
-                                        Belum ada data laporan yang cocok atau tersedia.
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            {{-- Pagination Section --}}
-            <div class="pt-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div class="text-xs text-gray-400 font-medium">
-                    Menampilkan {{ $daftarLaporan->firstItem() ?? 0 }} sampai {{ $daftarLaporan->lastItem() ?? 0 }} dari {{ $daftarLaporan->total() }} rekap laporan
-                </div>
-                <div class="font-figma">
-                    {{ $daftarLaporan->appends(request()->query())->links() }}
-                </div>
+        <section class="filter-card">
+            <div class="mb-4">
+                <h2 class="text-lg font-extrabold text-[#2C3E50]">Filter Laporan</h2>
             </div>
-            
-        </div>
+            <form action="{{ $routeSafe('rekapsulasi.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <input type="date" name="tanggal" value="{{ request('tanggal') }}" class="form-control">
+                <select name="id_penanggung_jawab" class="form-control">
+                    <option value="">Semua Penanggung Jawab</option>
+                    @foreach(($penanggungJawabs ?? collect()) as $pj)
+                        <option value="{{ $pj->id_user }}" @selected((string) request('id_penanggung_jawab') === (string) $pj->id_user)>{{ $pj->nama }}</option>
+                    @endforeach
+                </select>
+                <select name="id_laboratorium" class="form-control">
+                    <option value="">Semua Lokasi</option>
+                    @foreach(($laboratoriums ?? collect()) as $lab)
+                        <option value="{{ $lab->id_laboratorium }}" @selected((string) request('id_laboratorium') === (string) $lab->id_laboratorium)>{{ $lab->nama_laboratorium }}</option>
+                    @endforeach
+                </select>
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari laporan..." class="form-control">
+                <select name="sort" class="form-control">
+                    <option value="terbaru" @selected(request('sort', 'terbaru') === 'terbaru')>Terbaru</option>
+                    <option value="terlama" @selected(request('sort') === 'terlama')>Terlama</option>
+                </select>
+                <select name="status" class="form-control">
+                    <option value="">Semua Status</option>
+                    <option value="NEW" @selected(request('status') === 'NEW')>Baru</option>
+                    <option value="HANDLED" @selected(request('status') === 'HANDLED')>On Progress</option>
+                    <option value="DONE" @selected(request('status') === 'DONE')>Selesai</option>
+                </select>
+                <select name="id_fasilitas" class="form-control">
+                    <option value="">Semua Fasilitas</option>
+                    @foreach(($fasilitasList ?? collect()) as $fasilitas)
+                        <option value="{{ $fasilitas->id_fasilitas }}" @selected((string) request('id_fasilitas') === (string) $fasilitas->id_fasilitas)>{{ $fasilitas->nama_fasilitas }}</option>
+                    @endforeach
+                </select>
+                <div class="flex gap-2">
+                    <button type="submit" class="btn-primary flex-1"><i class="fa-solid fa-filter mr-2"></i>Filter</button>
+                    <a href="{{ $routeSafe('rekapsulasi.index') }}" class="btn-secondary"><i class="fa-solid fa-rotate-left mr-2"></i>Reset</a>
+                </div>
+            </form>
+        </section>
+
+        <section class="table-card">
+            <div class="px-6 py-5 border-b border-gray-100">
+                <h2 class="text-lg font-extrabold text-[#2C3E50]">Daftar Hasil Rekapitulasi</h2>
+            </div>
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Pelapor</th>
+                            <th>Lokasi Masalah</th>
+                            <th>Fasilitas</th>
+                            <th>Status</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($rows as $item)
+                            @php
+                                $status = $statusMeta($item->status_pengaduan ?? null);
+                                $detailUrl = route('dashboard.pengaduan.detail', $item);
+                            @endphp
+                            <tr>
+                                <td>{{ $item->tanggal_lapor ? \Carbon\Carbon::parse($item->tanggal_lapor)->format('d/m/Y') : '-' }}</td>
+                                <td>{{ data_get($item, 'pelapor.nama', 'Guest') }}</td>
+                                <td>{{ data_get($item, 'fasilitas.laboratorium.nama_laboratorium', '-') }}</td>
+                                <td>{{ data_get($item, 'fasilitas.nama_fasilitas', '-') }}</td>
+                                <td><span class="laporan-status {{ $status['class'] }}">{{ $status['label'] }}</span></td>
+                                <td class="text-center"><button type="button" class="detail-btn" data-detail-url="{{ $detailUrl }}">Detail</button></td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="6" class="py-10 text-center text-gray-400">Belum ada data rekapitulasi.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            @if(method_exists($rows, 'links'))
+                <div class="px-6 py-4 border-t border-gray-100">
+                    {{ $rows->withQueryString()->links() }}
+                </div>
+            @endif
+        </section>
     </main>
 </div>
 
@@ -232,15 +155,9 @@
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar-menu');
         const overlay = document.getElementById('sidebar-overlay');
-        if (sidebar.classList.contains('-translate-x-full')) {
-            sidebar.classList.remove('-translate-x-full');
-            sidebar.classList.add('translate-x-0');
-            overlay.classList.remove('hidden');
-        } else {
-            sidebar.classList.add('-translate-x-full');
-            sidebar.classList.remove('translate-x-0');
-            overlay.classList.add('hidden');
-        }
+        if (!sidebar || !overlay) return;
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
     }
 </script>
 @endsection

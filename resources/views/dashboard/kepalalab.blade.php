@@ -11,8 +11,24 @@
     $activeMenu = 'dashboard';
 
     $routeSafe = function (string $name, string $fallback = '#') {
-        return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
-    };
+    if (! \Illuminate\Support\Facades\Route::has($name)) {
+        return $fallback;
+    }
+
+    try {
+        return route($name);
+    } catch (\Throwable $e) {
+        return $fallback;
+    }
+};
+
+$menuItems = [
+    ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+    ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
+    ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
+    ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
+    ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+];
 
     $menuItems = \App\Support\SidebarMenu::forRole($user?->role);
 
