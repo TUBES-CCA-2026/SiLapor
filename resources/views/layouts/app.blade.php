@@ -100,6 +100,8 @@
         .global-notification-button:hover { background: #007CD5; }
     </style>
     @stack('head')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
@@ -107,6 +109,7 @@
    
     @endauth
 
+<<<<<<< HEAD
     <div id="app-content">
         @yield('content')
     </div>
@@ -135,6 +138,9 @@
             </div>
         </div>
     @endif
+=======
+    <main>
+>>>>>>> 8778576e254630aeaef27fa90aa4bd535ad4fb0b
 
     @stack('scripts')
 </body>
