@@ -243,7 +243,7 @@
 
     $statusMeta = function ($status) {
         return match ($status) {
-            'NEW' => ['label' => 'Baru', 'class' => 'new'],
+            'NEW' => ['label' => 'New', 'class' => 'new'],
             'HANDLED' => ['label' => 'On Progress', 'class' => 'progress'],
             'DONE' => ['label' => 'Done', 'class' => 'done'],
             default => ['label' => $status ?: '-', 'class' => 'new'],

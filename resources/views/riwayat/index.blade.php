@@ -11,12 +11,13 @@
     $user = auth()->user();
     $activeMenu = 'riwayat';
     $rows = isset($riwayat) ? collect($riwayat) : collect();
+    $canManageRiwayat = in_array($user?->role, ['asisten', 'laboran'], true);
 
     $statusMeta = function ($status) {
         return match ($status) {
-            'NEW' => ['label' => 'Baru', 'class' => 'new'],
+            'NEW' => ['label' => 'New', 'class' => 'new'],
             'HANDLED' => ['label' => 'On Progress', 'class' => 'progress'],
-            'DONE' => ['label' => 'Selesai', 'class' => 'done'],
+            'DONE' => ['label' => 'Done', 'class' => 'done'],
             'CANCEL' => ['label' => 'Cancel', 'class' => 'cancel'],
             'NO_SPAREPART' => ['label' => 'No Sparepart', 'class' => 'no-sparepart'],
             default => ['label' => $status ?: '-', 'class' => 'new'],
@@ -76,7 +77,7 @@
 
         <section class="dashboard-card">
             <div class="laporan-toolbar">
-                <h2 class="section-title">Riwayat Laporan Selesai</h2>
+                <h2 class="section-title">Riwayat Laporan Done</h2>
                 <label class="laporan-search" aria-label="Cari laporan">
                     <input type="search" placeholder="Cari riwayat..." data-laporan-search>
                     <i class="fa-solid fa-magnifying-glass text-gray-500"></i>
@@ -91,7 +92,7 @@
                             <th>Pelapor</th>
                             <th>Fasilitas</th>
                             <th>Lokasi Masalah</th>
-                            <th>Tanggal Selesai</th>
+                            <th>Tanggal Done</th>
                             <th>Status</th>
                             <th class="text-center">Aksi</th>
                         </tr>
@@ -119,15 +120,18 @@
                                 <td class="text-center">
                                     <div class="action-row">
                                         <button type="button" class="detail-btn" data-detail-url="{{ $detailUrl }}">Detail</button>
-                                        <button type="button" class="edit-btn" onclick="toggleEditRow(@json($editRowId))">Edit</button>
-                                        <form action="{{ route('riwayat.destroy', $laporan) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus riwayat ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="danger-btn">Hapus</button>
-                                        </form>
+                                        @if($canManageRiwayat)
+                                            <button type="button" class="edit-btn" data-edit-target="{{ $editRowId }}">Edit</button>
+                                            <form action="{{ route('riwayat.destroy', $laporan) }}" method="POST" class="inline-block" data-confirm-delete data-confirm-title="Hapus riwayat ini?" data-confirm-text="Riwayat yang dihapus tidak akan tampil lagi.">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="danger-btn">Hapus</button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
+                            @if($canManageRiwayat)
                             <tr id="{{ $editRowId }}" hidden>
                                 <td colspan="7" class="edit-panel">
                                     <form method="POST" action="{{ route('riwayat.update', $laporan) }}" class="edit-form">
@@ -140,9 +144,9 @@
                                         <div>
                                             <label>Status</label>
                                             <select name="status_pengaduan">
-                                                <option value="NEW" @selected(($laporan->status_pengaduan ?? null) === 'NEW')>Baru</option>
+                                                <option value="NEW" @selected(($laporan->status_pengaduan ?? null) === 'NEW')>New</option>
                                                 <option value="HANDLED" @selected(($laporan->status_pengaduan ?? null) === 'HANDLED')>On Progress</option>
-                                                <option value="DONE" @selected(($laporan->status_pengaduan ?? null) === 'DONE')>Selesai</option>
+                                                <option value="DONE" @selected(($laporan->status_pengaduan ?? null) === 'DONE')>Done</option>
                                                 <option value="CANCEL" @selected(($laporan->status_pengaduan ?? null) === 'CANCEL')>Cancel</option>
                                                 <option value="NO_SPAREPART" @selected(($laporan->status_pengaduan ?? null) === 'NO_SPAREPART')>No Sparepart</option>
                                             </select>
@@ -151,6 +155,7 @@
                                     </form>
                                 </td>
                             </tr>
+                            @endif
                         @empty
                             <tr data-empty-row><td colspan="7" class="empty-state">Belum ada riwayat pengaduan.</td></tr>
                         @endforelse
@@ -168,10 +173,12 @@
 </div>
 
 <script>
-    function toggleEditRow(rowId) {
-        const row = document.getElementById(rowId);
+    document.addEventListener('click', function (event) {
+        const editButton = event.target.closest('[data-edit-target]');
+        if (!editButton) return;
+        const row = document.getElementById(editButton.dataset.editTarget);
         if (row) row.hidden = !row.hidden;
-    }
+    });
 
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar-menu');

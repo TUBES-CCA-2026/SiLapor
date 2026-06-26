@@ -102,23 +102,23 @@ Route::middleware('auth')->group(function () {
         ->name('laporan.update');
 
     Route::delete('/laporan/{pengaduan}', [DashboardController::class, 'destroyPengaduan'])
-        ->middleware('role:koordinator_lab,laboran,kepala_lab')
+        ->middleware('role:koordinator_lab,laboran')
         ->name('laporan.destroy');
 
     Route::patch('/riwayat/{pengaduan}', [DashboardController::class, 'updatePengaduan'])
-        ->middleware('role:asisten,laboran,kepala_lab')
+        ->middleware('role:asisten,laboran')
         ->name('riwayat.update');
 
     Route::delete('/riwayat/{pengaduan}', [DashboardController::class, 'destroyPengaduan'])
-        ->middleware('role:asisten,laboran,kepala_lab')
+        ->middleware('role:asisten,laboran')
         ->name('riwayat.destroy');
 
     Route::get('/rekapsulasi/export/excel', [DashboardController::class, 'exportRekapsulasiExcel'])
-        ->middleware('role:laboran,kepala_lab')
+        ->middleware('role:laboran')
         ->name('rekapsulasi.export.excel');
 
     Route::get('/rekapsulasi/export/pdf', [DashboardController::class, 'exportRekapsulasiPdf'])
-        ->middleware('role:laboran,kepala_lab')
+        ->middleware('role:laboran')
         ->name('rekapsulasi.export.pdf');
 
     Route::post('/rekapsulasi/import', [DashboardController::class, 'importRekapsulasi'])

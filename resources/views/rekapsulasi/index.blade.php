@@ -11,14 +11,15 @@
     $user = auth()->user();
     $activeMenu = 'rekapsulasi';
     $rows = $daftarLaporan ?? collect();
+    $canExportRekap = $user?->role === 'laboran';
     $routeSafe = function (string $name, string $fallback = '#') {
         return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
     };
     $statusMeta = function ($status) {
         return match ($status) {
-            'NEW' => ['label' => 'Baru', 'class' => 'new'],
+            'NEW' => ['label' => 'New', 'class' => 'new'],
             'HANDLED' => ['label' => 'On Progress', 'class' => 'progress'],
-            'DONE' => ['label' => 'Selesai', 'class' => 'done'],
+            'DONE' => ['label' => 'Done', 'class' => 'done'],
             'CANCEL' => ['label' => 'Cancel', 'class' => 'cancel'],
             'NO_SPAREPART' => ['label' => 'No Sparepart', 'class' => 'no-sparepart'],
             default => ['label' => $status ?: '-', 'class' => 'new'],
@@ -94,9 +95,11 @@
                 </select>
                 <select name="status" class="form-control">
                     <option value="">Semua Status</option>
-                    <option value="NEW" @selected(request('status') === 'NEW')>Baru</option>
+                    <option value="NEW" @selected(request('status') === 'NEW')>New</option>
                     <option value="HANDLED" @selected(request('status') === 'HANDLED')>On Progress</option>
-                    <option value="DONE" @selected(request('status') === 'DONE')>Selesai</option>
+                    <option value="DONE" @selected(request('status') === 'DONE')>Done</option>
+                    <option value="CANCEL" @selected(request('status') === 'CANCEL')>Cancel</option>
+                    <option value="NO_SPAREPART" @selected(request('status') === 'NO_SPAREPART')>No Sparepart</option>
                 </select>
                 <select name="id_fasilitas" class="form-control">
                     <option value="">Semua Fasilitas</option>
@@ -110,10 +113,12 @@
                 </div>
             </form>
             <div class="mt-4 flex flex-col lg:flex-row justify-between gap-3">
-                <div class="flex gap-2 flex-wrap">
-                    <a href="{{ route('rekapsulasi.export.pdf', request()->query()) }}" class="btn-export-pdf"><i class="fa-solid fa-file-pdf mr-2"></i>Cetak PDF</a>
-                    <a href="{{ route('rekapsulasi.export.excel', request()->query()) }}" class="btn-export-excel"><i class="fa-solid fa-file-excel mr-2"></i>Cetak Excel</a>
-                </div>
+                @if($canExportRekap)
+                    <div class="flex gap-2 flex-wrap">
+                        <a href="{{ route('rekapsulasi.export.pdf', request()->query()) }}" class="btn-export-pdf"><i class="fa-solid fa-file-pdf mr-2"></i>Cetak PDF</a>
+                        <a href="{{ route('rekapsulasi.export.excel', request()->query()) }}" class="btn-export-excel"><i class="fa-solid fa-file-excel mr-2"></i>Cetak Excel</a>
+                    </div>
+                @endif
                 @if(auth()->user()?->role === 'laboran')
                     <form action="{{ route('rekapsulasi.import') }}" method="POST" enctype="multipart/form-data" class="import-form">
                         @csrf

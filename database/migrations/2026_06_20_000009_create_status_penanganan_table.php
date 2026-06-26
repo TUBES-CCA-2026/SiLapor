@@ -17,7 +17,7 @@ return new class extends Migration
 
         DB::table('status_penanganan')->insert([
             ['kode_status' => 'ON PROGRES', 'nama_status' => 'On Progress'],
-            ['kode_status' => 'DONE', 'nama_status' => 'Selesai'],
+            ['kode_status' => 'DONE', 'nama_status' => 'Done'],
         ]);
     }
 

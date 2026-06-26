@@ -29,9 +29,11 @@ class FasilitasLab extends Model
         return $this->hasMany(Pengaduan::class, 'id_fasilitas', 'id_fasilitas');
     }
 
-    // URL unik yang akan di-encode ke dalam gambar QR
+    // URL unik yang akan di-encode ke dalam gambar QR.
+    // Host diambil dari request aktif agar QR tetap bisa dibuka dari HP saat server lokal
+    // diakses memakai IP jaringan, bukan 127.0.0.1.
     public function scanUrl(): string
     {
-        return route('pengaduan.qr.create', ['qr_code' => $this->qr_code]);
+        return request()->getSchemeAndHttpHost() . route('pengaduan.qr.create', ['qr_code' => $this->qr_code], false);
     }
 }

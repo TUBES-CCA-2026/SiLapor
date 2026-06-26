@@ -239,9 +239,9 @@ class DashboardController extends Controller
         ]);
 
         $statusLabel = match ($pengaduan->status_pengaduan) {
-            'NEW' => 'Baru',
+            'NEW' => 'New',
             'HANDLED' => 'On Progress',
-            'DONE' => 'Selesai',
+            'DONE' => 'Done',
             'CANCEL' => 'Cancel',
             'NO_SPAREPART' => 'No Sparepart',
             default => $pengaduan->status_pengaduan,
@@ -449,7 +449,7 @@ class DashboardController extends Controller
                 data_get($item, 'pelapor.nama', 'Guest'),
                 data_get($item, 'fasilitas.laboratorium.nama_laboratorium', '-'),
                 data_get($item, 'fasilitas.nama_fasilitas', '-'),
-                $item->status_pengaduan ?: '-',
+                $this->statusLabel($item->status_pengaduan),
                 $item->deskripsi_kerusakan ?: '-',
             ];
         }
@@ -483,7 +483,7 @@ class DashboardController extends Controller
                 . '<td>' . e(data_get($item, 'pelapor.nama', 'Guest')) . '</td>'
                 . '<td>' . e(data_get($item, 'fasilitas.laboratorium.nama_laboratorium', '-')) . '</td>'
                 . '<td>' . e(data_get($item, 'fasilitas.nama_fasilitas', '-')) . '</td>'
-                . '<td>' . e($item->status_pengaduan ?: '-') . '</td>'
+                . '<td>' . e($this->statusLabel($item->status_pengaduan)) . '</td>'
                 . '<td>' . e($item->deskripsi_kerusakan ?: '-') . '</td>'
                 . '</tr>';
         }
@@ -544,6 +544,19 @@ class DashboardController extends Controller
         fclose($handle);
 
         return back()->with('success', "Import selesai. {$created} laporan berhasil dibuat.");
+    }
+
+
+    protected function statusLabel(?string $status): string
+    {
+        return match ($status) {
+            'NEW' => 'New',
+            'HANDLED' => 'On Progress',
+            'DONE' => 'Done',
+            'CANCEL' => 'Cancel',
+            'NO_SPAREPART' => 'No Sparepart',
+            default => $status ?: '-',
+        };
     }
 
     protected function rekapsulasiQuery(Request $request)

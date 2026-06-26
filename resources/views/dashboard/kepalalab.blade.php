@@ -34,9 +34,9 @@ $menuItems = [
 
     $statusMeta = function ($status) {
         return match ($status) {
-            'NEW' => ['label' => 'Baru', 'class' => 'new'],
+            'NEW' => ['label' => 'New', 'class' => 'new'],
             'HANDLED' => ['label' => 'On Progress', 'class' => 'progress'],
-            'DONE' => ['label' => 'Selesai', 'class' => 'done'],
+            'DONE' => ['label' => 'Done', 'class' => 'done'],
             'CANCEL' => ['label' => 'Cancel', 'class' => 'cancel'],
             'NO_SPAREPART' => ['label' => 'No Sparepart', 'class' => 'no-sparepart'],
             default => ['label' => $status ?: '-', 'class' => 'new'],
@@ -156,7 +156,7 @@ $menuItems = [
                     </div>
                     <div class="bg-white border border-gray-200 rounded-[20px] p-4 flex items-center gap-4 shadow-figma-card">
                         <div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-[#22C55E] shrink-0"><i class="fa-regular fa-square-check text-xl"></i></div>
-                        <div><p class="text-xs font-bold text-gray-400">Selesai</p><p class="text-2xl font-extrabold text-[#2C3E50] leading-tight">{{ $selesai ?? 0 }}</p><p class="text-[10px] text-gray-400 font-medium">Laporan selesai</p></div>
+                        <div><p class="text-xs font-bold text-gray-400">Done</p><p class="text-2xl font-extrabold text-[#2C3E50] leading-tight">{{ $selesai ?? 0 }}</p><p class="text-[10px] text-gray-400 font-medium">Laporan done</p></div>
                     </div>
                     <div class="bg-white border border-gray-200 rounded-[20px] p-4 flex items-center gap-4 shadow-figma-card">
                         <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-[#F59E0B] shrink-0"><i class="fa-regular fa-clock text-xl"></i></div>
@@ -217,15 +217,7 @@ $menuItems = [
             </section>
         </div>
 
-        <div class="modal-backdrop" id="detailModal" hidden>
-            <div class="modal-card" role="dialog" aria-modal="true">
-                <div class="modal-header">
-                    <h2>Detail Pengaduan</h2>
-                    <button type="button" class="modal-close" data-close-modal aria-label="Tutup">×</button>
-                </div>
-                <div class="modal-body" id="modalContent"></div>
-            </div>
-        </div>
+        @include('partials.detail-modal')
     </main>
 </div>
 
@@ -239,84 +231,5 @@ $menuItems = [
         overlay.classList.toggle('hidden');
     }
 
-    (function () {
-        const modal = document.getElementById('detailModal');
-        const modalContent = document.getElementById('modalContent');
-        if (!modal || !modalContent) return;
-
-        function closeModal() {
-            modal.hidden = true;
-            modalContent.innerHTML = '';
-        }
-
-        function esc(value) {
-            return String(value ?? '-')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-
-        function renderDetail(data) {
-            const fotoItems = Array.isArray(data.fotos) && data.fotos.length ? data.fotos : (data.foto ? [{ url: data.foto }] : []);
-            const foto = fotoItems.length
-                ? fotoItems.map((item, index) => {
-                    const url = typeof item === 'string' ? item : item.url;
-                    return url ? `<img src="${esc(url)}" alt="Foto kerusakan ${index + 1}" class="modal-photo" loading="lazy">` : '';
-                }).join('')
-                : `<div class="modal-photo-placeholder">Tidak ada foto</div>`;
-
-            const statusClass = esc(data.statusClass || 'new');
-            const statusLabel = esc(data.statusLabel || data.status);
-
-            return `
-                <div class="detail-photo-wrap">${foto}</div>
-                <div class="detail-panel">
-                    <div class="modal-row"><span>ID</span><span>:</span><span>${esc(data.id)}</span></div>
-                    <div class="modal-row"><span>Status</span><span>:</span><span><mark class="status-badge ${statusClass}">${statusLabel}</mark></span></div>
-                    <div class="modal-row"><span>Pelapor</span><span>:</span><span>${esc(data.pelapor)}</span></div>
-                    <div class="modal-row"><span>Lokasi</span><span>:</span><span>${esc(data.lokasi)}</span></div>
-                    <div class="modal-row"><span>Fasilitas</span><span>:</span><span>${esc(data.fasilitas)}</span></div>
-                    <div class="modal-row"><span>Tgl Lapor</span><span>:</span><span>${esc(data.tanggal)}</span></div>
-                    <div class="modal-row modal-row-description"><span>Deskripsi</span><span>:</span><div class="description-box">${esc(data.deskripsi)}</div></div>
-                </div>
-            `;
-        }
-
-        document.addEventListener('click', async function (event) {
-            const detailButton = event.target.closest('.detail-btn');
-            const closeButton = event.target.closest('[data-close-modal]');
-
-            if (closeButton || event.target === modal) {
-                closeModal();
-                return;
-            }
-
-            if (!detailButton) return;
-
-            const url = detailButton.dataset.detailUrl;
-            modal.hidden = false;
-            modalContent.innerHTML = '<div class="loading-line"></div><div class="loading-line short"></div><div class="loading-line"></div>';
-
-            if (!url || url === '#') {
-                modalContent.innerHTML = '<p>URL detail belum tersedia.</p>';
-                return;
-            }
-
-            try {
-                const response = await fetch(url, { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } });
-                if (!response.ok) throw new Error('Gagal mengambil detail laporan.');
-                const data = await response.json();
-                modalContent.innerHTML = renderDetail(data);
-            } catch (error) {
-                modalContent.innerHTML = '<p>Detail laporan belum bisa ditampilkan. Pastikan route detail pengaduan sudah benar.</p>';
-            }
-        });
-
-        document.addEventListener('keydown', function (event) {
-            if (event.key === 'Escape') closeModal();
-        });
-    })();
 </script>
 @endsection

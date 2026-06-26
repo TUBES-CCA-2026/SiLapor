@@ -206,7 +206,7 @@
                             <th class="py-5 px-6">Fasilitas</th>
                             <th class="py-5 px-6 text-center">Status</th>
                             <th class="py-5 px-6">Tanggal Lapor</th>
-                            <th class="py-5 px-6">Tanggal Selesai</th>
+                            <th class="py-5 px-6">Tanggal Done</th>
                             <th class="py-5 px-6 text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -264,7 +264,7 @@
                                 <td class="py-5 px-6 text-gray-500">
                                     {{ $t->pengaduan?->created_at ? $t->pengaduan->created_at->format('d/m/Y') : '13/06/2026' }}
                                 </td>
-                                <!-- Tanggal Selesai -->
+                                <!-- Tanggal Done -->
                                 <td class="py-5 px-6 text-gray-500">
                                     @if($t->status_penanganan === 'DONE')
                                         {{ $t->updated_at ? $t->updated_at->format('d-m-Y') : '18-10-2026' }}
@@ -331,7 +331,7 @@
                                                     </button>
                                                     <button type="submit" name="status_penanganan" value="DONE"
                                                             class="text-xs font-bold px-5 py-2.5 rounded-full bg-[#0090F5] text-white hover:bg-[#007cd5] shadow-sm transition-colors">
-                                                        Tandai Selesai
+                                                        Tandai Done
                                                     </button>
                                                 </div>
                                             </form>
