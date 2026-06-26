@@ -16,7 +16,21 @@ class TindakLanjutController extends Controller
 {
     public function index()
     {
-        $tugas = TindakLanjut::with(['pengaduan.user', 'pengaduan.fasilitas.laboratorium', 'pengaduan.fotoUtama', 'pengaduan.fotos', 'asisten', 'statusData'])
+        $user = Auth::user();
+
+        $tugas = TindakLanjut::with([
+                'pengaduan.user',
+                'pengaduan.pelapor',
+                'pengaduan.fasilitas.laboratorium',
+                'pengaduan.fotoUtama',
+                'pengaduan.fotos',
+                'asisten',
+                'statusData',
+            ])
+            ->where('id_petugas', $user->id_user)
+            ->whereHas('statusData', function ($status) {
+                $status->where('kode_status', '!=', 'DONE');
+            })
             ->latest('id_tindak_lanjut')
             ->get();
 

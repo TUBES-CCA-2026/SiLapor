@@ -20,7 +20,6 @@
         'laboran' => 'Laboran',
         'koordinator_lab' => 'Koordinator Lab',
         'asisten' => 'Asisten Lab',
-        'admin' => 'Admin',
         default => 'User',
     };
 
@@ -49,7 +48,6 @@
             ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
             ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
             ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-            ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } else {
@@ -156,7 +154,7 @@
                 $sidebarUser = auth()->user();
                 $sidebarRole = $sidebarUser?->role;
 
-                if ($sidebarRole === 'laboran' || $sidebarRole === 'admin') {
+                if ($sidebarRole === 'laboran') {
                     $menuItems = [
                         ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
                         ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
@@ -179,8 +177,7 @@
                         ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
                         ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
                         ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-                        ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+                                    ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
                     ];
                 } else {
                     $menuItems = [

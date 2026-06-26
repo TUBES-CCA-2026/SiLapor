@@ -23,7 +23,6 @@
         'koordinator_lab' => 'Koordinator Lab',
         'laboran' => 'Laboran',
         'asisten' => 'Asisten Lab',
-        'admin' => 'Admin',
         default => 'User',
     };
 
@@ -32,7 +31,6 @@
         'koordinator_lab' => 'Nama Koordinator Lab',
         'laboran' => 'Nama Laboran',
         'asisten' => 'Nama Asisten Lab',
-        'admin' => 'Nama Admin',
         default => 'Nama User',
     };
 
@@ -41,7 +39,6 @@
         'koordinator_lab' => 'ID Koordinator Lab',
         'laboran' => 'ID Laboran',
         'asisten' => 'ID Asisten Lab',
-        'admin' => 'ID Admin',
         default => 'ID User',
     };
 

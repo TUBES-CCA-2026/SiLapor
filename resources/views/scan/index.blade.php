@@ -45,7 +45,7 @@
 
         <div class="mt-4 pt-6 border-t border-gray-800">
             <p class="text-gray-400 text-sm mb-3">Atau, kalau masih tidak bisa juga:</p>
-            <a href="{{ route('pengaduan.manual.create') }}"
+            <a href="{{ auth()->check() ? route('pengaduan.index') : route('pengaduan.manual.create') }}"
                class="inline-flex items-center justify-center w-full rounded-xl border border-gray-700 bg-gray-800 hover:bg-gray-700 text-white text-sm font-semibold px-4 py-3 transition">
                 Buat Pengaduan Manual
             </a>

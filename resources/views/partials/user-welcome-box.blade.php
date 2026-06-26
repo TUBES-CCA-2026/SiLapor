@@ -6,7 +6,6 @@
         'koordinator_lab' => 'Koordinator Lab',
         'laboran' => 'Laboran',
         'asisten' => 'Asisten Lab',
-        'admin' => 'Admin',
         default => 'User',
     };
     $avatarUrl = $displayUser?->profile_photo_url

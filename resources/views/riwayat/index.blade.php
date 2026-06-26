@@ -49,6 +49,8 @@
     .laporan-status.no-sparepart { color:#374151; background:#E5E7EB; }
     .detail-btn { border:1px solid #0090F5; color:#0090F5; background:#EEF8FF; border-radius:.5rem; padding:.45rem 1rem; font-size:.8rem; font-weight:800; cursor:pointer; }
     .detail-btn:hover { background:#0090F5; color:#fff; }
+    .danger-btn { border:1px solid #DC2626; color:#DC2626; background:#FEE2E2; border-radius:.5rem; padding:.45rem .8rem; font-size:.8rem; font-weight:800; cursor:pointer; }
+    .danger-btn:hover { background:#DC2626; color:#fff; }
     .empty-state { padding:2rem!important; text-align:center!important; color:#94A3B8!important; }
     .modal-backdrop { position:fixed; inset:0; z-index:60; padding:20px; background:rgba(15,23,42,.35); display:grid; place-items:center; }
     .modal-backdrop[hidden] { display:none!important; }
@@ -128,8 +130,94 @@
                                 <td>{{ $fasilitas }}</td>
                                 <td>{{ $lokasi }}</td>
                                 <td>{{ $tanggalSelesai }}</td>
-                                <td class="text-center"><button type="button" class="detail-btn" data-detail-url="{{ $detailUrl }}">Detail</button></td>
-                            </tr>
+                                <td class="text-center">
+    @php
+        $detailUrl = route('dashboard.pengaduan.detail', $laporan);
+        $editRowId = 'edit-row-' . $laporan->id_pengaduan;
+    @endphp
+
+    <div class="flex items-center justify-center gap-2">
+        <button
+            type="button"
+            class="detail-btn"
+            onclick="openDetailModal(@json($detailUrl))"
+        >
+            Detail
+        </button>
+
+        <button
+            type="button"
+            class="detail-btn"
+            onclick="toggleEditRow(@json($editRowId))"
+        >
+            Edit
+        </button>
+
+        <form
+            action="{{ route('riwayat.destroy', $laporan) }}"
+            method="POST"
+            class="inline-block"
+            onsubmit="return confirm('Yakin ingin menghapus riwayat ini?')"
+        >
+            @csrf
+            @method('DELETE')
+
+            <button type="submit" class="btn-danger-soft">
+                Hapus
+            </button>
+        </form>
+    </div>
+</td>
+                            <tr id="edit-row-{{ $laporan->id_pengaduan }}" class="hidden bg-gray-50">
+    <td colspan="6" class="px-6 py-5">
+        <form
+            method="POST"
+            action="{{ route('riwayat.update', $laporan) }}"
+            class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end"
+        >
+            @csrf
+            @method('PUT')
+
+            <div class="md:col-span-2">
+                <label class="block text-sm font-bold text-gray-700 mb-2">
+                    Deskripsi Kerusakan
+                </label>
+
+                <textarea
+                    name="deskripsi_kerusakan"
+                    rows="3"
+                    class="w-full border border-gray-300 rounded-xl px-4 py-3"
+                >{{ $laporan->deskripsi_kerusakan }}</textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">
+                    Status
+                </label>
+
+                <select
+                    name="status_pengaduan"
+                    class="w-full border border-gray-300 rounded-xl px-4 py-3"
+                >
+                    <option value="NEW" {{ $laporan->status_pengaduan === 'NEW' ? 'selected' : '' }}>Baru</option>
+                    <option value="HANDLED" {{ $laporan->status_pengaduan === 'HANDLED' ? 'selected' : '' }}>On Progress</option>
+                    <option value="DONE" {{ $laporan->status_pengaduan === 'DONE' ? 'selected' : '' }}>Selesai</option>
+                    <option value="CANCEL" {{ $laporan->status_pengaduan === 'CANCEL' ? 'selected' : '' }}>Cancel</option>
+                    <option value="NO_SPAREPART" {{ $laporan->status_pengaduan === 'NO_SPAREPART' ? 'selected' : '' }}>No Sparepart</option>
+                </select>
+            </div>
+
+            <div class="md:col-span-3 flex justify-end">
+                <button
+                    type="submit"
+                    class="bg-[#0090F5] hover:bg-[#007cd5] text-white font-bold px-6 py-3 rounded-xl"
+                >
+                    Simpan
+                </button>
+            </div>
+        </form>
+    </td>
+</tr>
                         @empty
                             <tr data-empty-row><td colspan="6" class="empty-state">Belum ada riwayat pengaduan.</td></tr>
                         @endforelse
@@ -155,12 +243,25 @@
 </div>
 
 <script>
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar-menu');
-        const overlay = document.getElementById('sidebar-overlay');
-        if (!sidebar || !overlay) return;
-        sidebar.classList.toggle('-translate-x-full');
-        overlay.classList.toggle('hidden');
+    function toggleEditRow(rowId) {
+        const row = document.getElementById(rowId);
+
+        if (!row) {
+            console.error('Row edit tidak ditemukan:', rowId);
+            return;
+        }
+
+        row.classList.toggle('hidden');
+    }
+
+    function closeDetailModal() {
+        const modal = document.getElementById('detailModal');
+        const modalContent = document.getElementById('modalContent');
+
+        if (!modal || !modalContent) return;
+
+        modal.hidden = true;
+        modalContent.innerHTML = '';
     }
 
     function esc(value) {
@@ -172,75 +273,141 @@
             .replace(/'/g, '&#039;');
     }
 
-    function renderDetail(data) {
-        const fotoItems = Array.isArray(data.fotos) && data.fotos.length ? data.fotos : (data.foto ? [{ url: data.foto }] : []);
-        const foto = fotoItems.length
-            ? fotoItems.map((item, index) => {
-                const url = typeof item === 'string' ? item : item.url;
-                return url ? `<img src="${esc(url)}" alt="Foto kerusakan ${index + 1}" class="modal-photo" loading="lazy">` : '';
-            }).join('')
-            : `<div class="modal-photo-placeholder">Tidak ada foto</div>`;
-
-        const statusClass = esc(data.statusClass || 'new');
-        const statusLabel = esc(data.statusLabel || data.status);
-
-        return `
-            <div class="detail-photo-wrap">${foto}</div>
-            <div class="detail-panel">
-                <div class="modal-row"><span>ID</span><span>:</span><span>${esc(data.id)}</span></div>
-                <div class="modal-row"><span>Status</span><span>:</span><span><mark class="status-badge ${statusClass}">${statusLabel}</mark></span></div>
-                <div class="modal-row"><span>Pelapor</span><span>:</span><span>${esc(data.pelapor)}</span></div>
-                <div class="modal-row"><span>Lokasi</span><span>:</span><span>${esc(data.lokasi)}</span></div>
-                <div class="modal-row"><span>Fasilitas</span><span>:</span><span>${esc(data.fasilitas)}</span></div>
-                <div class="modal-row"><span>Tgl Lapor</span><span>:</span><span>${esc(data.tanggal)}</span></div>
-                <div class="modal-row modal-row-description"><span>Deskripsi</span><span>:</span><div class="description-box">${esc(data.deskripsi)}</div></div>
-            </div>
-        `;
-    }
-
-    document.addEventListener('click', async function (event) {
+    async function openDetailModal(url) {
         const modal = document.getElementById('detailModal');
         const modalContent = document.getElementById('modalContent');
-        const detailButton = event.target.closest('.detail-btn');
-        const closeButton = event.target.closest('[data-close-modal]');
 
-        if (!modal || !modalContent) return;
-        if (closeButton || event.target === modal) {
-            modal.hidden = true;
-            modalContent.innerHTML = '';
+        if (!modal || !modalContent) {
+            console.error('Modal detail tidak ditemukan.');
             return;
         }
-        if (!detailButton) return;
 
         modal.hidden = false;
-        modalContent.innerHTML = '<div class="loading-line"></div><div class="loading-line short"></div><div class="loading-line"></div>';
+        modalContent.innerHTML = `
+            <div class="loading-line"></div>
+            <div class="loading-line short"></div>
+            <div class="loading-line"></div>
+        `;
+
+        if (!url || url === '#') {
+            modalContent.innerHTML = '<p>URL detail belum tersedia.</p>';
+            return;
+        }
 
         try {
-            const response = await fetch(detailButton.dataset.detailUrl, {
-                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            const response = await fetch(url, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
             });
-            if (!response.ok) throw new Error('Gagal mengambil detail.');
-            modalContent.innerHTML = renderDetail(await response.json());
+
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+
+            const data = await response.json();
+
+            const fotoItems = Array.isArray(data.fotos) && data.fotos.length
+                ? data.fotos
+                : (data.foto ? [{ url: data.foto }] : []);
+
+            const foto = fotoItems.length
+                ? fotoItems.map(function (item, index) {
+                    const imageUrl = typeof item === 'string' ? item : item.url;
+
+                    return imageUrl
+                        ? `<img src="${esc(imageUrl)}" alt="Foto kerusakan ${index + 1}" class="modal-photo" loading="lazy">`
+                        : '';
+                }).join('')
+                : `<div class="modal-photo-placeholder">Tidak ada foto</div>`;
+
+            modalContent.innerHTML = `
+                <div class="detail-photo-wrap">${foto}</div>
+
+                <div class="detail-panel">
+                    <div class="modal-row">
+                        <span>ID</span>
+                        <span>:</span>
+                        <span>${esc(data.id)}</span>
+                    </div>
+
+                    <div class="modal-row">
+                        <span>Status</span>
+                        <span>:</span>
+                        <span>${esc(data.statusLabel || data.status)}</span>
+                    </div>
+
+                    <div class="modal-row">
+                        <span>Pelapor</span>
+                        <span>:</span>
+                        <span>${esc(data.pelapor)}</span>
+                    </div>
+
+                    <div class="modal-row">
+                        <span>Lokasi</span>
+                        <span>:</span>
+                        <span>${esc(data.lokasi)}</span>
+                    </div>
+
+                    <div class="modal-row">
+                        <span>Fasilitas</span>
+                        <span>:</span>
+                        <span>${esc(data.fasilitas)}</span>
+                    </div>
+
+                    <div class="modal-row">
+                        <span>Tgl Lapor</span>
+                        <span>:</span>
+                        <span>${esc(data.tanggal)}</span>
+                    </div>
+
+                    <div class="modal-row modal-row-description">
+                        <span>Deskripsi</span>
+                        <span>:</span>
+                        <div class="description-box">${esc(data.deskripsi)}</div>
+                    </div>
+                </div>
+            <div class="modal-backdrop" id="detailModal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true">
+        <div class="modal-header">
+            <h2>Detail Pengaduan</h2>
+            <button type="button" class="modal-close" data-close-modal aria-label="Tutup">×</button>
+        </div>
+
+        <div class="modal-body" id="modalContent"></div>
+    </div>
+</div>    
+            `;
         } catch (error) {
+            console.error(error);
             modalContent.innerHTML = '<p>Detail laporan belum bisa ditampilkan.</p>';
+        }
+    }
+
+    document.addEventListener('click', function (event) {
+        const modal = document.getElementById('detailModal');
+        const closeButton = event.target.closest('[data-close-modal]');
+
+        if (closeButton || event.target === modal) {
+            closeDetailModal();
         }
     });
 
-    const searchInput = document.querySelector('[data-laporan-search]');
-    const table = document.querySelector('[data-laporan-table]');
-    if (searchInput && table) {
-        const rows = Array.from(table.querySelectorAll('[data-laporan-row]'));
-        const emptyRow = table.querySelector('[data-empty-row]');
-        searchInput.addEventListener('input', function () {
-            const keyword = this.value.trim().toLowerCase();
-            let visibleCount = 0;
-            rows.forEach(function (row) {
-                const isMatch = row.textContent.toLowerCase().includes(keyword);
-                row.hidden = !isMatch;
-                if (isMatch) visibleCount++;
-            });
-            if (emptyRow && rows.length > 0) emptyRow.hidden = visibleCount !== 0;
-        });
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            closeDetailModal();
+        }
+    });
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar-menu');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        if (!sidebar || !overlay) return;
+
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
     }
 </script>
 @endsection

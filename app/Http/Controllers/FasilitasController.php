@@ -48,10 +48,21 @@ class FasilitasController extends Controller
         $fasilitas->update([
             'qr_code' => Str::uuid()->toString(),
             'qr_generated_date' => now(),
+            'qr_deleted_at' => null,
         ]);
 
         return back()
             ->with('success', 'QR Code untuk ' . $fasilitas->nama_fasilitas . ' berhasil diperbarui.')
             ->with('new_fasilitas_id', $fasilitas->id_fasilitas);
+    }
+
+
+    public function deleteQr(FasilitasLab $fasilitas)
+    {
+        $fasilitas->update([
+            'qr_deleted_at' => now(),
+        ]);
+
+        return back()->with('success', 'QR Code untuk ' . $fasilitas->nama_fasilitas . ' berhasil dihapus/nonaktif.');
     }
 }

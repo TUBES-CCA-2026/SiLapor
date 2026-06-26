@@ -20,7 +20,6 @@ return new class extends Migration
             ['nama_role' => 'laboran', 'created_at' => now(), 'updated_at' => now()],
             ['nama_role' => 'koordinator_lab', 'created_at' => now(), 'updated_at' => now()],
             ['nama_role' => 'kepala_lab', 'created_at' => now(), 'updated_at' => now()],
-            ['nama_role' => 'admin', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 

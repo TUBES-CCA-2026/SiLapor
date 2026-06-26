@@ -20,7 +20,6 @@
         'laboran' => 'Laboran',
         'koordinator_lab' => 'Koordinator Lab',
         'asisten' => 'Asisten Lab',
-        'admin' => 'Admin',
         default => 'User',
     };
 
@@ -49,7 +48,6 @@
             ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
             ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
             ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-            ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } else {
@@ -156,7 +154,7 @@
                 $sidebarUser = auth()->user();
                 $sidebarRole = $sidebarUser?->role;
 
-                if ($sidebarRole === 'laboran' || $sidebarRole === 'admin') {
+                if ($sidebarRole === 'laboran') {
                     $menuItems = [
                         ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
                         ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
@@ -179,8 +177,7 @@
                         ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
                         ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
                         ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-                        ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+                                    ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
                     ];
                 } else {
                     $menuItems = [
@@ -264,7 +261,11 @@
                 <div id="fasilitas-card-{{ $f->id_fasilitas }}" style="background: #fff; border: {{ session('new_fasilitas_id') == $f->id_fasilitas ? '2px solid #0090F5' : '1px solid #E5E7EB' }}; border-radius: 1.25rem; padding: 1.25rem; text-align: center;">
                     <p style="margin: 0; font-weight: 800; color: #2C3E50;">{{ $f->nama_fasilitas }}</p>
                     <p style="margin: .25rem 0 1rem; color: #64748B; font-size: .82rem;">{{ $f->laboratorium->nama_laboratorium }}</p>
-                    <div class="qr-print-area" data-fasilitas-name="{{ $f->nama_fasilitas }}" data-fasilitas-lab="{{ $f->laboratorium->nama_laboratorium ?? '-' }}" data-fasilitas-url="{{ $f->scanUrl() }}" style="display: flex; justify-content: center; margin-bottom: 1rem; min-height: 140px; align-items: center;" id="qr-{{ $f->id_fasilitas }}"></div>
+                    @if($f->qr_deleted_at)
+                        <div style="display:grid;place-items:center;margin-bottom:1rem;min-height:140px;color:#DC2626;font-size:.85rem;font-weight:800;border:1px dashed #FCA5A5;border-radius:1rem;background:#FEF2F2;">QR sudah dihapus/nonaktif</div>
+                    @else
+                        <div class="qr-print-area" data-fasilitas-name="{{ $f->nama_fasilitas }}" data-fasilitas-lab="{{ $f->laboratorium->nama_laboratorium ?? '-' }}" data-fasilitas-url="{{ $f->scanUrl() }}" style="display: flex; justify-content: center; margin-bottom: 1rem; min-height: 140px; align-items: center;" id="qr-{{ $f->id_fasilitas }}"></div>
+                    @endif
                     <script>
                         document.addEventListener('DOMContentLoaded', function () {
                             const target = document.getElementById('qr-{{ $f->id_fasilitas }}');
@@ -287,9 +288,16 @@
                             @csrf
                             <button class="btn-outline-blue" type="submit">Regenerasi QR</button>
                         </form>
-                        <button type="button" class="btn-outline-blue" onclick="printQr('qr-{{ $f->id_fasilitas }}')">
-                            <i class="fa-solid fa-print" style="margin-right:.35rem;"></i>Cetak QR
-                        </button>
+                        @if(! $f->qr_deleted_at)
+                            <button type="button" class="btn-outline-blue" onclick="printQr('qr-{{ $f->id_fasilitas }}')">
+                                <i class="fa-solid fa-print" style="margin-right:.35rem;"></i>Cetak QR
+                            </button>
+                            <form method="POST" action="{{ route('fasilitas.delete-qr', $f->id_fasilitas) }}" onsubmit="return confirm('Hapus/nonaktifkan QR code fasilitas ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn-danger-soft" type="submit"><i class="fa-solid fa-qrcode" style="margin-right:.35rem;"></i>Hapus QR</button>
+                            </form>
+                        @endif
                     </div>
                 </div>
             @empty

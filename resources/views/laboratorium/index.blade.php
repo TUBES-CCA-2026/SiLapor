@@ -19,7 +19,6 @@
         'laboran' => 'Laboran',
         'koordinator_lab' => 'Koordinator Lab',
         'asisten' => 'Asisten Lab',
-        'admin' => 'Admin',
         default => 'User',
     };
 
@@ -48,7 +47,6 @@
             ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
             ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
             ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-            ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } else {
@@ -155,7 +153,7 @@
                 $sidebarUser = auth()->user();
                 $sidebarRole = $sidebarUser?->role;
 
-                if ($sidebarRole === 'laboran' || $sidebarRole === 'admin') {
+                if ($sidebarRole === 'laboran') {
                     $menuItems = [
                         ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
                         ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
@@ -178,8 +176,7 @@
                         ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
                         ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
                         ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-                        ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+                                    ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
                     ];
                 } else {
                     $menuItems = [
@@ -252,8 +249,7 @@
             <input name="kode_laboratorium" placeholder="Kode (cth: LAB-RPL)" class="form-control" style="font-size: .9rem;">
             <input name="lokasi" placeholder="Lokasi (cth: Gedung A Lantai 2)" class="form-control" style="font-size: .9rem;">
 
-            <select name="id_koordinator" class="form-control" style="font-size: .9rem;">
-                <option value="">Penanggung jawab (role asisten)</option>
+            <select name="id_penanggung_jawab[]" multiple class="form-control" style="font-size: .9rem; min-height: 96px;">
                 @foreach (($penanggungJawabs ?? $koordinators) as $k)
                     <option value="{{ $k->id_user }}">{{ $k->nama }}</option>
                 @endforeach
@@ -279,7 +275,7 @@
                             </p>
                             <p style="margin: .25rem 0 0; color: #64748B; font-size: .86rem;">{{ $lab->lokasi ?? '—' }}</p>
                             <p style="margin: .2rem 0 0; color: #94A3B8; font-size: .78rem;">
-                                Penanggung Jawab: {{ $lab->koordinator?->nama ?? 'Belum ditentukan' }} · {{ $lab->fasilitas_count }} fasilitas
+                                Penanggung Jawab: {{ $lab->penanggungJawabs->pluck('nama')->join(', ') ?: ($lab->koordinator?->nama ?? 'Belum ditentukan') }} · {{ $lab->fasilitas_count }} fasilitas
                             </p>
                             @if($lab->keterangan)
                                 <p style="margin: .2rem 0 0; color: #64748B; font-size: .78rem;">{{ $lab->keterangan }}</p>
@@ -307,10 +303,9 @@
                             <input name="nama_laboratorium" value="{{ $lab->nama_laboratorium }}" required class="form-control" placeholder="Nama laboratorium">
                             <input name="kode_laboratorium" value="{{ $lab->kode_laboratorium }}" class="form-control" placeholder="Kode laboratorium">
                             <input name="lokasi" value="{{ $lab->lokasi }}" class="form-control" placeholder="Lokasi">
-                            <select name="id_koordinator" class="form-control">
-                                <option value="">Penanggung jawab</option>
+                            <select name="id_penanggung_jawab[]" multiple class="form-control" style="min-height: 96px;">
                                 @foreach (($penanggungJawabs ?? $koordinators) as $k)
-                                    <option value="{{ $k->id_user }}" {{ (string) $lab->id_koordinator === (string) $k->id_user ? 'selected' : '' }}>{{ $k->nama }}</option>
+                                    <option value="{{ $k->id_user }}" @selected($lab->penanggungJawabs->contains('id_user', $k->id_user) || (string) $lab->id_koordinator === (string) $k->id_user)>{{ $k->nama }}</option>
                                 @endforeach
                             </select>
                             <input name="keterangan" value="{{ $lab->keterangan }}" class="form-control" placeholder="Keterangan">

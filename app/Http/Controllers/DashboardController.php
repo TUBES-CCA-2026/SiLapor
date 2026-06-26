@@ -26,7 +26,7 @@ class DashboardController extends Controller
             return $this->dashboardKoordinator($user);
         }
 
-        if ($user->isLaboran() || $user->isAdmin()) {
+        if ($user->isLaboran()) {
             return $this->dashboardLaboran($user);
         }
 
@@ -354,6 +354,9 @@ class DashboardController extends Controller
             'statusData',
         ])
             ->where('id_petugas', $user->id_user)
+            ->whereHas('statusData', function ($status) {
+                $status->where('kode_status', '!=', 'DONE');
+            })
             ->orderByDesc('id_tindak_lanjut')
             ->get();
 
@@ -405,5 +408,196 @@ class DashboardController extends Controller
             'daftarLaporan'
         ));
     }
-}
 
+
+    public function updatePengaduan(Request $request, Pengaduan $pengaduan)
+    {
+        $validated = $request->validate([
+            'deskripsi_kerusakan' => ['nullable', 'string', 'max:2000'],
+            'status_pengaduan' => ['nullable', 'in:NEW,HANDLED,DONE,CANCEL,NO_SPAREPART'],
+        ]);
+
+        if (isset($validated['deskripsi_kerusakan'])) {
+            $pengaduan->deskripsi_kerusakan = $validated['deskripsi_kerusakan'];
+        }
+
+        if (isset($validated['status_pengaduan'])) {
+            $pengaduan->status_pengaduan = $validated['status_pengaduan'];
+        }
+
+        $pengaduan->save();
+
+        return back()->with('success', 'Data laporan berhasil diperbarui.');
+    }
+
+    public function destroyPengaduan(Pengaduan $pengaduan)
+    {
+        $pengaduan->delete();
+
+        return back()->with('success', 'Laporan berhasil dihapus dan tidak akan muncul di laporan, riwayat, atau rekapitulasi.');
+    }
+
+    public function exportRekapsulasiExcel(Request $request)
+    {
+        $rows = $this->rekapsulasiQuery($request)->get();
+        $lines = [];
+        $lines[] = ['Tanggal', 'Pelapor', 'Lokasi Masalah', 'Fasilitas', 'Status', 'Deskripsi'];
+
+        foreach ($rows as $item) {
+            $lines[] = [
+                optional($item->tanggal_lapor)->format('d/m/Y') ?: '-',
+                data_get($item, 'pelapor.nama', 'Guest'),
+                data_get($item, 'fasilitas.laboratorium.nama_laboratorium', '-'),
+                data_get($item, 'fasilitas.nama_fasilitas', '-'),
+                $item->status_pengaduan ?: '-',
+                $item->deskripsi_kerusakan ?: '-',
+            ];
+        }
+
+        $csv = "\xEF\xBB\xBF";
+        foreach ($lines as $line) {
+            $escaped = array_map(function ($value) {
+                $value = str_replace('"', '""', (string) $value);
+                return '"' . $value . '"';
+            }, $line);
+            $csv .= implode(';', $escaped) . "\n";
+        }
+
+        return response($csv, 200, [
+            'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="rekapitulasi-laporan.xls"',
+        ]);
+    }
+
+    public function exportRekapsulasiPdf(Request $request)
+    {
+        $rows = $this->rekapsulasiQuery($request)->get();
+
+        $html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Rekapitulasi Laporan</title>'
+            . '<style>body{font-family:Arial,sans-serif;color:#111827}h1{font-size:20px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #d1d5db;padding:8px;text-align:left}th{background:#f3f4f6}@media print{button{display:none}}</style>'
+            . '</head><body><button onclick="window.print()">Cetak / Simpan PDF</button><h1>Rekapitulasi Laporan</h1><table><thead><tr><th>Tanggal</th><th>Pelapor</th><th>Lokasi</th><th>Fasilitas</th><th>Status</th><th>Deskripsi</th></tr></thead><tbody>';
+
+        foreach ($rows as $item) {
+            $html .= '<tr>'
+                . '<td>' . e(optional($item->tanggal_lapor)->format('d/m/Y') ?: '-') . '</td>'
+                . '<td>' . e(data_get($item, 'pelapor.nama', 'Guest')) . '</td>'
+                . '<td>' . e(data_get($item, 'fasilitas.laboratorium.nama_laboratorium', '-')) . '</td>'
+                . '<td>' . e(data_get($item, 'fasilitas.nama_fasilitas', '-')) . '</td>'
+                . '<td>' . e($item->status_pengaduan ?: '-') . '</td>'
+                . '<td>' . e($item->deskripsi_kerusakan ?: '-') . '</td>'
+                . '</tr>';
+        }
+
+        $html .= '</tbody></table><script>window.addEventListener("load",()=>setTimeout(()=>window.print(),400));</script></body></html>';
+
+        return response($html);
+    }
+
+    public function importRekapsulasi(Request $request)
+    {
+        $validated = $request->validate([
+            'file' => ['required', 'file', 'mimes:csv,txt,xls,xlsx', 'max:4096'],
+        ]);
+
+        $path = $validated['file']->getRealPath();
+        $handle = fopen($path, 'r');
+
+        if (!$handle) {
+            return back()->withErrors(['file' => 'File tidak bisa dibaca.']);
+        }
+
+        $created = 0;
+        $headerSkipped = false;
+
+        while (($row = fgetcsv($handle, 0, ';')) !== false) {
+            if (count($row) < 6) {
+                $row = str_getcsv(implode(';', $row), ',');
+            }
+
+            if (!$headerSkipped) {
+                $headerSkipped = true;
+                if (isset($row[0]) && stripos((string) $row[0], 'tanggal') !== false) {
+                    continue;
+                }
+            }
+
+            [$tanggal, $pelaporNama, $lokasi, $fasilitasNama, $status, $deskripsi] = array_pad($row, 6, null);
+
+            $pelapor = User::where('nama', trim((string) $pelaporNama))->first() ?: User::role('laboran')->first() ?: User::first();
+            $fasilitas = FasilitasLab::where('nama_fasilitas', trim((string) $fasilitasNama))->first() ?: FasilitasLab::first();
+
+            if (!$pelapor || !$fasilitas) {
+                continue;
+            }
+
+            Pengaduan::create([
+                'id_user' => $pelapor->id_user,
+                'id_fasilitas' => $fasilitas->id_fasilitas,
+                'tanggal_lapor' => $tanggal ? date('Y-m-d', strtotime((string) $tanggal)) : now()->toDateString(),
+                'status_pengaduan' => in_array($status, ['NEW', 'HANDLED', 'DONE'], true) ? $status : 'NEW',
+                'deskripsi_kerusakan' => $deskripsi ?: 'Import rekapitulasi',
+            ]);
+
+            $created++;
+        }
+
+        fclose($handle);
+
+        return back()->with('success', "Import selesai. {$created} laporan berhasil dibuat.");
+    }
+
+    protected function rekapsulasiQuery(Request $request)
+    {
+        $query = Pengaduan::with([
+            'fasilitas.laboratorium',
+            'pelapor',
+            'statusData',
+            'fotoUtama',
+            'fotos',
+            'tindakLanjut.asisten',
+            'tindakLanjut.penugas',
+        ]);
+
+        if ($request->filled('tanggal')) {
+            $query->whereDate('tanggal_lapor', $request->input('tanggal'));
+        }
+
+        if ($request->filled('status')) {
+            $query->statusKode($request->string('status')->toString());
+        }
+
+        if ($request->filled('id_laboratorium')) {
+            $query->whereHas('fasilitas', function ($q) use ($request) {
+                $q->where('id_laboratorium', $request->integer('id_laboratorium'));
+            });
+        }
+
+        if ($request->filled('id_fasilitas')) {
+            $query->where('id_fasilitas', $request->integer('id_fasilitas'));
+        }
+
+        if ($request->filled('id_penanggung_jawab')) {
+            $query->whereHas('tindakLanjut', function ($q) use ($request) {
+                $q->where('id_petugas', $request->integer('id_penanggung_jawab'));
+            });
+        }
+
+        if ($request->filled('q')) {
+            $keyword = trim($request->string('q')->toString());
+            $query->where(function ($q) use ($keyword) {
+                $q->where('deskripsi_kerusakan', 'like', "%{$keyword}%")
+                    ->orWhereHas('pelapor', function ($u) use ($keyword) {
+                        $u->where('nama', 'like', "%{$keyword}%");
+                    })
+                    ->orWhereHas('fasilitas', function ($f) use ($keyword) {
+                        $f->where('nama_fasilitas', 'like', "%{$keyword}%");
+                    });
+            });
+        }
+
+        return $request->input('sort') === 'terlama'
+            ? $query->orderBy('tanggal_lapor')->orderBy('id_pengaduan')
+            : $query->orderByDesc('tanggal_lapor')->orderByDesc('id_pengaduan');
+    }
+
+}

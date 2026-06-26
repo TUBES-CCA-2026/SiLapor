@@ -49,6 +49,7 @@ class PengaduanController extends Controller
     {
         $fasilitas = FasilitasLab::with('laboratorium')
             ->where('qr_code', $qr_code)
+            ->whereNull('qr_deleted_at')
             ->firstOrFail();
 
         return view('pengaduan.create', $this->formData('qr', $fasilitas));
@@ -61,6 +62,7 @@ class PengaduanController extends Controller
     {
         $fasilitas = FasilitasLab::with('laboratorium')
             ->where('qr_code', $qr_code)
+            ->whereNull('qr_deleted_at')
             ->firstOrFail();
 
         $validated = $this->validateReport($request, false);

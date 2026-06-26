@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard Admin - SiLapor')
+@section('title', 'Dashboard Laboran - SiLapor')
 
 @section('content')
 <div class="max-w-3xl mx-auto px-4 py-10">
-    <h1 class="font-display font-bold text-2xl text-gray-900 mb-1">Panel Admin</h1>
+    <h1 class="font-display font-bold text-2xl text-gray-900 mb-1">Panel Laboran</h1>
     <p class="text-gray-500 mb-8">Kelola seluruh isi sistem SiLapor dari sini.</p>
 
     <div class="grid sm:grid-cols-2 gap-4">

@@ -16,7 +16,6 @@ class UserSeeder extends Seeder
             ['nama' => 'Sari Laboran',      'email' => 'laboran@silapor.test',     'role' => 'laboran'],
             ['nama' => 'Andi Koordinator',  'email' => 'koordinator@silapor.test', 'role' => 'koordinator_lab'],
             ['nama' => 'Dr. Wijaya',        'email' => 'kepalalab@silapor.test',   'role' => 'kepala_lab'],
-            ['nama' => 'Admin SiLapor',     'email' => 'admin@silapor.test',       'role' => 'admin'],
         ];
 
         foreach ($users as $data) {

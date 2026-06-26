@@ -23,4 +23,10 @@ class Laboratorium extends Model
     {
         return $this->hasMany(FasilitasLab::class, 'id_laboratorium', 'id_laboratorium');
     }
+
+    public function penanggungJawabs()
+    {
+        return $this->belongsToMany(User::class, 'laboratorium_penanggung_jawab', 'id_laboratorium', 'id_user')
+            ->withTimestamps();
+    }
 }

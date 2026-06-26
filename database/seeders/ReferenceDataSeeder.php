@@ -12,7 +12,7 @@ class ReferenceDataSeeder extends Seeder
 {
     public function run(): void
     {
-        foreach (['asisten', 'laboran', 'koordinator_lab', 'kepala_lab', 'admin'] as $role) {
+        foreach (['asisten', 'laboran', 'koordinator_lab', 'kepala_lab'] as $role) {
             Role::firstOrCreate(['nama_role' => $role]);
         }
 

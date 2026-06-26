@@ -11,7 +11,7 @@ class LaboratoriumController extends Controller
 {
     public function index()
     {
-        $laboratoriums = Laboratorium::with('koordinator')
+        $laboratoriums = Laboratorium::with(['koordinator', 'penanggungJawabs'])
             ->withCount('fasilitas')
             ->orderBy('nama_laboratorium')
             ->get();
@@ -30,10 +30,20 @@ class LaboratoriumController extends Controller
             'kode_laboratorium' => ['nullable', 'string', 'max:20'],
             'lokasi' => ['nullable', 'string', 'max:120'],
             'id_koordinator' => ['nullable', 'exists:users,id_user'],
+            'id_penanggung_jawab' => ['nullable', 'array'],
+            'id_penanggung_jawab.*' => ['exists:users,id_user'],
             'keterangan' => ['nullable', 'string'],
         ]);
 
-        Laboratorium::create($validated);
+        $pjIds = $validated['id_penanggung_jawab'] ?? [];
+        unset($validated['id_penanggung_jawab']);
+
+        if (empty($validated['id_koordinator']) && !empty($pjIds)) {
+            $validated['id_koordinator'] = $pjIds[0];
+        }
+
+        $laboratorium = Laboratorium::create($validated);
+        $laboratorium->penanggungJawabs()->sync($pjIds);
 
         return back()->with('success', 'Laboratorium baru berhasil ditambahkan.');
     }
@@ -45,10 +55,20 @@ class LaboratoriumController extends Controller
             'kode_laboratorium' => ['nullable', 'string', 'max:20'],
             'lokasi' => ['nullable', 'string', 'max:120'],
             'id_koordinator' => ['nullable', 'exists:users,id_user'],
+            'id_penanggung_jawab' => ['nullable', 'array'],
+            'id_penanggung_jawab.*' => ['exists:users,id_user'],
             'keterangan' => ['nullable', 'string'],
         ]);
 
+        $pjIds = $validated['id_penanggung_jawab'] ?? [];
+        unset($validated['id_penanggung_jawab']);
+
+        if (empty($validated['id_koordinator']) && !empty($pjIds)) {
+            $validated['id_koordinator'] = $pjIds[0];
+        }
+
         $laboratorium->update($validated);
+        $laboratorium->penanggungJawabs()->sync($pjIds);
 
         return back()->with('success', 'Data laboratorium berhasil diperbarui.');
     }

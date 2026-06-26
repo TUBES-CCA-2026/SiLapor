@@ -11,11 +11,12 @@ class FasilitasLab extends Model
 
     protected $fillable = [
         'nama_fasilitas', 'id_laboratorium', 'no_fasilitas',
-        'qr_code', 'qr_generated_date',
+        'qr_code', 'qr_generated_date', 'qr_deleted_at',
     ];
 
     protected $casts = [
         'qr_generated_date' => 'datetime',
+        'qr_deleted_at' => 'datetime',
     ];
 
     public function laboratorium()

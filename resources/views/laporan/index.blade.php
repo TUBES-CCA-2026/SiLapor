@@ -49,6 +49,8 @@
     .laporan-status.no-sparepart { color:#374151; background:#E5E7EB; }
     .detail-btn { border:1px solid #0090F5; color:#0090F5; background:#EEF8FF; border-radius:.5rem; padding:.45rem 1rem; font-size:.8rem; font-weight:800; cursor:pointer; }
     .detail-btn:hover { background:#0090F5; color:#fff; }
+    .danger-btn { border:1px solid #DC2626; color:#DC2626; background:#FEE2E2; border-radius:.5rem; padding:.45rem .8rem; font-size:.8rem; font-weight:800; cursor:pointer; }
+    .danger-btn:hover { background:#DC2626; color:#fff; }
     .empty-state { padding:2rem!important; text-align:center!important; color:#94A3B8!important; }
     .modal-backdrop { position:fixed; inset:0; z-index:60; padding:20px; background:rgba(15,23,42,.35); display:grid; place-items:center; }
     .modal-backdrop[hidden] { display:none!important; }
@@ -131,7 +133,42 @@
                                 <td>{{ $lokasi }}</td>
                                 <td class="laporan-description" title="{{ $deskripsi }}">{{ \Illuminate\Support\Str::limit($deskripsi, 45) }}</td>
                                 <td><span class="laporan-status {{ $status['class'] }}">{{ $status['label'] }}</span></td>
-                                <td class="text-center"><button type="button" class="detail-btn" data-detail-url="{{ $detailUrl }}">Detail</button></td>
+                                <td class="text-center">
+                                    <div class="inline-flex items-center gap-2 justify-center">
+                                        <button type="button" class="detail-btn" data-detail-url="{{ $detailUrl }}">Detail</button>
+                                        @if(\Illuminate\Support\Facades\Route::has('laporan.update'))
+                                            <button type="button" class="detail-btn" onclick="document.getElementById('edit-laporan-{{ $laporan->id_pengaduan }}').toggleAttribute('hidden')">Edit</button>
+                                        @endif
+                                        @if(\Illuminate\Support\Facades\Route::has('laporan.destroy'))
+                                            <form method="POST" action="{{ route('laporan.destroy', $laporan) }}" onsubmit="return confirm('Hapus laporan ini?')" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="danger-btn">Hapus</button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr id="edit-laporan-{{ $laporan->id_pengaduan }}" hidden>
+                                <td colspan="7" style="background:#F8FAFC; padding:1rem 1.25rem;">
+                                    <form method="POST" action="{{ route('laporan.update', $laporan) }}" style="display:grid; grid-template-columns: 1fr 180px 120px; gap:.75rem; align-items:end;">
+                                        @csrf
+                                        @method('PATCH')
+                                        <div>
+                                            <label style="display:block;font-size:.75rem;font-weight:800;color:#64748B;margin-bottom:.35rem;">Deskripsi Kerusakan</label>
+                                            <textarea name="deskripsi_kerusakan" rows="2" class="form-control" style="width:100%;border:1px solid #D1D5DB;border-radius:.75rem;padding:.7rem;">{{ $deskripsi }}</textarea>
+                                        </div>
+                                        <div>
+                                            <label style="display:block;font-size:.75rem;font-weight:800;color:#64748B;margin-bottom:.35rem;">Status</label>
+                                            <select name="status_pengaduan" class="form-control" style="width:100%;border:1px solid #D1D5DB;border-radius:.75rem;padding:.7rem;">
+                                                <option value="NEW" @selected(($laporan->status_pengaduan ?? null) === 'NEW')>Baru</option>
+                                                <option value="HANDLED" @selected(($laporan->status_pengaduan ?? null) === 'HANDLED')>On Progress</option>
+                                                <option value="DONE" @selected(($laporan->status_pengaduan ?? null) === 'DONE')>Selesai</option>
+                                            </select>
+                                        </div>
+                                        <button class="detail-btn" type="submit">Simpan</button>
+                                    </form>
+                                </td>
                             </tr>
                         @empty
                             <tr data-empty-row><td colspan="7" class="empty-state">Belum ada laporan pengaduan.</td></tr>

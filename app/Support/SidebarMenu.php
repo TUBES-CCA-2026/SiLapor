@@ -21,7 +21,7 @@ final class SidebarMenu
         };
 
         return match ($role) {
-            'laboran', 'admin' => [
+            'laboran' => [
                 ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $url('dashboard')],
                 ['laporan', 'Laporan', 'fa-regular fa-file-lines', $url('laporan.index')],
                 ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $url('riwayat.index')],
@@ -43,7 +43,6 @@ final class SidebarMenu
                 ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $url('pengaduan.index')],
                 ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $url('tindak-lanjut.index')],
                 ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $url('riwayat.index')],
-                ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $url('teknisi.index')],
                 ['profil', 'Profil', 'fa-regular fa-user', $url('profile.index')],
             ],
             'kepala_lab' => [

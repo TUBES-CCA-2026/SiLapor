@@ -82,7 +82,6 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/tindak-lanjut', [TindakLanjutController::class, 'index'])->name('tindak-lanjut.index');
         Route::patch('/tindak-lanjut/{tindakLanjut}', [TindakLanjutController::class, 'update'])->name('tindak-lanjut.update');
-        Route::get('/teknisi', [TeknisiController::class, 'index'])->name('teknisi.index');
     });
 
     Route::get('/riwayat', [RiwayatController::class, 'index'])
@@ -96,6 +95,34 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/pengaduan/{pengaduan}/detail', [DashboardController::class, 'detailPengaduan'])
         ->middleware('role:asisten,koordinator_lab,laboran,kepala_lab')
         ->name('dashboard.pengaduan.detail');
+
+    Route::patch('/laporan/{pengaduan}', [DashboardController::class, 'updatePengaduan'])
+        ->middleware('role:koordinator_lab,laboran')
+        ->name('laporan.update');
+
+    Route::delete('/laporan/{pengaduan}', [DashboardController::class, 'destroyPengaduan'])
+        ->middleware('role:koordinator_lab,laboran,kepala_lab')
+        ->name('laporan.destroy');
+
+    Route::patch('/riwayat/{pengaduan}', [DashboardController::class, 'updatePengaduan'])
+        ->middleware('role:asisten,laboran,kepala_lab')
+        ->name('riwayat.update');
+
+    Route::delete('/riwayat/{pengaduan}', [DashboardController::class, 'destroyPengaduan'])
+        ->middleware('role:asisten,laboran,kepala_lab')
+        ->name('riwayat.destroy');
+
+    Route::get('/rekapsulasi/export/excel', [DashboardController::class, 'exportRekapsulasiExcel'])
+        ->middleware('role:laboran,kepala_lab')
+        ->name('rekapsulasi.export.excel');
+
+    Route::get('/rekapsulasi/export/pdf', [DashboardController::class, 'exportRekapsulasiPdf'])
+        ->middleware('role:laboran,kepala_lab')
+        ->name('rekapsulasi.export.pdf');
+
+    Route::post('/rekapsulasi/import', [DashboardController::class, 'importRekapsulasi'])
+        ->middleware('role:laboran')
+        ->name('rekapsulasi.import');
 
     Route::middleware('role:koordinator_lab')->group(function () {
         Route::get('/detail-laporan', [DashboardController::class, 'detailLaporan'])->name('detail-laporan.index');
@@ -112,6 +139,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/fasilitas', [FasilitasController::class, 'index'])->name('fasilitas.index');
         Route::post('/fasilitas', [FasilitasController::class, 'store'])->name('fasilitas.store');
         Route::post('/fasilitas/{fasilitas}/regenerate-qr', [FasilitasController::class, 'regenerateQr'])->name('fasilitas.regenerate-qr');
+        Route::delete('/fasilitas/{fasilitas}/qr', [FasilitasController::class, 'deleteQr'])->name('fasilitas.delete-qr');
 
         Route::get('/laboratorium', [LaboratoriumController::class, 'index'])->name('laboratorium.index');
         Route::post('/laboratorium', [LaboratoriumController::class, 'store'])->name('laboratorium.store');

@@ -19,7 +19,6 @@
         'laboran' => 'Laboran',
         'koordinator_lab' => 'Koordinator Lab',
         'asisten' => 'Asisten Lab',
-        'admin' => 'Admin',
         default => 'User',
     };
 
@@ -48,7 +47,6 @@
             ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
             ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
             ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-            ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } else {
@@ -93,7 +91,7 @@
     .status-chip.done { background: #4DFF41; color: #128A2B; }
     .status-chip.new { background: #DCEEFF; color: #0D5D9C; }
 
-    .laporan-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .laporan-toolbar { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
     .laporan-title { margin-bottom: 0; }
     .laporan-search { width: min(280px, 100%); height: 42px; padding: 0 .9rem 0 1rem; display: flex; align-items: center; gap: .65rem; border: 1px solid #D8E1EC; border-radius: 999px; background: #fff; }
     .laporan-search input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: #2C3E50; font-size: .875rem; }
@@ -158,7 +156,7 @@
                 $sidebarUser = auth()->user();
                 $sidebarRole = $sidebarUser?->role;
 
-                if ($sidebarRole === 'laboran' || $sidebarRole === 'admin') {
+                if ($sidebarRole === 'laboran') {
                     $menuItems = [
                         ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
                         ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
@@ -181,8 +179,7 @@
                         ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
                         ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
                         ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-                        ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+                                    ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
                     ];
                 } else {
                     $menuItems = [
@@ -359,13 +356,13 @@
     }
 
     .penugasan-status {
-        min-width: 108px;
+        min-width: 126px;
         height: 30px;
         padding: 0 10px;
         display: inline-flex;
         align-items: center;
         justify-content: space-between;
-        gap: 10px;
+        gap: 0;
         border-radius: 7px;
         font-size: 12px;
         font-weight: 700;
@@ -387,11 +384,6 @@
         background: #dceeff;
     }
 
-    .penugasan-status .status-arrow {
-        margin-left: auto;
-        opacity: .8;
-        font-size: 11px;
-    }
 
     .penugasan-note {
         margin: 14px 0 0;
@@ -466,7 +458,6 @@
                         <td>
                             <span class="penugasan-status {{ $status['class'] }}">
                                 {{ $status['label'] }}
-                                <span class="status-arrow">▾</span>
                             </span>
                         </td>
                     </tr>

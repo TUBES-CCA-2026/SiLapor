@@ -84,8 +84,7 @@ class User extends Authenticatable
             'koordinator_lab' => 'Koordinator Lab',
             'laboran' => 'Laboran',
             'asisten' => 'Asisten Lab',
-            'admin' => 'Admin',
-            default => 'User',
+                        default => 'User',
         };
     }
 
@@ -162,6 +161,6 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return false;
     }
 }

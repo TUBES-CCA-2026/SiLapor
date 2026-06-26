@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
-    protected array $roles = ['asisten', 'laboran', 'koordinator_lab', 'kepala_lab', 'admin'];
+    protected array $roles = ['asisten', 'laboran', 'koordinator_lab', 'kepala_lab'];
 
     protected array $roleLimits = [
         'laboran' => 1,
@@ -24,6 +24,8 @@ class UserController extends Controller
     {
         $users = User::with(['roleData', 'profile'])
             ->join('roles', 'users.id_role', '=', 'roles.id_role')
+            ->where('users.id_user', '!=', Auth::id())
+            ->where('roles.nama_role', '!=', 'admin')
             ->orderBy('roles.nama_role')
             ->orderBy('users.nama')
             ->select('users.*')

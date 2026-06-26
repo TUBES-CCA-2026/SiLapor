@@ -19,7 +19,6 @@
         'laboran' => 'Laboran',
         'koordinator_lab' => 'Koordinator Lab',
         'asisten' => 'Asisten Lab',
-        'admin' => 'Admin',
         default => 'User',
     };
 
@@ -48,7 +47,6 @@
             ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
             ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
             ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-            ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } else {
@@ -155,7 +153,7 @@
                 $sidebarUser = auth()->user();
                 $sidebarRole = $sidebarUser?->role;
 
-                if ($sidebarRole === 'laboran' || $sidebarRole === 'admin') {
+                if ($sidebarRole === 'laboran') {
                     $menuItems = [
                         ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
                         ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
@@ -178,8 +176,7 @@
                         ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
                         ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
                         ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-                        ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+                                    ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
                     ];
                 } else {
                     $menuItems = [
@@ -240,7 +237,7 @@
 <section class="page-card" style="max-width: 720px; margin: 0 auto; width: 100%;">
     <div class="page-card-body">
         <h2 class="section-title" style="margin-bottom: .35rem;">Tambah User Baru</h2>
-        <p style="margin: 0 0 1.5rem; color: #64748B; font-size: .9rem;">Buat akun untuk asisten, laboran, koordinator, kepala lab, atau admin lain.</p>
+        <p style="margin: 0 0 1.5rem; color: #64748B; font-size: .9rem;">Buat akun untuk asisten, laboran, koordinator, kepala lab, atau kepala lab.</p>
 <form method="POST" action="{{ route('admin.users.store') }}" style="display: grid; gap: 1rem;">
             @csrf
             <div>

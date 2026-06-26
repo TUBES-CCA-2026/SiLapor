@@ -98,6 +98,24 @@
             cursor: pointer;
         }
         .global-notification-button:hover { background: #007CD5; }
+
+        .logout-confirm-actions {
+            display: flex;
+            justify-content: center;
+            gap: .75rem;
+            margin-top: 1.25rem;
+        }
+        .logout-confirm-actions button {
+            min-width: 96px;
+            border: 0;
+            border-radius: .95rem;
+            padding: .75rem 1rem;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .logout-confirm-cancel { background: #E5E7EB; color: #374151; }
+        .logout-confirm-yes { background: #DC2626; color: #fff; }
+        .logout-confirm-yes:hover { background: #B91C1C; }
     </style>
     @stack('head')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -137,6 +155,63 @@
             </div>
         </div>
     @endif
+
+
+<script>
+(function () {
+    function findLogoutForm() {
+        return document.getElementById('logout-form') || document.querySelector('form[action$="/logout"]');
+    }
+
+    function confirmLogout(form) {
+        if (!form) return;
+
+        if (window.Swal) {
+            Swal.fire({
+                title: 'Keluar dari akun?',
+                text: 'Pilih Ya untuk logout atau Tidak untuk tetap di halaman ini.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Tidak',
+                confirmButtonColor: '#DC2626',
+                cancelButtonColor: '#64748B',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.dataset.confirmed = '1';
+                    form.submit();
+                }
+            });
+            return;
+        }
+
+        if (confirm('Keluar dari akun?')) {
+            form.dataset.confirmed = '1';
+            form.submit();
+        }
+    }
+
+    document.addEventListener('click', function (event) {
+        const trigger = event.target.closest('[data-logout-link], a[onclick*="logout-form"]');
+        if (!trigger) return;
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        confirmLogout(findLogoutForm());
+    }, true);
+
+    document.addEventListener('submit', function (event) {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement)) return;
+        if (!form.matches('#logout-form, form[action$="/logout"]')) return;
+        if (form.dataset.confirmed === '1') return;
+
+        event.preventDefault();
+        confirmLogout(form);
+    }, true);
+})();
+</script>
 
     @stack('scripts')
 </body>
