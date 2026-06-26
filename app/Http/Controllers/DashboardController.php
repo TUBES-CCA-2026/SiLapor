@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FasilitasLab;
+use App\Models\Laboratorium;
 use App\Models\Notifikasi;
 use App\Models\Pengaduan;
 use App\Models\TindakLanjut;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -24,17 +27,19 @@ class DashboardController extends Controller
             return $this->dashboardKoordinator($user);
         }
 
-        if ($user->isAdmin()) {
-            return view('dashboard.admin');
+        if ($user->isLaboran() || $user->isAdmin()) {
+            return $this->dashboardLaboran($user);
         }
 
-        // Role lain (laboran, kepala_lab) bisa diarahkan
-        // ke view dashboard masing-masing yang sudah ada di project kamu.
+        if ($user->isKepalaLab()) {
+            return $this->dashboardKepalaLab($user);
+        }
+
         return view('dashboard.default', compact('user'));
     }
 
     /**
-     * Halaman menu Laporan pada sidebar koordinator.
+     * Halaman menu Laporan.
      */
     public function laporan()
     {
@@ -62,11 +67,13 @@ class DashboardController extends Controller
     }
 
     /**
-     * Halaman menu Detail Laporan pada sidebar koordinator.
+     * Halaman menu Detail Laporan / Rekapsulasi.
      */
-    public function detailLaporan()
+    public function detailLaporan(Request $request)
     {
-        $pengaduanList = Pengaduan::with([
+        $isKoordinator = $request->user()?->role === 'koordinator_lab';
+
+        $query = Pengaduan::with([
                 'fasilitas.laboratorium',
                 'pelapor',
                 'statusData',
@@ -74,17 +81,60 @@ class DashboardController extends Controller
                 'fotos',
                 'tindakLanjut.asisten',
                 'tindakLanjut.penugas',
-            ])
-            ->orderBy('id_pengaduan')
-            ->get();
+            ]);
 
-        return view('detail-laporan.index', compact('pengaduanList'));
+        if ($isKoordinator) {
+            // Detail Laporan adalah antrean aktif: laporan selesai tidak ditampilkan.
+            $query->whereHas('statusData', fn ($status) => $status->where('kode_status', '!=', 'DONE'));
+            $query->orderByDesc('tanggal_lapor')->orderByDesc('id_pengaduan');
+        } else {
+            if ($request->filled('status')) {
+                $query->statusKode($request->string('status')->toString());
+            }
+
+            if ($request->filled('id_laboratorium')) {
+                $query->whereHas('fasilitas', function ($q) use ($request) {
+                    $q->where('id_laboratorium', $request->integer('id_laboratorium'));
+                });
+            }
+
+            if ($request->filled('id_fasilitas')) {
+                $query->where('id_fasilitas', $request->integer('id_fasilitas'));
+            }
+
+            if ($request->filled('id_penanggung_jawab')) {
+                $query->whereHas('tindakLanjut', function ($q) use ($request) {
+                    $q->where('id_petugas', $request->integer('id_penanggung_jawab'));
+                });
+            }
+
+            if ($request->filled('q')) {
+                $keyword = trim($request->string('q')->toString());
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('deskripsi_kerusakan', 'like', "%{$keyword}%")
+                        ->orWhereHas('pelapor', fn ($u) => $u->where('nama', 'like', "%{$keyword}%"))
+                        ->orWhereHas('fasilitas', fn ($f) => $f->where('nama_fasilitas', 'like', "%{$keyword}%"));
+                });
+            }
+
+            $sort = $request->input('sort', 'terbaru');
+            $sort === 'terlama'
+                ? $query->orderBy('tanggal_lapor')->orderBy('id_pengaduan')
+                : $query->orderByDesc('tanggal_lapor')->orderByDesc('id_pengaduan');
+        }
+
+        $pengaduanList = $query->get();
+        $laboratoriums = Laboratorium::orderBy('nama_laboratorium')->get();
+        $fasilitasList = FasilitasLab::orderBy('nama_fasilitas')->get();
+        $penanggungJawabs = User::role('asisten')->orderBy('nama')->get();
+        $filters = $request->only(['status', 'id_laboratorium', 'id_fasilitas', 'id_penanggung_jawab', 'sort', 'q']);
+
+        return view('detail-laporan.index', compact('pengaduanList', 'laboratoriums', 'fasilitasList', 'penanggungJawabs', 'filters'));
     }
 
     /**
      * Dashboard koordinator_lab: lihat pengaduan masuk & berikan tugas
-     * perbaikan ke asisten (inilah fitur "koordinator memberi asisten tugas
-     * perbaikan" yang memicu notifikasi email, lihat TindakLanjutController@assign).
+     * perbaikan ke asisten.
      */
     protected function dashboardKoordinator($user)
     {
@@ -98,7 +148,6 @@ class DashboardController extends Controller
             ->orderByDesc('id_pengaduan')
             ->get();
 
-        // Data utama untuk tabel dashboard koordinator.
         $pengaduanList = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten', 'statusData', 'fotoUtama', 'fotos'])
             ->orderByDesc('id_pengaduan')
             ->take(50)
@@ -111,6 +160,7 @@ class DashboardController extends Controller
         $asisten = User::role('asisten')->orderBy('nama')->get();
 
         return view('dashboard.koordinator', compact(
+            'user',
             'pengaduanBaru',
             'pengaduanDitangani',
             'pengaduanList',
@@ -118,6 +168,38 @@ class DashboardController extends Controller
             'proses',
             'selesai',
             'asisten'
+        ));
+    }
+
+    protected function dashboardLaboran($user)
+    {
+        $totalLaporan = Pengaduan::count();
+        $proses = Pengaduan::statusKode('HANDLED')->count();
+        $selesai = Pengaduan::statusKode('DONE')->count();
+        $totalLaboratorium = Laboratorium::count();
+        $totalFasilitas = FasilitasLab::count();
+        $totalPengguna = User::count();
+
+        $pengaduanList = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'statusData', 'fotoUtama', 'fotos', 'tindakLanjut.asisten'])
+            ->orderByDesc('id_pengaduan')
+            ->take(10)
+            ->get();
+
+        $laboratoriumList = Laboratorium::with('koordinator')
+            ->orderBy('nama_laboratorium')
+            ->take(8)
+            ->get();
+
+        return view('dashboard.laboran', compact(
+            'user',
+            'totalLaporan',
+            'proses',
+            'selesai',
+            'totalLaboratorium',
+            'totalFasilitas',
+            'totalPengguna',
+            'pengaduanList',
+            'laboratoriumList'
         ));
     }
 
@@ -132,6 +214,8 @@ class DashboardController extends Controller
             'NEW' => 'Baru',
             'HANDLED' => 'On Progress',
             'DONE' => 'Selesai',
+            'CANCEL' => 'Cancel',
+            'NO_SPAREPART' => 'No Sparepart',
             default => $pengaduan->status_pengaduan,
         };
 
@@ -139,6 +223,8 @@ class DashboardController extends Controller
             'NEW' => 'new',
             'HANDLED' => 'progress',
             'DONE' => 'done',
+            'CANCEL' => 'cancel',
+            'NO_SPAREPART' => 'no-sparepart',
             default => 'new',
         };
 
@@ -154,7 +240,6 @@ class DashboardController extends Controller
                 ? $pengaduan->tanggal_lapor->format('d/m/Y')
                 : '-',
             'deskripsi' => $pengaduan->deskripsi_kerusakan ?? '-',
-            // URL siap pakai untuk semua modal/detail.
             'foto' => $pengaduan->foto_kerusakan_url,
             'fotos' => collect($pengaduan->foto_urls)
                 ->map(fn ($url) => ['url' => $url])
@@ -165,19 +250,50 @@ class DashboardController extends Controller
 
     protected function dashboardAsisten($user)
     {
-        // Tugas perbaikan yang ditugaskan ke asisten ini
         $tugas = TindakLanjut::with(['pengaduan.fasilitas.laboratorium', 'pengaduan.user', 'pengaduan.statusData', 'pengaduan.fotoUtama', 'pengaduan.fotos', 'statusData'])
             ->where('id_petugas', $user->id_user)
             ->orderByDesc('id_tindak_lanjut')
             ->get();
 
-        // Riwayat notifikasi (email) yang pernah dikirim ke asisten ini
         $notifikasi = Notifikasi::with('tindakLanjut.pengaduan.fasilitas')
             ->where('id_user_penerima', $user->id_user)
             ->orderByDesc('id_notifikasi')
             ->take(20)
             ->get();
 
-        return view('dashboard.asisten', compact('tugas', 'notifikasi'));
+        $totalPengaduan = $tugas->count();
+        $sedangDiperbaiki = $tugas->where('status_penanganan', 'ON PROGRES')->count();
+        $selesai = $tugas->where('status_penanganan', 'DONE')->count();
+
+        return view('dashboard.asisten', compact('user', 'tugas', 'notifikasi', 'totalPengaduan', 'sedangDiperbaiki', 'selesai'));
     }
+    protected function dashboardKepalaLab($user)
+    {
+        $totalLaporan = Pengaduan::count();
+        $selesai = Pengaduan::statusKode('DONE')->count();
+        $proses = Pengaduan::statusKode('HANDLED')->count();
+        $tertunda = Pengaduan::statusKode('NEW')->count();
+
+        $daftarLaporan = Pengaduan::with([
+            'fasilitas.laboratorium',
+            'pelapor',
+            'statusData',
+            'fotoUtama',
+            'fotos',
+            'tindakLanjut.asisten',
+        ])
+            ->orderByDesc('id_pengaduan')
+            ->take(8)
+            ->get();
+
+        return view('dashboard.kepalalab', compact(
+            'user',
+            'totalLaporan',
+            'selesai',
+            'proses',
+            'tertunda',
+            'daftarLaporan'
+        ));
+    }
+
 }

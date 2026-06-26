@@ -16,7 +16,9 @@
 <div class="min-h-screen flex flex-col items-center justify-center p-6 bg-gray-900">
     <div class="w-full max-w-sm text-center">
         <div class="flex items-center justify-center gap-2 mb-6">
-            <img src="{{ asset('images/logo-silapor.png') }}" alt="SiLapor" class="w-10 h-10 rounded-lg object-contain">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
+                <i class="fa-solid fa-square-poll-vertical text-xl"></i>
+            </div>
             <span class="font-display font-bold text-xl text-white">SiLapor</span>
         </div>
 
