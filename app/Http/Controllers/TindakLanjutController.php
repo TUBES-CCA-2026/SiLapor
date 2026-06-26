@@ -102,7 +102,7 @@ class TindakLanjutController extends Controller
 
         $validated = $request->validate([
             'catatan_perbaikan' => ['nullable', 'string'],
-            'status_penanganan' => ['required', 'in:ON PROGRES,DONE'],
+            'status_penanganan' => ['required', 'in:ON PROGRES,DONE,CANCEL,NO SPAREPART'],
         ]);
 
         if (!array_key_exists('catatan_perbaikan', $validated) || $validated['catatan_perbaikan'] === null) {
@@ -114,6 +114,8 @@ class TindakLanjutController extends Controller
 
         if ($validated['status_penanganan'] === 'DONE') {
             $tindakLanjut->pengaduan->update(['status_pengaduan' => 'DONE']);
+        } elseif (in_array($validated['status_penanganan'], ['ON PROGRES', 'CANCEL', 'NO SPAREPART'], true)) {
+            $tindakLanjut->pengaduan->update(['status_pengaduan' => 'HANDLED']);
         }
 
         return back()->with('success', 'Status perbaikan berhasil diperbarui.');

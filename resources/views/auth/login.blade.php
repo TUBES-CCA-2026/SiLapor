@@ -73,7 +73,7 @@
             <div class="border-t border-gray-100 my-6"></div>
 
             <p class="text-center text-sm text-gray-500">
-                Need help? <a href="#" class="text-silapor-600 hover:underline">Contact Laboratory Support</a>
+                Need help? <a href="{{ route('support.contact') }}" class="text-silapor-600 hover:underline">Contact Laboratory Support</a>
             </p>
 
             <div class="text-center text-sm text-gray-400 mt-6">

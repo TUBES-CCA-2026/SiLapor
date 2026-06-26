@@ -34,6 +34,18 @@
     }
 
     /* Penyesuaian layout responsive di breakpoint khusus 850px */
+
+    .tindak-status-on-progress { background: #FBBF24; color: #fff; }
+    .tindak-status-done { background: #4ADE80; color: #fff; }
+    .tindak-status-cancel { background: #EF4444; color: #fff; }
+    .tindak-status-no-sparepart { background: #E5E7EB; color: #374151; }
+    .tindak-popup-backdrop { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 1rem; background: rgba(15, 23, 42, .35); }
+    .tindak-popup-card { width: min(420px, 94vw); overflow: hidden; border-radius: 1.5rem; background: #fff; box-shadow: 0 20px 45px rgba(15, 23, 42, .20); }
+    .tindak-popup-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid #E5E7EB; }
+    .tindak-popup-title { margin: 0; color: #2C3E50; font-size: 1rem; font-weight: 800; }
+    .tindak-popup-close { border: 0; background: transparent; color: #64748B; font-size: 1.8rem; line-height: 1; cursor: pointer; }
+    .tindak-popup-body { padding: 1.5rem; text-align: center; }
+
     @media (min-width: 850px) {
         .sidebar-desktop {
             transform: translateX(0) !important;
@@ -50,7 +62,7 @@
 <div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
     
     <!-- SIDEBAR KIRI (Persis seperti mockup TINDAK LANJUT.png) -->
-    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white ... transition-all duration-300 -translate-x-full md:translate-x-0 md:sticky md:top-0 h-screen">
+    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop md:sticky md:top-0 md:h-screen rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
         
         <!-- Bagian Atas Sidebar -->
         <div class="p-8 flex-1 flex flex-col overflow-y-auto">
@@ -63,51 +75,87 @@
             </div>
 
             <!-- List Menu Navigasi -->
-            <nav class="mt-10 space-y-2">
-                <!-- Dashboard -->
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-solid fa-table-columns text-lg"></i>
-                    <span>Dashboard</span>
-                </a>
+            @php
+    $user = auth()->user();
+    $role = $user?->role;
+    $sidebarUser = $user;
+    $sidebarRole = $role;
+    $activeMenu = 'tindak-lanjut';
+    $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
 
-                <!-- Pengaduan -->
-                <a href="{{ route('pengaduan.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-regular fa-file-lines text-lg"></i>
-                    <span>Pengaduan</span>
-                </a>
+    $routeSafe = function (string $name, string $fallback = '#') {
+        return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
+    };
 
-                <!-- Tindak Lanjut (ACTIVE - Berwarna abu-abu tipis dengan bar biru di kanan) -->
-                <a href="#" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm group transition-all">
-                    <div class="flex items-center gap-3.5">
-                        <i class="fa-solid fa-screwdriver-wrench text-lg text-[#0090F5]"></i>
-                        <span>Tindak Lanjut</span>
-                    </div>
-                    <!-- Indicator bar vertical biru kanan -->
-                    <div class="w-1.5 h-6 rounded-full bg-[#0090F5]"></div>
-                </a>
+    $roleLabel = match($role) {
+        'laboran' => 'Laboran',
+        'koordinator_lab' => 'Koordinator Lab',
+        'asisten' => 'Asisten Lab',
+        'admin' => 'Admin',
+        default => 'User',
+    };
 
-                <!-- Riwayat -->
-                <a href="{{ route('riwayat.index') }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-solid fa-clock-rotate-left text-lg"></i>
-                    <span>Riwayat</span>
-                </a>
+    if ($role === 'laboran') {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
+            ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
+            ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
+            ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
+            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
+            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    } elseif ($role === 'koordinator_lab') {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
+            ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
+            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    } elseif ($role === 'asisten') {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
+            ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
+            ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
+            ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    } else {
+        $menuItems = [
+            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
+            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+        ];
+    }
+@endphp
 
-                <!-- Teknisi -->
-                <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
-                    <span>Teknisi</span>
-                </a>
-
-                <!-- Profil -->
-                <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                    <i class="fa-regular fa-user text-lg"></i>
-                    <span>Profil</span>
-                </a>
+            @php
+                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
+            @endphp
+            <nav class="mt-10 space-y-7">
+                @foreach($menuItems as [$key, $label, $icon, $url])
+                    @if($activeMenu === $key)
+                        <a href="{{ $url }}" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm group transition-all">
+                            <div class="flex items-center gap-3.5">
+                                <i class="{{ $icon }} text-lg text-[#0090F5]"></i>
+                                <span>{{ $label }}</span>
+                            </div>
+                            <div class="w-1.5 h-6 rounded-full bg-[#0090F5]"></div>
+                        </a>
+                    @else
+                        <a href="{{ $url }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
+                            <i class="{{ $icon }} text-lg"></i>
+                            <span>{{ $label }}</span>
+                        </a>
+                    @endif
+                @endforeach
             </nav>
         </div>
 
         <!-- Bagian Bawah Sidebar (Logout) -->
-        <div class="p-8 border-t border-gray-100 bg-white rounded-br-[36px] md:rounded-br-none">
+        <div class="mt-auto p-8 border-t border-gray-100 bg-white rounded-br-[36px] md:rounded-br-none">
             <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-red-50 hover:text-red-600 font-semibold text-sm transition-all"
                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                 <i class="fa-solid fa-right-from-bracket text-lg"></i>
@@ -201,11 +249,20 @@
                                     <form method="POST" action="{{ route('tindak-lanjut.update', $t->id_tindak_lanjut) }}" id="form-status-{{ $t->id_tindak_lanjut }}">
                                         @csrf
                                         @method('PATCH')
+                                        @php
+                                            $statusSelectClass = match($t->status_penanganan) {
+                                                'DONE' => 'tindak-status-done',
+                                                'CANCEL' => 'tindak-status-cancel',
+                                                'NO SPAREPART' => 'tindak-status-no-sparepart',
+                                                default => 'tindak-status-on-progress',
+                                            };
+                                        @endphp
                                         <select name="status_penanganan" onchange="document.getElementById('form-status-{{ $t->id_tindak_lanjut }}').submit()" 
-                                            class="inline-block text-xs font-bold px-3 py-1.5 rounded-md text-center appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0090F5]/30
-                                            {{ $t->status_penanganan === 'DONE' ? 'bg-[#4ADE80] text-white' : 'bg-[#FBBF24] text-white' }}">
+                                            class="inline-block text-xs font-bold px-3 py-1.5 rounded-md text-center appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0090F5]/30 {{ $statusSelectClass }}">
                                             <option value="ON PROGRES" {{ $t->status_penanganan === 'ON PROGRES' ? 'selected' : '' }}>On Progress ▼</option>
                                             <option value="DONE" {{ $t->status_penanganan === 'DONE' ? 'selected' : '' }}>Done ▼</option>
+                                            <option value="CANCEL" {{ $t->status_penanganan === 'CANCEL' ? 'selected' : '' }}>Cancel ▼</option>
+                                            <option value="NO SPAREPART" {{ $t->status_penanganan === 'NO SPAREPART' ? 'selected' : '' }}>No Sparepart ▼</option>
                                         </select>
                                     </form>
                                 </td>
@@ -295,7 +352,7 @@
                 </table>
             </div>
         </section>
-    </main>
+</main>
 </div>
 
 <script>

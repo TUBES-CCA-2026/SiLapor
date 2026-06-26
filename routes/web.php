@@ -12,13 +12,8 @@ use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\ScanController;
 use App\Http\Controllers\TeknisiController;
 use App\Http\Controllers\TindakLanjutController;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Rute Publik
-|--------------------------------------------------------------------------
-*/
 
 Route::get('/', function () {
     return auth()->check() ? redirect()->route('dashboard') : redirect()->route('login');
@@ -26,6 +21,15 @@ Route::get('/', function () {
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
+
+Route::get('/contact-laboratory-support', function () {
+    $laborans = User::with(['roleData', 'profile'])
+        ->role('laboran')
+        ->orderBy('nama')
+        ->get();
+
+    return view('support.contact', compact('laborans'));
+})->name('support.contact');
 
 Route::controller(ForgotPasswordController::class)->group(function () {
     Route::get('/forgot-password', 'showEmailForm')->name('password.request');
@@ -42,100 +46,68 @@ Route::get('/scan', [ScanController::class, 'index'])->name('scan.index');
 Route::prefix('lapor')->name('pengaduan.')->group(function () {
     Route::get('/qr/{qr_code}', [PengaduanController::class, 'createQr'])->name('qr.create');
     Route::post('/qr/{qr_code}', [PengaduanController::class, 'storeQr'])->name('qr.store');
-
     Route::get('/manual', [PengaduanController::class, 'createManual'])->name('manual.create');
     Route::post('/manual', [PengaduanController::class, 'storeManual'])->name('manual.store');
-
     Route::get('/sukses/{pengaduan}', [PengaduanController::class, 'success'])->name('success');
     Route::get('/{qr_code}', [PengaduanController::class, 'redirectLegacyQr'])->name('qr.legacy');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Area Wajib Login
-|--------------------------------------------------------------------------
-*/
-
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-    Route::get('/pengaduan-foto/{foto}', [PengaduanController::class, 'showFoto'])
-        ->name('pengaduan-foto.show');
-
-    Route::prefix('pengaduan')->name('pengaduan.')->group(function () {
-        Route::get('/', [PengaduanController::class, 'index'])->name('index');
-        Route::get('/create', [PengaduanController::class, 'create'])->name('create');
-        Route::post('/', [PengaduanController::class, 'store'])->name('store');
-    });
-
-    Route::get('/tindak-lanjut', [TindakLanjutController::class, 'index'])
-        ->name('tindak-lanjut.index');
-
-    Route::patch('/tindak-lanjut/{tindakLanjut}', [TindakLanjutController::class, 'update'])
-        ->middleware('role:asisten')
-        ->name('tindak-lanjut.update');
-
-    Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat.index');
-    Route::get('/teknisi', [TeknisiController::class, 'index'])->name('teknisi.index');
+    Route::get('/pengaduan-foto/{foto}', [PengaduanController::class, 'showFoto'])->name('pengaduan-foto.show');
 
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
         Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
         Route::put('/', [ProfileController::class, 'update'])->name('update');
+        Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
     });
 
-    Route::get('/profil', function () {
-        return view('profil.index');
-    })
-        ->middleware('role:koordinator_lab')
-        ->name('profil.index');
+    Route::get('/profil', fn () => redirect()->route('profile.index'))->name('profil.index');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Koordinator Lab
-    |--------------------------------------------------------------------------
-    */
+    Route::middleware('role:asisten')->group(function () {
+        Route::prefix('pengaduan')->name('pengaduan.')->group(function () {
+            Route::get('/', [PengaduanController::class, 'index'])->name('index');
+            Route::get('/create', [PengaduanController::class, 'create'])->name('create');
+            Route::post('/', [PengaduanController::class, 'store'])->name('store');
+        });
+
+        Route::get('/tindak-lanjut', [TindakLanjutController::class, 'index'])->name('tindak-lanjut.index');
+        Route::patch('/tindak-lanjut/{tindakLanjut}', [TindakLanjutController::class, 'update'])->name('tindak-lanjut.update');
+        Route::get('/teknisi', [TeknisiController::class, 'index'])->name('teknisi.index');
+    });
+
+    Route::get('/riwayat', [RiwayatController::class, 'index'])
+        ->middleware('role:asisten,laboran')
+        ->name('riwayat.index');
+
+    Route::middleware('role:koordinator_lab,laboran')->group(function () {
+        Route::get('/laporan', [DashboardController::class, 'laporan'])->name('laporan.index');
+    });
+
+    Route::get('/dashboard/pengaduan/{pengaduan}/detail', [DashboardController::class, 'detailPengaduan'])
+        ->middleware('role:asisten,koordinator_lab,laboran')
+        ->name('dashboard.pengaduan.detail');
 
     Route::middleware('role:koordinator_lab')->group(function () {
-        Route::get('/laporan', [DashboardController::class, 'laporan'])->name('laporan.index');
-        Route::get('/penugasan', [DashboardController::class, 'penugasan'])->name('penugasan.index');
         Route::get('/detail-laporan', [DashboardController::class, 'detailLaporan'])->name('detail-laporan.index');
-
-        Route::get('/dashboard/pengaduan/{pengaduan}/detail', [DashboardController::class, 'detailPengaduan'])
-            ->name('dashboard.pengaduan.detail');
-
-        Route::post('/pengaduan/{pengaduan}/assign', [TindakLanjutController::class, 'assign'])
-            ->name('tindak-lanjut.assign');
-
-        Route::post('/notifikasi/{notifikasi}/kirim-ulang', [TindakLanjutController::class, 'kirimUlang'])
-            ->name('notifikasi.kirim-ulang');
+        Route::get('/penugasan', [DashboardController::class, 'penugasan'])->name('penugasan.index');
+        Route::post('/pengaduan/{pengaduan}/assign', [TindakLanjutController::class, 'assign'])->name('tindak-lanjut.assign');
+        Route::post('/notifikasi/{notifikasi}/kirim-ulang', [TindakLanjutController::class, 'kirimUlang'])->name('notifikasi.kirim-ulang');
     });
-
-    /*
-    |--------------------------------------------------------------------------
-    | Laboran
-    |--------------------------------------------------------------------------
-    | Fitur Laboratorium dipindahkan ke role laboran.
-    */
 
     Route::middleware('role:laboran')->group(function () {
-        Route::get('/laboratorium', [LaboratoriumController::class, 'index'])->name('laboratorium.index');
-        Route::post('/laboratorium', [LaboratoriumController::class, 'store'])->name('laboratorium.store');
-        Route::patch('/laboratorium/{laboratorium}', [LaboratoriumController::class, 'update'])->name('laboratorium.update');
-    });
+        Route::get('/rekapsulasi', [DashboardController::class, 'detailLaporan'])->name('rekapsulasi.index');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Admin
-    |--------------------------------------------------------------------------
-    */
-
-    Route::middleware('role:admin')->group(function () {
         Route::get('/fasilitas', [FasilitasController::class, 'index'])->name('fasilitas.index');
         Route::post('/fasilitas', [FasilitasController::class, 'store'])->name('fasilitas.store');
         Route::post('/fasilitas/{fasilitas}/regenerate-qr', [FasilitasController::class, 'regenerateQr'])->name('fasilitas.regenerate-qr');
+
+        Route::get('/laboratorium', [LaboratoriumController::class, 'index'])->name('laboratorium.index');
+        Route::post('/laboratorium', [LaboratoriumController::class, 'store'])->name('laboratorium.store');
+        Route::patch('/laboratorium/{laboratorium}', [LaboratoriumController::class, 'update'])->name('laboratorium.update');
+        Route::delete('/laboratorium/{laboratorium}', [LaboratoriumController::class, 'destroy'])->name('laboratorium.destroy');
 
         Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');

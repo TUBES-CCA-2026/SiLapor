@@ -27,6 +27,8 @@ class ReferenceDataSeeder extends Seeder
         foreach ([
             'ON PROGRES' => 'On Progress',
             'DONE' => 'Selesai',
+            'CANCEL' => 'Cancel',
+            'NO SPAREPART' => 'No Sparepart',
         ] as $kode => $nama) {
             StatusPenanganan::firstOrCreate(['kode_status' => $kode], ['nama_status' => $nama]);
         }

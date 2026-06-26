@@ -8,10 +8,17 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
     protected array $roles = ['asisten', 'laboran', 'koordinator_lab', 'kepala_lab', 'admin'];
+
+    protected array $roleLimits = [
+        'laboran' => 1,
+        'koordinator_lab' => 1,
+        'kepala_lab' => 2,
+    ];
 
     public function index()
     {
@@ -27,12 +34,17 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('admin.users.create', ['roles' => $this->roles]);
+        return view('admin.users.create', [
+            'roles' => $this->roles,
+            'roleCounts' => $this->roleCounts(),
+            'roleLimits' => $this->roleLimits,
+        ]);
     }
 
     public function store(Request $request)
     {
         $validated = $this->validateUser($request);
+        $this->enforceRoleLimit($validated['role']);
 
         $user = User::create([
             'nama' => $validated['nama'],
@@ -51,12 +63,18 @@ class UserController extends Controller
     {
         $user->load(['roleData', 'profile']);
 
-        return view('admin.users.edit', ['user' => $user, 'roles' => $this->roles]);
+        return view('admin.users.edit', [
+            'user' => $user,
+            'roles' => $this->roles,
+            'roleCounts' => $this->roleCounts($user),
+            'roleLimits' => $this->roleLimits,
+        ]);
     }
 
     public function update(Request $request, User $user)
     {
         $validated = $this->validateUser($request, $user);
+        $this->enforceRoleLimit($validated['role'], $user);
 
         $user->update([
             'nama' => $validated['nama'],
@@ -94,6 +112,44 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus.');
     }
 
+
+
+    protected function roleCounts(?User $except = null): array
+    {
+        $counts = [];
+
+        foreach ($this->roleLimits as $role => $limit) {
+            $query = User::role($role);
+
+            if ($except) {
+                $query->where('id_user', '!=', $except->id_user);
+            }
+
+            $counts[$role] = $query->count();
+        }
+
+        return $counts;
+    }
+
+    protected function enforceRoleLimit(string $role, ?User $except = null): void
+    {
+        if (!array_key_exists($role, $this->roleLimits)) {
+            return;
+        }
+
+        $query = User::role($role);
+
+        if ($except) {
+            $query->where('id_user', '!=', $except->id_user);
+        }
+
+        if ($query->count() >= $this->roleLimits[$role]) {
+            throw ValidationException::withMessages([
+                'role' => 'Role ' . str_replace('_', ' ', $role) . ' hanya boleh digunakan maksimal ' . $this->roleLimits[$role] . ' akun.',
+            ]);
+        }
+    }
+
     protected function validateUser(Request $request, ?User $user = null): array
     {
         $emailRule = $user
@@ -115,6 +171,11 @@ class UserController extends Controller
 
     protected function syncProfile(User $user, array $validated): void
     {
+        if (($validated['role'] ?? $user->role) !== 'asisten') {
+            $user->profile?->delete();
+            return;
+        }
+
         $profile = [
             'nim' => $validated['nim'] ?? null,
             'jurusan' => $validated['jurusan'] ?? null,

@@ -17,6 +17,8 @@ class StatusPenanganan extends Model
         $namaStatus = match ($kodeStatus) {
             'ON PROGRES' => 'On Progress',
             'DONE' => 'Selesai',
+            'CANCEL' => 'Cancel',
+            'NO SPAREPART' => 'No Sparepart',
             default => $kodeStatus,
         };
 

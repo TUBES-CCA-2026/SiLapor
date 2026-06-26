@@ -22,7 +22,9 @@
 <div class="min-h-screen flex items-center justify-center p-6 bg-gray-50">
     <div class="w-full max-w-2xl bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
         <div class="flex items-center gap-2 mb-6">
-            <img src="{{ asset('images/logo-silapor.png') }}" alt="SiLapor" class="w-9 h-9 rounded-lg object-contain">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
+                <i class="fa-solid fa-square-poll-vertical text-lg"></i>
+            </div>
             <span class="font-display font-bold text-lg text-gray-900">SiLapor</span>
         </div>
 
@@ -53,14 +55,7 @@
                 ? 'Kode barang, nama fasilitas, dan lokasi lab otomatis terkunci berdasarkan QR Code yang dipindai.'
                 : 'Pilih fasilitas yang rusak. Kode barang, nama fasilitas, dan lokasi lab akan terisi otomatis.' }}
         </p>
-
-        @if ($errors->any())
-            <div class="mb-5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3">
-                {{ $errors->first() }}
-            </div>
-        @endif
-
-        <form method="POST"
+<form method="POST"
               action="{{ $mode === 'qr'
                     ? route('pengaduan.qr.store', $fasilitas->qr_code)
                     : route('pengaduan.manual.store') }}"
