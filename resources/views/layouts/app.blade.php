@@ -133,8 +133,11 @@
     
 
     @php
-        $globalNotificationType = session('success') ? 'success' : ((session('error') || $errors->any()) ? 'error' : null);
-        $globalNotificationMessage = session('success') ?: (session('error') ?: ($errors->any() ? $errors->first() : null));
+        // Popup global hanya untuk flash success/error.
+        // Validation errors tetap tampil sebagai notifikasi inline pada halaman masing-masing,
+        // sehingga error login/password tidak muncul sebagai popup modal.
+        $globalNotificationType = session('success') ? 'success' : (session('error') ? 'error' : null);
+        $globalNotificationMessage = session('success') ?: session('error');
         $globalNotificationTitle = $globalNotificationType === 'success' ? 'Berhasil' : 'Gagal';
     @endphp
 

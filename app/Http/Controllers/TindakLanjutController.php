@@ -128,7 +128,11 @@ class TindakLanjutController extends Controller
 
         if ($validated['status_penanganan'] === 'DONE') {
             $tindakLanjut->pengaduan->update(['status_pengaduan' => 'DONE']);
-        } elseif (in_array($validated['status_penanganan'], ['ON PROGRES', 'CANCEL', 'NO SPAREPART'], true)) {
+        } elseif ($validated['status_penanganan'] === 'CANCEL') {
+            $tindakLanjut->pengaduan->update(['status_pengaduan' => 'CANCEL']);
+        } elseif ($validated['status_penanganan'] === 'NO SPAREPART') {
+            $tindakLanjut->pengaduan->update(['status_pengaduan' => 'NO_SPAREPART']);
+        } elseif ($validated['status_penanganan'] === 'ON PROGRES') {
             $tindakLanjut->pengaduan->update(['status_pengaduan' => 'HANDLED']);
         }
 

@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
 use Illuminate\View\View;
 use Throwable;
 
@@ -211,6 +212,12 @@ class PengaduanController extends Controller
         } catch (Throwable $exception) {
             Log::error('Gagal menyimpan pengaduan: ' . $exception->getMessage());
             throw $exception;
+        }
+
+        if (Auth::check() && Auth::user()?->role === 'asisten' && Route::has('pengaduan.index')) {
+            return redirect()
+                ->route('pengaduan.index')
+                ->with('success', 'Pengaduan berhasil dikirim.');
         }
 
         return redirect()

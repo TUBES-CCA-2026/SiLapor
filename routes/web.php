@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/pengaduan-foto/{foto}', [PengaduanController::class, 'showFoto'])->name('pengaduan-foto.show');
+    Route::get('/users/{user}/foto', [ProfileController::class, 'showPhoto'])->name('users.photo');
 
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');

@@ -190,9 +190,7 @@
         </section>
 
         @php
-            $buatPengaduanRoute = Route::has('pengaduan.create')
-                ? route('pengaduan.create')
-                : (Route::has('pengaduan.index') ? route('pengaduan.index') : '#');
+            $buatPengaduanRoute = Route::has('pengaduan.index') ? route('pengaduan.index') : '#';
         @endphp
 
         <section class="bg-white border border-gray-100 rounded-[32px] overflow-hidden shadow-figma-container">

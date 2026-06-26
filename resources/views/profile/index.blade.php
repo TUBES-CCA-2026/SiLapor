@@ -9,7 +9,7 @@
 
 @php
     $user = $user ?? auth()->user();
-    $user->loadMissing('profile', 'roleData');
+    $user->loadMissing('profile', 'roleData', 'laboratoriumPenanggungJawab');
     $activeMenu = 'profil';
 
     $routeSafe = function (string $name, string $fallback = '#') {
@@ -42,9 +42,12 @@
         default => 'ID User',
     };
 
-    $avatarUrl = $user?->foto
-        ? asset('storage/' . $user->foto)
-        : 'https://ui-avatars.com/api/?name=' . urlencode($user?->nama ?? 'User') . '&background=F3F4F6&color=9CA3AF';
+    $avatarUrl = $user?->profile_photo_url
+        ?? ('https://ui-avatars.com/api/?name=' . urlencode($user?->nama ?? 'User') . '&background=F3F4F6&color=9CA3AF');
+
+    $laboratoriumPj = $user?->laboratoriumPenanggungJawab ?? collect();
+    $penanggungJawabLabel = $laboratoriumPj->pluck('nama_laboratorium')->filter()->values()->join(', ');
+    $penanggungJawabLabel = $penanggungJawabLabel ?: ($user->profile?->penanggung_jawab ?: '-');
 @endphp
 
 @once
@@ -176,6 +179,10 @@
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Jurusan</label>
                             <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $user->profile?->jurusan ?? '-' }}</div>
                         </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Penanggung Jawab</label>
+                            <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $penanggungJawabLabel }}</div>
+                        </div>
                     @endif
                 </div>
             </div>
@@ -242,6 +249,13 @@
                         <div class="col-span-1">
                             <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Jurusan</label>
                             <input type="text" name="jurusan" value="{{ old('jurusan', $user->profile?->jurusan) }}" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Penanggung Jawab</label>
+                            <div class="w-full mt-1.5 p-3.5 bg-gray-100 border border-gray-200 rounded-2xl font-medium text-sm text-gray-600">
+                                {{ $penanggungJawabLabel }}
+                            </div>
+                            <p class="text-[11px] text-gray-400 mt-1 ml-1">Relasi penanggung jawab laboratorium diatur dari menu Laboratorium pada role Laboran.</p>
                         </div>
                     @endif
                 </div>
