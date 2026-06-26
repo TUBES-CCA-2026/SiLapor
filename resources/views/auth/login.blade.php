@@ -3,7 +3,7 @@
 @section('title', 'Login - SiLapor')
 
 @section('content')
-<div class="min-h-screen grid lg:grid-cols-2">
+<div class="min-h-screen grid lg:grid-cols-[60%_40%]">
 
     {{-- Panel kiri: branding --}}
     {{-- BACKGROUND: ganti file di public/images/lab-background.jpg dengan foto lab kamu --}}
@@ -32,7 +32,7 @@
     <div class="flex items-center justify-center p-8">
         <div class="w-full max-w-md">
             <h2 class="font-display font-bold text-3xl text-gray-900 mb-1">Sign In To Your Account</h2>
-            <p class="text-gray-500 mb-8">Welcome Back!</p>
+            <p class="text-gray-500 text-align-center mb-8">Welcome Back!</p>
 
             @if ($errors->any())
                 <div class="mb-5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3">

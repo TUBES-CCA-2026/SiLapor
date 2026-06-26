@@ -166,7 +166,6 @@ class UserController extends Controller
             'phone' => ['nullable', 'string', 'max:15'],
             'nim' => ['nullable', 'string', 'max:12'],
             'jurusan' => ['nullable', 'string', 'max:20'],
-            'peminatan' => ['nullable', 'string', 'max:20'],
             'penanggung_jawab' => ['nullable', 'string', 'max:20'],
         ]);
     }
@@ -181,7 +180,6 @@ class UserController extends Controller
         $profile = [
             'nim' => $validated['nim'] ?? null,
             'jurusan' => $validated['jurusan'] ?? null,
-            'peminatan' => $validated['peminatan'] ?? null,
             'penanggung_jawab' => $validated['penanggung_jawab'] ?? null,
         ];
 
