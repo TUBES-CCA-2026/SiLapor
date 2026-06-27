@@ -205,8 +205,11 @@
                     <div class="modal-row"><span class="modal-label">Pelapor</span><span>:</span><span>${esc(data.pelapor)}</span></div>
                     <div class="modal-row"><span class="modal-label">Lokasi</span><span>:</span><span>${esc(data.lokasi)}</span></div>
                     <div class="modal-row"><span class="modal-label">Fasilitas</span><span>:</span><span>${esc(data.fasilitas)}</span></div>
-                    <div class="modal-row"><span class="modal-label">Tgl Lapor</span><span>:</span><span>${esc(data.tanggal)}</span></div>
+                    <div class="modal-row"><span class="modal-label">Tgl Lapor</span><span>:</span><span>${esc(data.tanggal || data.tanggalLapor)}</span></div>
+                    <div class="modal-row"><span class="modal-label">Tgl Selesai</span><span>:</span><span>${esc(data.tanggalSelesai)}</span></div>
+                    <div class="modal-row"><span class="modal-label">PJ</span><span>:</span><span>${esc(data.penanggungJawab)}</span></div>
                     <div class="modal-row modal-row-description"><span class="modal-label">Deskripsi</span><span>:</span><div class="description-box">${esc(data.deskripsi)}</div></div>
+                    <div class="modal-row modal-row-description"><span class="modal-label">Catatan</span><span>:</span><div class="description-box">${esc(data.catatanPerbaikan)}</div></div>
                 </div>
             </div>`;
     }
@@ -220,6 +223,9 @@
 
         const detailButton = event.target.closest('[data-detail-url]');
         if (!detailButton) return;
+
+        event.preventDefault();
+        event.stopPropagation();
 
         const url = detailButton.dataset.detailUrl;
         modal.hidden = false;
@@ -237,6 +243,7 @@
             const data = await response.json();
             modalContent.innerHTML = renderDetail(data);
         } catch (error) {
+            console.error(error);
             modalContent.innerHTML = '<p>Detail laporan belum bisa ditampilkan. Pastikan route detail pengaduan sudah benar.</p>';
         }
     });

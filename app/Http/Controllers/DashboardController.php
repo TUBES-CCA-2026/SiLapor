@@ -233,21 +233,24 @@ class DashboardController extends Controller
             'fasilitas.laboratorium',
             'pelapor',
             'tindakLanjut.asisten',
+            'tindakLanjut.penugas',
             'statusData',
             'fotoUtama',
             'fotos',
         ]);
 
-        $statusLabel = match ($pengaduan->status_pengaduan) {
-            'NEW' => 'New',
+        $statusKode = $pengaduan->status_pengaduan;
+
+        $statusLabel = match ($statusKode) {
+            'NEW' => 'Baru',
             'HANDLED' => 'On Progress',
-            'DONE' => 'Done',
+            'DONE' => 'Selesai',
             'CANCEL' => 'Cancel',
             'NO_SPAREPART' => 'No Sparepart',
-            default => $pengaduan->status_pengaduan,
+            default => $statusKode ?: '-',
         };
 
-        $statusClass = match ($pengaduan->status_pengaduan) {
+        $statusClass = match ($statusKode) {
             'NEW' => 'new',
             'HANDLED' => 'progress',
             'DONE' => 'done',
@@ -256,23 +259,38 @@ class DashboardController extends Controller
             default => 'new',
         };
 
+        $tanggalLapor = $pengaduan->tanggal_lapor
+            ? \Carbon\Carbon::parse($pengaduan->tanggal_lapor)->format('d/m/Y')
+            : '-';
+
+        $tanggalSelesai = $pengaduan->updated_at
+            ? \Carbon\Carbon::parse($pengaduan->updated_at)->format('d/m/Y')
+            : '-';
+
+        $fotoUrls = collect($pengaduan->foto_urls)
+            ->filter()
+            ->map(fn ($url) => ['url' => $url])
+            ->values()
+            ->all();
+
         return response()->json([
             'id' => 'PGD-' . str_pad((string) $pengaduan->id_pengaduan, 3, '0', STR_PAD_LEFT),
-            'status' => $pengaduan->status_pengaduan,
+            'status' => $statusKode,
             'statusLabel' => $statusLabel,
             'statusClass' => $statusClass,
-            'pelapor' => $pengaduan->pelapor->nama ?? 'Guest',
+            'pelapor' => $pengaduan->pelapor?->nama ?? $pengaduan->user?->nama ?? 'Guest',
             'lokasi' => $pengaduan->fasilitas?->laboratorium?->nama_laboratorium ?? '-',
             'fasilitas' => $pengaduan->fasilitas?->nama_fasilitas ?? '-',
-            'tanggal' => $pengaduan->tanggal_lapor
-                ? $pengaduan->tanggal_lapor->format('d/m/Y')
-                : '-',
+            'tanggal' => $tanggalLapor,
+            'tanggalLapor' => $tanggalLapor,
+            'tanggalSelesai' => $tanggalSelesai,
             'deskripsi' => $pengaduan->deskripsi_kerusakan ?? '-',
+            'penanggungJawab' => $pengaduan->tindakLanjut?->asisten?->nama
+                ?? $pengaduan->tindakLanjut?->penugas?->nama
+                ?? 'Belum ditugaskan',
+            'catatanPerbaikan' => $pengaduan->tindakLanjut?->catatan_perbaikan ?? '-',
             'foto' => $pengaduan->foto_kerusakan_url,
-            'fotos' => collect($pengaduan->foto_urls)
-                ->map(fn ($url) => ['url' => $url])
-                ->values()
-                ->all(),
+            'fotos' => $fotoUrls,
         ]);
     }
 

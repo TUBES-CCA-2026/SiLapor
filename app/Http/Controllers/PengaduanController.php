@@ -113,6 +113,7 @@ class PengaduanController extends Controller
     private function formData(string $mode, ?FasilitasLab $fasilitas = null): array
     {
         $facilities = FasilitasLab::with('laboratorium')
+            ->whereNull('qr_deleted_at')
             ->orderBy('nama_fasilitas')
             ->get();
 
@@ -215,11 +216,30 @@ class PengaduanController extends Controller
             throw $exception;
         }
 
-        $redirect = redirect()->route('pengaduan.success', $pengaduan);
+        $redirect = $this->redirectAfterReport($pengaduan);
 
         return $showSuccessPopup
             ? $redirect->with('success', 'Pengaduan berhasil dikirim.')
             : $redirect;
+    }
+
+    private function redirectAfterReport(Pengaduan $pengaduan): RedirectResponse
+    {
+        if (! Auth::check()) {
+            return redirect()->route('pengaduan.success', $pengaduan);
+        }
+
+        $user = Auth::user();
+
+        if ($user?->isAsisten() && Route::has('pengaduan.index')) {
+            return redirect()->route('pengaduan.index');
+        }
+
+        if (Route::has('dashboard')) {
+            return redirect()->route('dashboard');
+        }
+
+        return redirect()->route('pengaduan.success', $pengaduan);
     }
 
     public function showFoto(PengaduanFoto $foto)

@@ -252,7 +252,7 @@
             @endif
 
             @if ($mode === 'qr')
-                <a href="{{ route('pengaduan.manual.create') }}" class="flex-1 rounded-xl bg-silapor-50 px-4 py-2.5 text-silapor-700 font-semibold transition hover:bg-silapor-100">
+                <a href="{{ auth()->check() && auth()->user()?->isAsisten() ? route('pengaduan.index') : route('pengaduan.manual.create') }}" class="flex-1 rounded-xl bg-silapor-50 px-4 py-2.5 text-silapor-700 font-semibold transition hover:bg-silapor-100">
                     Buat pengaduan manual
                 </a>
             @else
