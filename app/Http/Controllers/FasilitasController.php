@@ -12,6 +12,8 @@ class FasilitasController extends Controller
     public function index()
     {
         $fasilitas = FasilitasLab::with('laboratorium')
+            ->whereNotNull('qr_code')
+            ->whereNull('qr_deleted_at')
             ->orderBy('id_laboratorium')
             ->orderBy('nama_fasilitas')
             ->get();

@@ -121,6 +121,10 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:laboran')
         ->name('rekapsulasi.export.pdf');
 
+    Route::get('/rekapsulasi/import-template', [DashboardController::class, 'importRekapsulasiTemplate'])
+        ->middleware('role:laboran')
+        ->name('rekapsulasi.import-template');
+
     Route::post('/rekapsulasi/import', [DashboardController::class, 'importRekapsulasi'])
         ->middleware('role:laboran')
         ->name('rekapsulasi.import');

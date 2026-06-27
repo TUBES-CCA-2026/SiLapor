@@ -493,6 +493,28 @@ class DashboardController extends Controller
         return response($html);
     }
 
+    public function importRekapsulasiTemplate()
+    {
+        $lines = [
+            ['Tanggal', 'Pelapor', 'Lokasi Masalah', 'Fasilitas', 'Status', 'Deskripsi'],
+            ['2026-06-25', 'Budi', 'Lab Startup', 'PC-01', 'NEW', 'Contoh deskripsi kerusakan'],
+        ];
+
+        $csv = "\xEF\xBB\xBF";
+        foreach ($lines as $line) {
+            $escaped = array_map(function ($value) {
+                $value = str_replace('"', '""', (string) $value);
+                return '"' . $value . '"';
+            }, $line);
+            $csv .= implode(';', $escaped) . "\n";
+        }
+
+        return response($csv, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="template-import-rekapitulasi.csv"',
+        ]);
+    }
+
     public function importRekapsulasi(Request $request)
     {
         $validated = $request->validate([

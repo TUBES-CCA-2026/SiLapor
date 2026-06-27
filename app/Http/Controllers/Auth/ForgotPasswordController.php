@@ -12,17 +12,11 @@ use Illuminate\Support\Facades\Mail;
 
 class ForgotPasswordController extends Controller
 {
-    /**
-     * STEP 1: tampilkan form input email.
-     */
     public function showEmailForm()
     {
         return view('auth.forgot-password');
     }
 
-    /**
-     * STEP 1 (proses): generate OTP 6 digit, simpan (hashed), kirim ke email.
-     */
     public function sendOtp(Request $request)
     {
         $request->validate([

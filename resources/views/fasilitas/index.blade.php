@@ -263,6 +263,7 @@
         </form>
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
             @forelse ($fasilitas as $f)
+                @continue($f->qr_deleted_at || blank($f->qr_code))
                 <div id="fasilitas-card-{{ $f->id_fasilitas }}" style="background: #fff; border: {{ session('new_fasilitas_id') == $f->id_fasilitas ? '2px solid #0090F5' : '1px solid #E5E7EB' }}; border-radius: 1.25rem; padding: 1.25rem; text-align: center;">
                     <p style="margin: 0; font-weight: 800; color: #2C3E50;">{{ $f->nama_fasilitas }}</p>
                     <p style="margin: .25rem 0 1rem; color: #64748B; font-size: .82rem;">{{ $f->laboratorium->nama_laboratorium }}</p>

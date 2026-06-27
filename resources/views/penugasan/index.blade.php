@@ -449,7 +449,6 @@
 </style>
 
 <section class="dashboard-card penugasan-page">
-    <h2 class="section-title penugasan-title">Tugaskan Teknisi</h2>
 
     <div class="table-wrap penugasan-table-wrap">
         <table class="report-table penugasan-table">
@@ -519,8 +518,7 @@
         </table>
     </div>
 
-    <p class="penugasan-note">Pilih nama teknisi/asisten pada kolom Teknisi untuk memberikan tugas perbaikan. Status akan berubah menjadi On Progress setelah penugasan berhasil disimpan.</p>
-</section>
+    </section>
 
 
 

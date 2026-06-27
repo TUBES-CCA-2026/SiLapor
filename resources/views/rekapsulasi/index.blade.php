@@ -35,11 +35,17 @@
     .form-control:focus { border-color:#0090F5; box-shadow:0 0 0 3px rgba(0,144,245,.14); }
     .btn-primary { background:#0090F5; color:#fff; border:0; border-radius:.875rem; padding:.75rem 1rem; font-weight:800; cursor:pointer; }
     .btn-secondary { background:#fff; color:#475569; border:1px solid #D1D5DB; border-radius:.875rem; padding:.75rem 1rem; font-weight:800; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; }
-    .btn-export-pdf { background:#fff; color:#DC2626; border:1px solid #FCA5A5; border-radius:.875rem; padding:.75rem 1rem; font-weight:800; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-mini { min-height: 36px; border-radius: .7rem; padding: .48rem .8rem; font-size: .78rem; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: .4rem; cursor: pointer; line-height: 1; transition: .18s ease; }
+    .btn-export-pdf { background:#fff; color:#DC2626; border:1px solid #FCA5A5; }
     .btn-export-pdf:hover { background:#DC2626; color:#fff; }
-    .btn-export-excel { background:#fff; color:#16A34A; border:1px solid #86EFAC; border-radius:.875rem; padding:.75rem 1rem; font-weight:800; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-export-excel { background:#fff; color:#16A34A; border:1px solid #86EFAC; }
     .btn-export-excel:hover { background:#16A34A; color:#fff; }
+    .btn-template { background:#fff; color:#475569; border:1px solid #CBD5E1; }
+    .btn-template:hover { background:#F8FAFC; border-color:#94A3B8; }
+    .btn-import { background:#0090F5; color:#fff; border:1px solid #0090F5; }
+    .btn-import:hover { background:#007CD5; }
     .import-form { display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
+    .import-file { max-width: 210px; min-height: 36px; padding: .42rem .7rem; border-radius: .7rem; font-size: .78rem; }
     .report-table { width:100%; border-collapse:collapse; min-width:980px; }
     .report-table thead { background:#F8FAFC; color:#64748B; text-transform:uppercase; font-size:.75rem; font-weight:800; letter-spacing:.04em; }
     .report-table th,.report-table td { padding:1rem 1.25rem; text-align:left; border-bottom:1px solid #F1F5F9; vertical-align:middle; }
@@ -115,15 +121,24 @@
             <div class="mt-4 flex flex-col lg:flex-row justify-between gap-3">
                 @if($canExportRekap)
                     <div class="flex gap-2 flex-wrap">
-                        <a href="{{ route('rekapsulasi.export.pdf', request()->query()) }}" class="btn-export-pdf"><i class="fa-solid fa-file-pdf mr-2"></i>Cetak PDF</a>
-                        <a href="{{ route('rekapsulasi.export.excel', request()->query()) }}" class="btn-export-excel"><i class="fa-solid fa-file-excel mr-2"></i>Cetak Excel</a>
+                        <a href="{{ route('rekapsulasi.export.pdf', request()->query()) }}" class="btn-mini btn-export-pdf">
+                            <i class="fa-solid fa-print"></i>Cetak
+                        </a>
+                        <a href="{{ route('rekapsulasi.export.excel', request()->query()) }}" class="btn-mini btn-export-excel">
+                            <i class="fa-solid fa-file-excel"></i>Excel
+                        </a>
+                        <a href="{{ route('rekapsulasi.import-template') }}" class="btn-mini btn-template">
+                            <i class="fa-solid fa-download"></i>Template
+                        </a>
                     </div>
                 @endif
                 @if(auth()->user()?->role === 'laboran')
                     <form action="{{ route('rekapsulasi.import') }}" method="POST" enctype="multipart/form-data" class="import-form">
                         @csrf
-                        <input type="file" name="file" accept=".csv,.txt,.xls,.xlsx" class="form-control" style="max-width: 280px;">
-                        <button type="submit" class="btn-primary"><i class="fa-solid fa-file-import mr-2"></i>Import Spreadsheet</button>
+                        <input type="file" name="file" accept=".csv,.txt,.xls,.xlsx" class="form-control import-file">
+                        <button type="submit" class="btn-mini btn-import">
+                            <i class="fa-solid fa-file-import"></i>Import
+                        </button>
                     </form>
                 @endif
             </div>
