@@ -12,8 +12,7 @@ class FasilitasController extends Controller
     public function index()
     {
         $fasilitas = FasilitasLab::with('laboratorium')
-            ->whereNotNull('qr_code')
-            ->whereNull('qr_deleted_at')
+            ->activeQr()
             ->orderBy('id_laboratorium')
             ->orderBy('nama_fasilitas')
             ->get();
@@ -61,12 +60,14 @@ class FasilitasController extends Controller
 
     public function deleteQr(FasilitasLab $fasilitas)
     {
+        $namaFasilitas = $fasilitas->nama_fasilitas;
+
         $fasilitas->update([
             'qr_code' => null,
             'qr_generated_date' => null,
             'qr_deleted_at' => now(),
         ]);
 
-        return back()->with('success', 'QR Code untuk ' . $fasilitas->nama_fasilitas . ' berhasil dihapus sepenuhnya.');
+        return back()->with('success', 'QR Code untuk ' . $namaFasilitas . ' berhasil dihapus. Data fasilitas tersebut otomatis tidak tampil di Fasilitas & QR dan tidak dihitung lagi pada Laboratorium.');
     }
 }

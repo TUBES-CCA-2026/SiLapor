@@ -12,7 +12,9 @@ class LaboratoriumController extends Controller
     public function index()
     {
         $laboratoriums = Laboratorium::with(['koordinator', 'penanggungJawabs'])
-            ->withCount('fasilitas')
+            ->withCount(['fasilitas' => function ($query) {
+                $query->activeQr();
+            }])
             ->orderBy('nama_laboratorium')
             ->get();
 
@@ -73,9 +75,9 @@ class LaboratoriumController extends Controller
 
     public function destroy(Laboratorium $laboratorium): RedirectResponse
     {
-        if ($laboratorium->fasilitas()->exists()) {
+        if ($laboratorium->fasilitas()->activeQr()->exists()) {
             return back()->withErrors([
-                'laboratorium' => 'Laboratorium tidak dapat dihapus karena masih memiliki fasilitas.',
+                'laboratorium' => 'Laboratorium tidak dapat dihapus karena masih memiliki fasilitas aktif.',
             ]);
         }
 

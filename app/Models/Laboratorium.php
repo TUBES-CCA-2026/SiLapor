@@ -21,6 +21,12 @@ class Laboratorium extends Model
 
     public function fasilitas()
     {
+        return $this->hasMany(FasilitasLab::class, 'id_laboratorium', 'id_laboratorium')
+            ->activeQr();
+    }
+
+    public function semuaFasilitas()
+    {
         return $this->hasMany(FasilitasLab::class, 'id_laboratorium', 'id_laboratorium');
     }
 

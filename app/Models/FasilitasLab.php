@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class FasilitasLab extends Model
@@ -22,6 +23,13 @@ class FasilitasLab extends Model
     public function laboratorium()
     {
         return $this->belongsTo(Laboratorium::class, 'id_laboratorium', 'id_laboratorium');
+    }
+
+    public function scopeActiveQr(Builder $query): Builder
+    {
+        return $query
+            ->whereNotNull('qr_code')
+            ->whereNull('qr_deleted_at');
     }
 
     public function pengaduan()

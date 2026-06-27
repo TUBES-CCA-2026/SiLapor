@@ -142,7 +142,7 @@ class DashboardController extends Controller
 
         $pengaduanList = $query->get();
         $laboratoriums = Laboratorium::orderBy('nama_laboratorium')->get();
-        $fasilitasList = FasilitasLab::orderBy('nama_fasilitas')->get();
+        $fasilitasList = FasilitasLab::activeQr()->orderBy('nama_fasilitas')->get();
         $penanggungJawabs = User::role('asisten')->orderBy('nama')->get();
         $filters = $request->only(['status', 'id_laboratorium', 'id_fasilitas', 'id_penanggung_jawab', 'sort', 'q']);
 
@@ -214,7 +214,7 @@ class DashboardController extends Controller
 
         $daftarLaporan = $query->paginate(10)->withQueryString();
         $laboratoriums = Laboratorium::orderBy('nama_laboratorium')->get();
-        $fasilitasList = FasilitasLab::orderBy('nama_fasilitas')->get();
+        $fasilitasList = FasilitasLab::activeQr()->orderBy('nama_fasilitas')->get();
         $penanggungJawabs = User::role('asisten')->orderBy('nama')->get();
         $filters = $request->only(['tanggal', 'status', 'id_laboratorium', 'id_fasilitas', 'id_penanggung_jawab', 'sort', 'q']);
 
@@ -334,7 +334,7 @@ class DashboardController extends Controller
         $proses = Pengaduan::statusKode('HANDLED')->count();
         $selesai = Pengaduan::statusKode('DONE')->count();
         $totalLaboratorium = Laboratorium::count();
-        $totalFasilitas = FasilitasLab::count();
+        $totalFasilitas = FasilitasLab::activeQr()->count();
         $totalPengguna = User::count();
 
         $pengaduanList = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'statusData', 'fotoUtama', 'fotos', 'tindakLanjut.asisten'])
@@ -564,7 +564,7 @@ class DashboardController extends Controller
             [$tanggal, $pelaporNama, $lokasi, $fasilitasNama, $status, $deskripsi] = array_pad($row, 6, null);
 
             $pelapor = User::where('nama', trim((string) $pelaporNama))->first() ?: User::role('laboran')->first() ?: User::first();
-            $fasilitas = FasilitasLab::where('nama_fasilitas', trim((string) $fasilitasNama))->first() ?: FasilitasLab::first();
+            $fasilitas = FasilitasLab::activeQr()->where('nama_fasilitas', trim((string) $fasilitasNama))->first() ?: FasilitasLab::activeQr()->first();
 
             if (!$pelapor || !$fasilitas) {
                 continue;
