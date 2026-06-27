@@ -19,17 +19,36 @@
     $selectedLokasiLab = $selectedLabLocation
         ? $selectedLabName . ' - ' . $selectedLabLocation
         : $selectedLabName;
+
+    $backUrl = null;
+    $backLabel = 'Kembali';
+
+    if (auth()->check()) {
+        if (auth()->user()->isAsisten()) {
+            $backUrl = route('pengaduan.index');
+            $backLabel = 'Kembali ke Halaman Pengaduan';
+        } else {
+            $backUrl = route('dashboard');
+            $backLabel = 'Kembali ke Dashboard';
+        }
+    } else {
+        $backUrl = route('login');
+        $backLabel = 'Kembali ke Login';
+    }
 @endphp
 
 <div class="min-h-screen flex items-center justify-center p-6 bg-gray-50">
     <div class="w-full max-w-2xl bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-        <div class="flex items-center gap-2 mb-6">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
-                <i class="fa-solid fa-square-poll-vertical text-lg"></i>
+        <div class="flex items-center justify-between gap-3 mb-6">
+            <div class="flex items-center gap-2">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
+                    <i class="fa-solid fa-square-poll-vertical text-lg"></i>
+                </div>
+                <span class="font-display font-bold text-lg text-gray-900">
+                    SiLapor
+                </span>
             </div>
-            <span class="font-display font-bold text-lg text-gray-900">
-                SiLapor
-            </span>
+
         </div>
 
         @if ($isGuest)
@@ -225,13 +244,19 @@
             </button>
         </form>
 
-        <div class="mt-6 pt-5 border-t border-gray-100 text-center text-sm">
+        <div class="mt-6 pt-5 border-t border-gray-100 flex flex-col sm:flex-row gap-3 text-center text-sm">
+            @if ($backUrl)
+                <a href="{{ $backUrl }}" class="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-gray-600 font-semibold transition hover:bg-gray-50">
+                    {{ $backLabel }}
+                </a>
+            @endif
+
             @if ($mode === 'qr')
-                <a href="{{ route('pengaduan.manual.create') }}" class="text-silapor-600 font-semibold hover:underline">
+                <a href="{{ route('pengaduan.manual.create') }}" class="flex-1 rounded-xl bg-silapor-50 px-4 py-2.5 text-silapor-700 font-semibold transition hover:bg-silapor-100">
                     Buat pengaduan manual
                 </a>
             @else
-                <a href="{{ route('scan.index') }}" class="text-silapor-600 font-semibold hover:underline">
+                <a href="{{ route('scan.index') }}" class="flex-1 rounded-xl bg-silapor-50 px-4 py-2.5 text-silapor-700 font-semibold transition hover:bg-silapor-100">
                     Gunakan scan QR
                 </a>
             @endif

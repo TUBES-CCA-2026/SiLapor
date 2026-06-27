@@ -128,6 +128,34 @@
     .loading-line { height: 13px; margin: 13px 0; border-radius: 30px; background: linear-gradient(90deg, #edf2f7, #f8fbff, #edf2f7); }
     .loading-line.short { width: 60%; }
 
+
+    .user-management-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .user-action-group { display: flex; align-items: center; gap: .65rem; flex-wrap: wrap; }
+    .btn-secondary-light { border: 1px solid #D8E1EC; color: #334155; background: #F8FAFC; border-radius: .875rem; padding: .75rem 1rem; font-weight: 800; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: .45rem; }
+    .btn-secondary-light:hover { border-color: #0090F5; color: #0090F5; background: #EEF8FF; }
+    .import-user-card { margin-bottom: 1.25rem; padding: 1rem; border: 1px solid #E5E7EB; border-radius: 1.15rem; background: #F8FAFC; display: grid; grid-template-columns: minmax(260px, 1fr) minmax(220px, .8fr) 180px auto auto; gap: .75rem; align-items: end; }
+    .import-user-title { margin: 0; color: #1F2937; font-size: .95rem; font-weight: 800; }
+    .import-user-help { margin: .25rem 0 0; color: #64748B; font-size: .78rem; line-height: 1.5; }
+    .import-user-card .form-control { height: 44px; padding: .62rem .85rem; border-radius: .75rem; font-size: .84rem; background: #fff; }
+    .import-user-card .btn-primary, .import-user-card .btn-secondary-light { height: 44px; padding: 0 .95rem; border-radius: .75rem; font-size: .84rem; white-space: nowrap; }
+    .import-result-box { margin-bottom: 1rem; padding: .9rem 1rem; border: 1px solid #FBBF24; border-radius: 1rem; background: #FFFBEB; color: #92400E; font-size: .84rem; line-height: 1.5; }
+    .import-result-box strong { display: block; margin-bottom: .35rem; font-weight: 800; }
+    .import-result-box ul { margin: .35rem 0 0 1rem; padding: 0; }
+    .import-result-box li + li { margin-top: .25rem; }
+
+
+    @media (max-width: 1100px) {
+        .import-user-card { grid-template-columns: 1fr 1fr; align-items: start; }
+        .import-user-card > div:first-child { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 700px) {
+        .user-management-header, .user-action-group { width: 100%; }
+        .user-action-group > * { width: 100%; }
+        .import-user-card { grid-template-columns: 1fr; }
+        .import-user-card .btn-primary, .import-user-card .btn-secondary-light { width: 100%; }
+    }
+
     @media (min-width: 850px) {
         .sidebar-desktop { transform: translateX(0) !important; }
         .hide-on-desktop { display: none !important; }
@@ -236,13 +264,57 @@
 
 <section class="page-card">
     <div class="page-card-body">
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+        <div class="user-management-header">
             <div>
                 <h2 class="section-title" style="margin-bottom: .35rem;">Kelola User</h2>
-                <p style="margin: 0; color: #64748B; font-size: .9rem;">Tambah akun baru, ubah profil, atau reset password user.</p>
+                <p style="margin: 0; color: #64748B; font-size: .9rem;">Tambah akun baru, ubah profil, reset password, atau import user dari spreadsheet.</p>
             </div>
-            <a href="{{ route('admin.users.create') }}" class="btn-primary">+ Tambah User</a>
+            <div class="user-action-group">
+                <a href="{{ route('admin.users.import-template') }}" class="btn-secondary-light">
+                    <i class="fa-solid fa-file-arrow-down"></i>Template CSV
+                </a>
+                <a href="{{ route('admin.users.create') }}" class="btn-primary">
+                    <i class="fa-solid fa-plus" style="margin-right: .45rem;"></i>Tambah User
+                </a>
+            </div>
         </div>
+
+        <form method="POST" action="{{ route('admin.users.import') }}" enctype="multipart/form-data" class="import-user-card">
+            @csrf
+            <div>
+                <p class="import-user-title">Import Spreadsheet User</p>
+                <p class="import-user-help">Gunakan file .xlsx atau .csv. Header yang didukung: nama, email, password, role, phone, nim, jurusan, penanggung_jawab. Jika kolom password kosong, sistem memakai password default.</p>
+            </div>
+            <input type="file" name="spreadsheet" accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required class="form-control">
+            <input type="text" name="default_password" value="password123" placeholder="Password default" class="form-control">
+            <button type="submit" class="btn-primary">
+                <i class="fa-solid fa-file-import" style="margin-right: .45rem;"></i>Import
+            </button>
+            <a href="{{ route('admin.users.import-template') }}" class="btn-secondary-light">Download Format</a>
+        </form>
+
+        @if(session('import_errors') && count(session('import_errors')) > 0)
+            <div class="import-result-box">
+                <strong>Catatan import</strong>
+                <ul>
+                    @foreach(session('import_errors') as $importError)
+                        <li>{{ $importError }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="import-result-box">
+                <strong>Data belum bisa diproses</strong>
+                <ul>
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
 <div class="table-wrap custom-scrollbar">
             <table class="report-table">
                 <thead>

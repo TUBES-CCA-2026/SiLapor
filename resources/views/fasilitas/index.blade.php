@@ -267,7 +267,7 @@
                     <p style="margin: 0; font-weight: 800; color: #2C3E50;">{{ $f->nama_fasilitas }}</p>
                     <p style="margin: .25rem 0 1rem; color: #64748B; font-size: .82rem;">{{ $f->laboratorium->nama_laboratorium }}</p>
                     @if($f->qr_deleted_at)
-                        <div style="display:grid;place-items:center;margin-bottom:1rem;min-height:140px;color:#DC2626;font-size:.85rem;font-weight:800;border:1px dashed #FCA5A5;border-radius:1rem;background:#FEF2F2;">QR sudah dihapus/nonaktif</div>
+                        <div style="display:grid;place-items:center;margin-bottom:1rem;min-height:168px;color:#DC2626;font-size:.85rem;font-weight:800;border:1px dashed #FCA5A5;border-radius:1rem;background:#FEF2F2;">QR sudah dihapus/nonaktif</div>
                     @else
                         <div class="qr-print-area" data-fasilitas-name="{{ $f->nama_fasilitas }}" data-fasilitas-lab="{{ $f->laboratorium->nama_laboratorium ?? '-' }}" data-fasilitas-url="{{ $f->scanUrl() }}" style="display: flex; justify-content: center; margin-bottom: 1rem; min-height: 140px; align-items: center;" id="qr-{{ $f->id_fasilitas }}"></div>
                     @endif
@@ -279,8 +279,8 @@
                             if (window.QRCode) {
                                 new QRCode(target, {
                                     text: @json($f->scanUrl()),
-                                    width: 140,
-                                    height: 140,
+                                    width: 168,
+                                    height: 168,
                                     correctLevel: QRCode.CorrectLevel.H
                                 });
                             } else {

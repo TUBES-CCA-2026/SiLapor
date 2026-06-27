@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class FasilitasLab extends Model
 {
@@ -34,6 +35,14 @@ class FasilitasLab extends Model
     // diakses memakai IP jaringan, bukan 127.0.0.1.
     public function scanUrl(): string
     {
-        return request()->getSchemeAndHttpHost() . route('pengaduan.qr.create', ['qr_code' => $this->qr_code], false);
+        $configuredUrl = rtrim((string) config('app.url'), '/');
+        $isLocalConfiguredUrl = $configuredUrl === ''
+            || Str::contains($configuredUrl, ['localhost', '127.0.0.1', '::1']);
+
+        $baseUrl = $isLocalConfiguredUrl
+            ? request()->getSchemeAndHttpHost()
+            : $configuredUrl;
+
+        return $baseUrl . route('pengaduan.qr.create', ['qr_code' => $this->qr_code], false);
     }
 }

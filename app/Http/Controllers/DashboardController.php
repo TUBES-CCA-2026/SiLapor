@@ -534,7 +534,7 @@ class DashboardController extends Controller
                 'id_user' => $pelapor->id_user,
                 'id_fasilitas' => $fasilitas->id_fasilitas,
                 'tanggal_lapor' => $tanggal ? date('Y-m-d', strtotime((string) $tanggal)) : now()->toDateString(),
-                'status_pengaduan' => in_array($status, ['NEW', 'HANDLED', 'DONE'], true) ? $status : 'NEW',
+                'status_pengaduan' => $this->normalizeStatusCode($status),
                 'deskripsi_kerusakan' => $deskripsi ?: 'Import rekapitulasi',
             ]);
 
@@ -546,6 +546,22 @@ class DashboardController extends Controller
         return back()->with('success', "Import selesai. {$created} laporan berhasil dibuat.");
     }
 
+
+
+    protected function normalizeStatusCode(?string $status): string
+    {
+        $normalized = strtoupper(trim((string) $status));
+        $normalized = str_replace(['-', ' '], '_', $normalized);
+
+        return match ($normalized) {
+            'NEW', 'BARU' => 'NEW',
+            'HANDLED', 'ON_PROGRESS', 'ON_PROGRES', 'PROGRESS', 'PROGRES' => 'HANDLED',
+            'DONE', 'SELESAI' => 'DONE',
+            'CANCEL', 'CANCELLED', 'DIBATALKAN' => 'CANCEL',
+            'NO_SPAREPART', 'NO_SPARE_PART', 'TIDAK_ADA_SPAREPART', 'TIDAK_ADA_SPARE_PART' => 'NO_SPAREPART',
+            default => 'NEW',
+        };
+    }
 
     protected function statusLabel(?string $status): string
     {

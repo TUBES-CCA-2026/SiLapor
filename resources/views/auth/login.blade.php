@@ -3,17 +3,14 @@
 @section('title', 'Login - SiLapor')
 
 @section('content')
-<div class="min-h-screen grid lg:grid-cols-2">
+<div class="min-h-screen grid lg:grid-cols-[60%_40%]">
 
-    {{-- Panel kiri: branding --}}
-    {{-- BACKGROUND: ganti file di public/images/lab-background.jpg dengan foto lab kamu --}}
-    <div class="relative hidden lg:flex flex-col justify-between p-12 text-white overflow-hidden bg-cover bg-center"
+     <div class="relative hidden lg:flex flex-col justify-between p-12 text-white overflow-hidden bg-cover bg-center"
          style="background-image: linear-gradient(160deg, rgba(14,58,77,.88) 0%, rgba(21,108,153,.82) 100%), url('{{ asset('images/lab-background.jpg') }}');">
         <div class="flex items-center gap-3">
-            {{-- LOGO: ganti file di public/images/logo-silapor.png --}}
-            <img src="{{ asset('images/logo-silapor.png') }}" alt="SiLapor"
-                 class="w-12 h-12 rounded-xl object-contain bg-white/15 p-1.5">
-            <span class="font-display font-extrabold text-2xl tracking-tight">SiLapor</span>
+            <img src="{{ asset('images/logo_iclabs.png') }}" alt="SiLapor"
+                 class="w-99 h-99 p-1.5">
+            <span class="font-display font-extrabold text-4xl tracking-tight">SiLapor</span>
         </div>
 
         <div>
