@@ -188,7 +188,7 @@ $menuItems = [
                                 @forelse ($daftarLaporan ?? [] as $row)
                                     @php
                                         $status = $statusMeta($row->status_pengaduan ?? null);
-                                        $detailUrl = $routeSafe('dashboard.pengaduan.detail') !== '#'
+                                        $detailUrl = \Illuminate\Support\Facades\Route::has('dashboard.pengaduan.detail')
                                             ? route('dashboard.pengaduan.detail', $row)
                                             : '#';
                                     @endphp

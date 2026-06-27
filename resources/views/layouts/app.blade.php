@@ -133,12 +133,13 @@
     
 
     @php
+        $globalNotificationsSuppressed = trim($__env->yieldContent('suppress_global_notification')) === 'true';
         $globalNotificationType = session('success') ? 'success' : ((session('error') || $errors->any()) ? 'error' : null);
         $globalNotificationMessage = session('success') ?: (session('error') ?: ($errors->any() ? $errors->first() : null));
         $globalNotificationTitle = $globalNotificationType === 'success' ? 'Berhasil' : 'Gagal';
     @endphp
 
-    @if($globalNotificationType && $globalNotificationMessage)
+    @if(! $globalNotificationsSuppressed && $globalNotificationType && $globalNotificationMessage)
         <div id="global-notification-popup" class="global-notification-backdrop">
             <div class="global-notification-card" role="dialog" aria-modal="true">
                 <div class="global-notification-header">

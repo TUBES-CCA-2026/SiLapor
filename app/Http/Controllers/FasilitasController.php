@@ -60,9 +60,11 @@ class FasilitasController extends Controller
     public function deleteQr(FasilitasLab $fasilitas)
     {
         $fasilitas->update([
+            'qr_code' => null,
+            'qr_generated_date' => null,
             'qr_deleted_at' => now(),
         ]);
 
-        return back()->with('success', 'QR Code untuk ' . $fasilitas->nama_fasilitas . ' berhasil dihapus/nonaktif.');
+        return back()->with('success', 'QR Code untuk ' . $fasilitas->nama_fasilitas . ' berhasil dihapus sepenuhnya.');
     }
 }

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Profil - SiLapor')
+@section('suppress_global_notification', 'true')
 
 @section('content')
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -63,7 +64,7 @@
 </style>
 @endonce
 
-<div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row" x-data="{ openEdit: {{ $errors->hasBag('default') && old('_form') === 'profile' ? 'true' : 'false' }}, openPassword: {{ $errors->any() && old('_form') === 'password' ? 'true' : 'false' }} }">
+<div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row" x-data="{ openEdit: {{ (($errors->any() && old('_form') === 'profile') || session('profile_form') === 'profile') ? 'true' : 'false' }}, openPassword: {{ (($errors->any() && old('_form') === 'password') || session('profile_form') === 'password') ? 'true' : 'false' }} }">
     <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop md:sticky md:top-0 md:h-screen rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
         <div class="p-8 flex-1 flex flex-col overflow-y-auto custom-scrollbar">
             <a href="{{ $routeSafe('dashboard') }}" class="flex items-center gap-3 px-4">
@@ -118,7 +119,13 @@
             @include('partials.user-welcome-box', ['user' => $user])
         </header>
 
-        @if($errors->any())
+        @if(session('success') && session('profile_form') !== 'password')
+            <div class="rounded-2xl border border-green-200 bg-green-50 text-green-700 px-5 py-4 text-sm font-semibold">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if($errors->any() && old('_form') !== 'password')
             <div class="rounded-2xl border border-red-200 bg-red-50 text-red-700 px-5 py-4 text-sm font-semibold">
                 {{ $errors->first() }}
             </div>
@@ -188,19 +195,31 @@
         </div>
     </main>
 
-    <div x-show="openEdit" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" x-cloak>
-        <div @click.away="openEdit = false" class="bg-white rounded-[40px] shadow-2xl w-full max-w-lg overflow-hidden" x-show="openEdit" x-transition>
-            <div class="flex items-center justify-between px-8 py-6 border-b border-gray-50">
+    <div x-show="openEdit" class="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-sm" x-cloak>
+        <div @click.away="openEdit = false" class="bg-white rounded-[28px] sm:rounded-[40px] shadow-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto" x-show="openEdit" x-transition>
+            <div class="flex items-center justify-between px-5 sm:px-8 py-5 sm:py-6 border-b border-gray-50">
                 <h3 class="text-lg font-extrabold text-[#2C3E50]">Edit Profil</h3>
                 <button @click="openEdit = false" class="text-gray-400 hover:text-gray-600 transition-colors" type="button">
                     <i class="fa-solid fa-xmark text-xl"></i>
                 </button>
             </div>
 
-            <form action="{{ $routeSafe('profile.update') }}" method="POST" enctype="multipart/form-data" class="p-8 space-y-5">
+            <form action="{{ $routeSafe('profile.update') }}" method="POST" enctype="multipart/form-data" class="p-5 sm:p-8 space-y-5">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="_form" value="profile">
+
+                @if(session('success') && session('profile_form') === 'profile')
+                    <div class="rounded-2xl border border-green-200 bg-green-50 text-green-700 px-4 py-3 text-sm font-semibold">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if($errors->any() && old('_form') === 'profile')
+                    <div class="rounded-2xl border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm font-semibold">
+                        {{ $errors->first() }}
+                    </div>
+                @endif
 
                 <div class="flex flex-col items-center mb-6">
                     <div class="w-24 h-24 bg-gray-50 rounded-[24px] overflow-hidden border-2 border-gray-100 mb-3 flex items-center justify-center text-gray-400 shadow-inner">
@@ -212,34 +231,34 @@
                     </label>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="col-span-1">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="sm:col-span-1">
                         <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">{{ $nameFieldLabel }}</label>
                         <input type="text" name="name" value="{{ old('name', $user->nama) }}" required class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800">
                     </div>
-                    <div class="col-span-1">
+                    <div class="sm:col-span-1">
                         <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">{{ $idFieldLabel }}</label>
                         <input type="text" value="{{ $user->id_user }}" disabled class="w-full mt-1.5 p-3.5 bg-gray-100 border border-gray-200 rounded-2xl font-medium text-sm text-gray-400 cursor-not-allowed">
                     </div>
-                    <div class="col-span-2">
+                    <div class="sm:col-span-2">
                         <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email</label>
                         <input type="email" name="email" value="{{ old('email', $user->email) }}" required class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800">
                     </div>
-                    <div class="col-span-1">
+                    <div class="sm:col-span-1">
                         <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">No Hp</label>
                         <input type="text" name="no_hp" value="{{ old('no_hp', $user->phone) }}" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800">
                     </div>
-                    <div class="col-span-1">
+                    <div class="sm:col-span-1">
                         <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Role</label>
                         <input type="text" value="{{ $roleLabel }}" disabled class="w-full mt-1.5 p-3.5 bg-gray-100 border border-gray-200 rounded-2xl font-medium text-sm text-gray-400 cursor-not-allowed">
                     </div>
 
                     @if($user->role === 'asisten')
-                        <div class="col-span-1">
+                        <div class="sm:col-span-1">
                             <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">NIM</label>
                             <input type="text" name="nim" value="{{ old('nim', $user->profile?->nim) }}" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800">
                         </div>
-                        <div class="col-span-1">
+                        <div class="sm:col-span-1">
                             <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Jurusan</label>
                             <input type="text" name="jurusan" value="{{ old('jurusan', $user->profile?->jurusan) }}" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800">
                         </div>
@@ -255,8 +274,8 @@
         </div>
     </div>
 
-    <div x-show="openPassword" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" x-cloak>
-        <div @click.away="openPassword = false" class="bg-white rounded-[32px] shadow-2xl w-full max-w-md overflow-hidden p-8 border border-gray-100" x-show="openPassword" x-transition>
+    <div x-show="openPassword" class="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-sm" x-cloak>
+        <div @click.away="openPassword = false" class="bg-white rounded-[28px] sm:rounded-[32px] shadow-2xl w-full max-w-md max-h-[92vh] overflow-y-auto p-5 sm:p-8 border border-gray-100" x-show="openPassword" x-transition>
             <div class="flex items-center justify-center pb-6 relative">
                 <h3 class="text-sm font-bold text-gray-800 tracking-wide">Ubah Password</h3>
                 <button @click="openPassword = false" class="text-gray-400 hover:text-gray-600 transition-colors absolute right-0" type="button">
@@ -268,6 +287,18 @@
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="_form" value="password">
+
+                @if(session('success') && session('profile_form') === 'password')
+                    <div class="rounded-2xl border border-green-200 bg-green-50 text-green-700 px-4 py-3 text-sm font-semibold">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if($errors->any() && old('_form') === 'password')
+                    <div class="rounded-2xl border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm font-semibold">
+                        {{ $errors->first() }}
+                    </div>
+                @endif
 
                 <div>
                     <label class="text-[11px] font-semibold text-gray-700 block mb-1.5">Password Lama</label>

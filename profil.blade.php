@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Kelola Laboratorium | SiLapor')
+@section('title', 'Profil | SiLapor')
 
 @section('content')
 @php
@@ -8,7 +8,7 @@
     $role = $user?->role;
     $sidebarUser = $user;
     $sidebarRole = $role;
-    $activeMenu = 'laboratorium';
+    $activeMenu = 'profil';
     $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
 
     $routeSafe = function (string $name, string $fallback = '#') {
@@ -19,6 +19,7 @@
         'laboran' => 'Laboran',
         'koordinator_lab' => 'Koordinator Lab',
         'asisten' => 'Asisten Lab',
+        'admin' => 'Admin',
         default => 'User',
     };
 
@@ -47,6 +48,7 @@
             ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
             ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
             ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
+            ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     } else {
@@ -66,10 +68,10 @@
     .custom-scrollbar::-webkit-scrollbar-track { background: #F1F5F9; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
 .dashboard-card,
-    .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: visible; }
+    .page-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 2rem; box-shadow: 0px 15px 50px rgba(0, 0, 0, 0.05); overflow: hidden; }
     .page-card-body { padding: 1.5rem; }
     .section-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 800; color: #2C3E50; }
-    .table-wrap { width: 100%; max-width: 100%; overflow-x: auto; overflow-y: visible; background: #fff; }
+    .table-wrap { width: 100%; overflow-x: auto; background: #fff; }
     .report-table { width: 100%; border-collapse: collapse; min-width: 900px; }
     .report-table thead { background: #F8FAFC; color: #64748B; text-transform: uppercase; font-size: .75rem; font-weight: 800; letter-spacing: .04em; }
     .report-table th, .report-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid #F1F5F9; white-space: nowrap; }
@@ -146,14 +148,14 @@
             </a>
 
             @php
-                $activeMenu = 'laboratorium';
+                $activeMenu = 'profil';
                 $routeSafe = function (string $name, string $fallback = '#') {
                     return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
                 };
                 $sidebarUser = auth()->user();
                 $sidebarRole = $sidebarUser?->role;
 
-                if ($sidebarRole === 'laboran') {
+                if ($sidebarRole === 'laboran' || $sidebarRole === 'admin') {
                     $menuItems = [
                         ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
                         ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
@@ -176,7 +178,8 @@
                         ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
                         ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
                         ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-                                    ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
+                        ['teknisi', 'Teknisi', 'fa-solid fa-triangle-exclamation', $routeSafe('teknisi.index')],
+                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
                     ];
                 } else {
                     $menuItems = [
@@ -186,9 +189,6 @@
                 }
             @endphp
 
-            @php
-                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
-            @endphp
             <nav class="mt-10 space-y-7">
                 @foreach($menuItems as [$key, $label, $icon, $url])
                     @if($activeMenu === $key)
@@ -228,142 +228,53 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
-            <h1 class="text-lg sm:text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-tight uppercase">LABORATORIUM</h1>
+            <h1 class="text-lg sm:text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-tight uppercase">PROFIL</h1>
         </div>
 
-        @include('partials.user-welcome-box', ['user' => $user ?? auth()->user()])
+        <div class="bg-[#1E90FF] text-white px-5 py-3 rounded-[22px] flex items-center gap-4 shadow-md w-full sm:w-auto">
+            <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-[#1E90FF] shrink-0">
+                <i class="fa-solid fa-user text-lg"></i>
+            </div>
+            <div class="text-left overflow-hidden">
+                <span class="text-[11px] opacity-80 block uppercase tracking-wider">Selamat datang</span>
+                <span class="text-xl font-extrabold block truncate">{{ $user->name ?? $user->nama ?? 'User' }}</span>
+            </div>
+        </div>
     </header>
 
-<section class="page-card">
-    <div class="page-card-body" style="padding: 2rem;">
-        <div style="margin-bottom: 1.5rem;">
-            <h2 style="margin: 0; color: #2C3E50; font-size: 2rem; font-weight: 800; letter-spacing: -.03em;">Data Laboratorium</h2>
-            <p style="margin: .4rem 0 0; color: #64748B; font-size: .95rem; line-height: 1.6;">
-                Daftar laboratorium yang ada. Tambahkan dulu di sini sebelum bisa dipilih saat menambah fasilitas di
-                <a href="{{ route('fasilitas.index') }}" style="color: #0090F5; text-decoration: none; font-weight: 700;">halaman Fasilitas</a>.
-            </p>
-        </div>
-<form method="POST" action="{{ route('laboratorium.store') }}" class="laboratorium-form-admin-like" style="background: #fff; border: 1px solid #E5E7EB; border-radius: 1rem; padding: 1.25rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem; margin-bottom: 1.5rem;">
-            @csrf
-            <input name="nama_laboratorium" placeholder="Nama lab (cth: Lab RPL)" required class="form-control" style="font-size: .9rem;">
-            <input name="kode_laboratorium" placeholder="Kode (cth: LAB-RPL)" class="form-control" style="font-size: .9rem;">
-            <input name="lokasi" placeholder="Lokasi (cth: Gedung A Lantai 2)" class="form-control" style="font-size: .9rem;">
+<style>
+.profile-card{background:#fff;border:1px solid #e5ebf2;border-radius:24px;padding:28px;box-shadow:0 10px 25px rgba(0,0,0,.05);margin:0 38px 40px}
+.profile-top{display:flex;justify-content:flex-end;margin-bottom:20px}
+.btn-outline{border:1px solid #bfc8d4;padding:8px 16px;border-radius:10px;text-decoration:none;color:#333;background:#fff}
+.profile-grid{display:grid;grid-template-columns:180px 1fr;gap:30px}
+.avatar-box{text-align:center}.avatar{width:120px;height:120px;border-radius:10px;object-fit:cover;border:1px solid #ddd}
+.badge-role{margin-top:8px;border:1px solid #bbb;border-radius:6px;padding:4px 8px;font-size:12px;display:inline-block}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px}.field label{display:block;margin-bottom:6px;font-size:13px}.field input{width:100%;padding:10px;border:1px solid #aaa;border-radius:8px;background:#fafafa}.full{grid-column:1/-1}
+</style>
 
-            <select name="id_penanggung_jawab[]" multiple class="form-control" style="font-size: .9rem; min-height: 96px;">
-                @foreach (($penanggungJawabs ?? $koordinators) as $k)
-                    <option value="{{ $k->id_user }}">{{ $k->nama }}</option>
-                @endforeach
-            </select>
+<div class="profile-card">
+<div class="profile-top"><a href="#" class="btn-outline">Edit Profil ✎</a></div>
 
-            <button class="btn-primary" style="font-size: .9rem; border-radius: .85rem;">
-                + Tambah Laboratorium
-            </button>
-        </form>
-
-        <div style="background: #fff; border: 1px solid #E5E7EB; border-radius: 1rem; overflow: hidden;">
-            @forelse ($laboratoriums as $lab)
-                <div style="padding: 1rem 1.25rem; border-bottom: {{ $loop->last ? '0' : '1px solid #F1F5F9' }};">
-                    <div class="laboratorium-row-main" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
-                        <div>
-                            <p style="margin: 0; color: #111827; font-weight: 800;">
-                                {{ $lab->nama_laboratorium }}
-                                @if ($lab->kode_laboratorium)
-                                    <span style="color: #94A3B8; font-size: .78rem; font-weight: 600;">({{ $lab->kode_laboratorium }})</span>
-                                @endif
-                            </p>
-                            <p style="margin: .25rem 0 0; color: #64748B; font-size: .86rem;">{{ $lab->lokasi ?? '—' }}</p>
-                            <p style="margin: .2rem 0 0; color: #94A3B8; font-size: .78rem;">
-                                Penanggung Jawab: {{ $lab->penanggungJawabs->pluck('nama')->join(', ') ?: ($lab->koordinator?->nama ?? 'Belum ditentukan') }} · {{ $lab->fasilitas_count }} fasilitas
-                            </p>
-                        </div>
-
-                        <div style="display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;">
-                            <button type="button" class="btn-outline-blue" onclick="document.getElementById('edit-lab-{{ $lab->id_laboratorium }}').toggleAttribute('hidden')">
-                                <i class="fa-solid fa-pen" style="margin-right: .4rem;"></i>Edit
-                            </button>
-                            <form method="POST" action="{{ route('laboratorium.destroy', $lab) }}" data-delete-lab-form data-lab-name="{{ $lab->nama_laboratorium }}">
-                                @csrf
-                                @method('DELETE')
-                                <button type="button" class="btn-danger-soft" data-delete-lab-trigger {{ $lab->fasilitas_count > 0 ? 'disabled' : '' }} title="{{ $lab->fasilitas_count > 0 ? 'Hapus seluruh fasilitasnya terlebih dahulu' : 'Hapus laboratorium' }}">
-                                    <i class="fa-solid fa-trash" style="margin-right: .4rem;"></i>Hapus
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <div id="edit-lab-{{ $lab->id_laboratorium }}" hidden style="margin-top: 1rem; padding: 1rem; border: 1px solid #DCE6F1; border-radius: 1rem; background: #F8FAFC;">
-                        <form method="POST" action="{{ route('laboratorium.update', $lab) }}" class="laboratorium-form-admin-like" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem;">
-                            @csrf
-                            @method('PATCH')
-                            <input name="nama_laboratorium" value="{{ $lab->nama_laboratorium }}" required class="form-control" placeholder="Nama laboratorium">
-                            <input name="kode_laboratorium" value="{{ $lab->kode_laboratorium }}" class="form-control" placeholder="Kode laboratorium">
-                            <input name="lokasi" value="{{ $lab->lokasi }}" class="form-control" placeholder="Lokasi">
-                            <select name="id_penanggung_jawab[]" multiple class="form-control" style="min-height: 96px;">
-                                @foreach (($penanggungJawabs ?? $koordinators) as $k)
-                                    <option value="{{ $k->id_user }}" @selected($lab->penanggungJawabs->contains('id_user', $k->id_user) || (string) $lab->id_koordinator === (string) $k->id_user)>{{ $k->nama }}</option>
-                                @endforeach
-                            </select>
-                            <button type="submit" class="btn-primary lab-submit-btn"><i class="fa-solid fa-floppy-disk" style="margin-right: .45rem;"></i>Simpan Perubahan</button>
-                        </form>
-                    </div>
-                </div>
-            @empty
-                <p style="margin: 0; padding: 1.5rem; color: #94A3B8; font-size: .9rem;">Belum ada data laboratorium.</p>
-            @endforelse
-        </div>
-    </div>
-</section>
-
-<div id="delete-lab-modal" class="modal-backdrop" hidden>
-    <div class="modal-card" role="dialog" aria-modal="true" style="width:min(440px,96vw);">
-        <div class="modal-header">
-            <h2>Hapus Laboratorium</h2>
-            <button type="button" class="modal-close" data-delete-lab-cancel aria-label="Tutup">&times;</button>
-        </div>
-        <div class="modal-body" style="text-align:center;">
-            <div style="width:64px;height:64px;border-radius:999px;margin:0 auto 1rem;display:grid;place-items:center;background:#FEE2E2;color:#DC2626;font-size:1.75rem;">
-                <i class="fa-solid fa-trash"></i>
-            </div>
-            <p id="delete-lab-message" style="margin:0;color:#374151;font-weight:800;line-height:1.6;">
-                Hapus laboratorium ini?
-            </p>
-            <p style="margin:.5rem 0 0;color:#64748B;font-size:.85rem;line-height:1.5;">
-                Data yang dihapus tidak akan tampil lagi pada daftar laboratorium.
-            </p>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:1.35rem;">
-                <button type="button" data-delete-lab-cancel style="border:1px solid #E5E7EB;background:#fff;color:#64748B;border-radius:.9rem;padding:.8rem 1rem;font-weight:800;cursor:pointer;">Batal</button>
-                <button type="button" id="delete-lab-confirm" style="border:0;background:#DC2626;color:#fff;border-radius:.9rem;padding:.8rem 1rem;font-weight:800;cursor:pointer;">Hapus</button>
-            </div>
-        </div>
-    </div>
+<div class="profile-grid">
+<div class="avatar-box">
+    <img class="avatar" src="{{ asset('images/alisa.jpg') }}" alt="Foto Alisa">
+    <div class="badge-role">Koordinator Lab</div>
 </div>
 
-<style>
-@media (max-width: 900px) {
-    .laboratorium-form-admin-like {
-        grid-template-columns: 1fr !important;
-    }
+<div class="form-grid">
+<div class="field"><label>Nama Koordinator</label><input value="{{ auth()->user()->name ?? 'Nur Alisa' }}" readonly></div>
+<div class="field"><label>ID Koordinator</label><input value="{{ auth()->id() ?? 'xxxxx' }}" readonly></div>
+<div class="field full"><label>Email</label><input value="{{ auth()->user()->email ?? 'koor@silapor.test' }}" readonly></div>
+<div class="field"><label>No Hp</label><input value="+62813xxxxxxx" readonly></div>
+<div class="field"><label>Role</label><input value="Koordinator LAB" readonly></div>
 
-    .laboratorium-row-main {
-        align-items: flex-start !important;
-        flex-direction: column;
-    }
-}
+<div style="grid-column:1/-1; display:flex; justify-content:flex-end; margin-top:20px;">
+    <a href="#" class="btn-outline">Ubah Password ⚙</a>
+</div>
+</div>
 
-
-.lab-submit-btn {
-    justify-self: start;
-    align-self: start;
-    min-height: 44px;
-    padding: 0 .95rem;
-    white-space: nowrap;
-}
-
-.btn-danger-soft:disabled {
-    cursor: not-allowed;
-    opacity: .45;
-}
-</style>
+</div>
+</div>
 
 </main>
 </div>
@@ -396,52 +307,6 @@
 
     window.addEventListener('resize', handleResponsiveSidebar);
     window.addEventListener('load', handleResponsiveSidebar);
-
-    (function () {
-        const modal = document.getElementById('delete-lab-modal');
-        const message = document.getElementById('delete-lab-message');
-        const confirmButton = document.getElementById('delete-lab-confirm');
-        let activeForm = null;
-
-        function closeDeleteModal() {
-            if (modal) modal.hidden = true;
-            activeForm = null;
-        }
-
-        document.addEventListener('click', function (event) {
-            const trigger = event.target.closest('[data-delete-lab-trigger]');
-            const cancel = event.target.closest('[data-delete-lab-cancel]');
-
-            if (cancel || event.target === modal) {
-                closeDeleteModal();
-                return;
-            }
-
-            if (!trigger) return;
-
-            const form = trigger.closest('[data-delete-lab-form]');
-            if (!form || trigger.disabled) return;
-
-            activeForm = form;
-            if (message) {
-                const labName = form.dataset.labName || 'laboratorium ini';
-                message.textContent = 'Hapus laboratorium ' + labName + '?';
-            }
-            if (modal) modal.hidden = false;
-        });
-
-        if (confirmButton) {
-            confirmButton.addEventListener('click', function () {
-                if (!activeForm) return;
-                modal.hidden = true;
-                activeForm.submit();
-            });
-        }
-
-        document.addEventListener('keydown', function (event) {
-            if (event.key === 'Escape') closeDeleteModal();
-        });
-    })();
 
     (function () {
         const modal = document.getElementById('detailModal');
