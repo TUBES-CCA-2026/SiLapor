@@ -83,6 +83,11 @@
     .btn-primary { background: #0090F5; color: #fff; border: 0; border-radius: .875rem; padding: .75rem 1rem; font-weight: 800; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
     .btn-primary:hover { background: #007CD5; }
     .btn-danger-soft { background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; border-radius: .875rem; padding: .65rem 1rem; font-weight: 700; text-decoration: none; cursor: pointer; }
+    .qr-actions { display:flex; gap:.4rem; justify-content:center; flex-wrap:wrap; }
+    .qr-action-btn { min-width:0; border-radius:.55rem; padding:.42rem .62rem; font-size:.72rem; font-weight:800; line-height:1; display:inline-flex; align-items:center; gap:.3rem; border:1px solid #CBD5E1; background:#fff; color:#334155; cursor:pointer; text-decoration:none; }
+    .qr-action-btn:hover { border-color:#0090F5; color:#0090F5; background:#F0F9FF; }
+    .qr-action-btn.danger { border-color:#FCA5A5; color:#DC2626; background:#FEF2F2; }
+    .qr-action-btn.danger:hover { background:#DC2626; color:#fff; border-color:#DC2626; }
     .form-control { width: 100%; border: 1px solid #D1D5DB; border-radius: .875rem; padding: .75rem 1rem; background: #fff; outline: none; }
     .form-control:focus { border-color: #0090F5; box-shadow: 0 0 0 3px rgba(0, 144, 245, .14); }
     .field-label { display: block; margin-bottom: .45rem; font-size: .75rem; color: #6B7280; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
@@ -262,7 +267,7 @@
                     <p style="margin: 0; font-weight: 800; color: #2C3E50;">{{ $f->nama_fasilitas }}</p>
                     <p style="margin: .25rem 0 1rem; color: #64748B; font-size: .82rem;">{{ $f->laboratorium->nama_laboratorium }}</p>
                     @if($f->qr_deleted_at)
-                        <div style="display:grid;place-items:center;margin-bottom:1rem;min-height:140px;color:#DC2626;font-size:.85rem;font-weight:800;border:1px dashed #FCA5A5;border-radius:1rem;background:#FEF2F2;">QR sudah dihapus/nonaktif</div>
+                        <div style="display:grid;place-items:center;margin-bottom:1rem;min-height:168px;color:#DC2626;font-size:.85rem;font-weight:800;border:1px dashed #FCA5A5;border-radius:1rem;background:#FEF2F2;">QR sudah dihapus/nonaktif</div>
                     @else
                         <div class="qr-print-area" data-fasilitas-name="{{ $f->nama_fasilitas }}" data-fasilitas-lab="{{ $f->laboratorium->nama_laboratorium ?? '-' }}" data-fasilitas-url="{{ $f->scanUrl() }}" style="display: flex; justify-content: center; margin-bottom: 1rem; min-height: 140px; align-items: center;" id="qr-{{ $f->id_fasilitas }}"></div>
                     @endif
@@ -274,8 +279,8 @@
                             if (window.QRCode) {
                                 new QRCode(target, {
                                     text: @json($f->scanUrl()),
-                                    width: 140,
-                                    height: 140,
+                                    width: 168,
+                                    height: 168,
                                     correctLevel: QRCode.CorrectLevel.H
                                 });
                             } else {
@@ -283,19 +288,17 @@
                             }
                         });
                     </script>
-                    <div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;">
+                    <div class="qr-actions">
                         <form method="POST" action="{{ route('fasilitas.regenerate-qr', $f->id_fasilitas) }}">
                             @csrf
-                            <button class="btn-outline-blue" type="submit">Regenerasi QR</button>
+                            <button class="qr-action-btn" type="submit" title="Regenerasi QR"><i class="fa-solid fa-rotate"></i><span>QR Baru</span></button>
                         </form>
                         @if(! $f->qr_deleted_at)
-                            <button type="button" class="btn-outline-blue" onclick="printQr('qr-{{ $f->id_fasilitas }}')">
-                                <i class="fa-solid fa-print" style="margin-right:.35rem;"></i>Cetak QR
-                            </button>
-                            <form method="POST" action="{{ route('fasilitas.delete-qr', $f->id_fasilitas) }}" onsubmit="return confirm('Hapus/nonaktifkan QR code fasilitas ini?')">
+                            <button type="button" class="qr-action-btn" onclick="printQr('qr-{{ $f->id_fasilitas }}')" title="Cetak QR"><i class="fa-solid fa-print"></i><span>Cetak</span></button>
+                            <form method="POST" action="{{ route('fasilitas.delete-qr', $f->id_fasilitas) }}" data-confirm-delete data-confirm-title="Hapus/nonaktifkan QR code fasilitas ini?" data-confirm-text="QR fasilitas ini akan dinonaktifkan dan tidak bisa digunakan untuk pelaporan.">
                                 @csrf
                                 @method('DELETE')
-                                <button class="btn-danger-soft" type="submit"><i class="fa-solid fa-qrcode" style="margin-right:.35rem;"></i>Hapus QR</button>
+                                <button class="qr-action-btn danger" type="submit" title="Hapus QR"><i class="fa-solid fa-trash"></i><span>Hapus</span></button>
                             </form>
                         @endif
                     </div>

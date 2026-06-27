@@ -17,16 +17,18 @@ class ReferenceDataSeeder extends Seeder
         }
 
         foreach ([
-            'NEW' => 'Baru',
-            'HANDLED' => 'Dalam Penanganan',
-            'DONE' => 'Selesai',
+            'NEW' => 'New',
+            'HANDLED' => 'On Progress',
+            'DONE' => 'Done',
+            'CANCEL' => 'Cancel',
+            'NO_SPAREPART' => 'No Sparepart',
         ] as $kode => $nama) {
             StatusPengaduan::firstOrCreate(['kode_status' => $kode], ['nama_status' => $nama]);
         }
 
         foreach ([
             'ON PROGRES' => 'On Progress',
-            'DONE' => 'Selesai',
+            'DONE' => 'Done',
             'CANCEL' => 'Cancel',
             'NO SPAREPART' => 'No Sparepart',
         ] as $kode => $nama) {

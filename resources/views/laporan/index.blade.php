@@ -11,6 +11,7 @@
     $user = auth()->user();
     $activeMenu = 'laporan';
     $rows = isset($pengaduanList) ? collect($pengaduanList) : collect();
+    $canManageLaporan = in_array($user?->role, ['koordinator_lab', 'laboran'], true);
 
     $routeSafe = function (string $name, string $fallback = '#') {
         return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
@@ -18,9 +19,9 @@
 
     $statusMeta = function ($status) {
         return match ($status) {
-            'NEW' => ['label' => 'Baru', 'class' => 'new'],
+            'NEW' => ['label' => 'New', 'class' => 'new'],
             'HANDLED' => ['label' => 'On Progress', 'class' => 'progress'],
-            'DONE' => ['label' => 'Selesai', 'class' => 'done'],
+            'DONE' => ['label' => 'Done', 'class' => 'done'],
             'CANCEL' => ['label' => 'Cancel', 'class' => 'cancel'],
             'NO_SPAREPART' => ['label' => 'No Sparepart', 'class' => 'no-sparepart'],
             default => ['label' => $status ?: '-', 'class' => 'new'],
@@ -47,26 +48,31 @@
     .laporan-status.new { color:#095E9C; background:#D8ECFF; }
     .laporan-status.cancel { color:#B91C1C; background:#FEE2E2; }
     .laporan-status.no-sparepart { color:#374151; background:#E5E7EB; }
-    .detail-btn { border:1px solid #0090F5; color:#0090F5; background:#EEF8FF; border-radius:.5rem; padding:.45rem 1rem; font-size:.8rem; font-weight:800; cursor:pointer; }
+    .detail-btn, .edit-btn, .danger-btn { border-radius:.55rem; padding:.45rem .85rem; font-size:.78rem; font-weight:800; cursor:pointer; transition:.18s ease; }
+    .detail-btn { border:1px solid #0090F5; color:#0090F5; background:#EEF8FF; }
     .detail-btn:hover { background:#0090F5; color:#fff; }
-    .danger-btn { border:1px solid #DC2626; color:#DC2626; background:#FEE2E2; border-radius:.5rem; padding:.45rem .8rem; font-size:.8rem; font-weight:800; cursor:pointer; }
+    .edit-btn { border:1px solid #CBD5E1; color:#334155; background:#fff; }
+    .edit-btn:hover { background:#F1F5F9; border-color:#94A3B8; }
+    .danger-btn { border:1px solid #DC2626; color:#DC2626; background:#FEE2E2; }
     .danger-btn:hover { background:#DC2626; color:#fff; }
     .empty-state { padding:2rem!important; text-align:center!important; color:#94A3B8!important; }
-    .modal-backdrop { position:fixed; inset:0; z-index:60; padding:20px; background:rgba(15,23,42,.35); display:grid; place-items:center; }
+    .modal-backdrop { position:fixed; inset:0; z-index:60; padding:20px; background:rgba(15,23,42,.34); backdrop-filter:blur(4px); display:grid; place-items:center; }
     .modal-backdrop[hidden] { display:none!important; }
-    .modal-card { width:min(520px,96vw); max-height:92vh; overflow:hidden; border-radius:1.5rem; background:#fff; box-shadow:0 18px 35px rgba(0,0,0,.18); }
-    .modal-header { height:58px; padding:0 20px; border-bottom:1px solid #E5E7EB; display:flex; align-items:center; justify-content:space-between; }
-    .modal-header h2 { margin:0; color:#404040; font-size:16px; font-weight:800; }
-    .modal-close { border:0; background:transparent; color:#4a4a4a; font-size:38px; font-weight:800; line-height:1; cursor:pointer; padding:0; }
-    .modal-body { padding:34px 32px 36px; overflow-y:auto; max-height:calc(92vh - 58px); }
-    .detail-photo-wrap { display:grid; gap:10px; width:min(100%,280px); max-height:360px; margin:0 auto 20px; border:1px solid #E5E7EB; border-radius:18px; overflow-y:auto; background:#f1f1f1; padding:8px; }
+    .modal-card { width:min(780px,96vw); max-height:92vh; overflow:hidden; border:1px solid #DCE6F1; border-radius:28px; background:#fff; box-shadow:0 28px 70px rgba(30,64,175,.18); }
+    .modal-header { min-height:68px; padding:0 24px; border-bottom:0; background:linear-gradient(135deg,#0090F5,#2563EB); display:flex; align-items:center; justify-content:space-between; }
+    .modal-header h2 { margin:0; color:#fff; font-size:18px; font-weight:800; }
+    .modal-close { border:0; background:transparent; color:#fff; font-size:32px; font-weight:800; line-height:1; cursor:pointer; padding:0; }
+    .modal-body { padding:24px; overflow-y:auto; max-height:calc(92vh - 68px); background:#F8FAFC; }
+    .detail-grid { display:grid; grid-template-columns:minmax(220px,280px) minmax(0,1fr); gap:20px; align-items:start; }
+    .detail-photo-wrap { display:grid; gap:10px; width:100%; max-height:360px; margin:0; border:1px solid #DCE6F1; border-radius:18px; overflow-y:auto; background:#fff; padding:8px; }
     .modal-photo { width:100%; height:160px; display:block; object-fit:cover; border-radius:12px; }
     .modal-photo-placeholder { width:100%; min-height:160px; display:grid; place-items:center; color:#777; font-size:13px; font-weight:700; }
-    .detail-panel { width:min(100%,420px); margin:0 auto; border:1px solid #E5E7EB; border-radius:20px; overflow:hidden; background:#f7f7f7; }
-    .modal-row { min-height:38px; display:grid; grid-template-columns:96px 12px 1fr; align-items:center; padding:0 16px; background:#f0f0f0; color:#555; font-size:14px; }
-    .modal-row:nth-child(even){ background:#e8e8e8; }
+    .detail-panel { width:100%; margin:0; border:1px solid #DCE6F1; border-radius:20px; overflow:hidden; background:#fff; }
+    .modal-row { min-height:38px; display:grid; grid-template-columns:96px 12px 1fr; align-items:center; padding:0 16px; background:#fff; color:#475569; font-size:14px; border-bottom:1px solid #EEF2F7; }
+    .modal-row:nth-child(even){ background:#F8FAFC; }
+    .modal-label { font-weight:700; }
     .modal-row-description { min-height:116px; align-items:start; padding-top:14px; padding-bottom:14px; }
-    .description-box { min-height:76px; padding:14px; border:1px solid #E5E7EB; border-radius:18px; background:#fff; color:#555; line-height:1.45; white-space:pre-wrap; }
+    .description-box { min-height:76px; padding:14px; border:1px solid #DCE6F1; border-radius:18px; background:#fff; color:#475569; line-height:1.45; white-space:pre-wrap; }
     .status-badge { display:inline-block; padding:2px 8px; border-radius:5px; font-size:11px; line-height:1.25; }
     .status-badge.new { color:#0b5b9c; background:#d8ecff; }
     .status-badge.done { color:#0f7433; background:#d9f7e3; }
@@ -75,6 +81,7 @@
     .status-badge.no-sparepart { color:#374151; background:#E5E7EB; }
     .loading-line { height:13px; margin:13px 0; border-radius:30px; background:linear-gradient(90deg,#edf2f7,#f8fbff,#edf2f7); }
     .loading-line.short { width:60%; }
+    @media (max-width:820px){ .detail-grid{ grid-template-columns:1fr; } }
 </style>
 @endonce
 
@@ -136,11 +143,11 @@
                                 <td class="text-center">
                                     <div class="inline-flex items-center gap-2 justify-center">
                                         <button type="button" class="detail-btn" data-detail-url="{{ $detailUrl }}">Detail</button>
-                                        @if(\Illuminate\Support\Facades\Route::has('laporan.update'))
-                                            <button type="button" class="detail-btn" onclick="document.getElementById('edit-laporan-{{ $laporan->id_pengaduan }}').toggleAttribute('hidden')">Edit</button>
+                                        @if($canManageLaporan && \Illuminate\Support\Facades\Route::has('laporan.update'))
+                                            <button type="button" class="edit-btn" data-edit-target="edit-laporan-{{ $laporan->id_pengaduan }}">Edit</button>
                                         @endif
-                                        @if(\Illuminate\Support\Facades\Route::has('laporan.destroy'))
-                                            <form method="POST" action="{{ route('laporan.destroy', $laporan) }}" onsubmit="return confirm('Hapus laporan ini?')" class="inline">
+                                        @if($canManageLaporan && \Illuminate\Support\Facades\Route::has('laporan.destroy'))
+                                            <form method="POST" action="{{ route('laporan.destroy', $laporan) }}" class="inline" data-confirm-delete data-confirm-title="Hapus laporan ini?" data-confirm-text="Laporan yang dihapus tidak akan tampil lagi di laporan, riwayat, atau rekapitulasi.">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="danger-btn">Hapus</button>
@@ -149,6 +156,7 @@
                                     </div>
                                 </td>
                             </tr>
+                            @if($canManageLaporan)
                             <tr id="edit-laporan-{{ $laporan->id_pengaduan }}" hidden>
                                 <td colspan="7" style="background:#F8FAFC; padding:1rem 1.25rem;">
                                     <form method="POST" action="{{ route('laporan.update', $laporan) }}" style="display:grid; grid-template-columns: 1fr 180px 120px; gap:.75rem; align-items:end;">
@@ -161,15 +169,18 @@
                                         <div>
                                             <label style="display:block;font-size:.75rem;font-weight:800;color:#64748B;margin-bottom:.35rem;">Status</label>
                                             <select name="status_pengaduan" class="form-control" style="width:100%;border:1px solid #D1D5DB;border-radius:.75rem;padding:.7rem;">
-                                                <option value="NEW" @selected(($laporan->status_pengaduan ?? null) === 'NEW')>Baru</option>
+                                                <option value="NEW" @selected(($laporan->status_pengaduan ?? null) === 'NEW')>New</option>
                                                 <option value="HANDLED" @selected(($laporan->status_pengaduan ?? null) === 'HANDLED')>On Progress</option>
-                                                <option value="DONE" @selected(($laporan->status_pengaduan ?? null) === 'DONE')>Selesai</option>
+                                                <option value="DONE" @selected(($laporan->status_pengaduan ?? null) === 'DONE')>Done</option>
+                                                <option value="CANCEL" @selected(($laporan->status_pengaduan ?? null) === 'CANCEL')>Cancel</option>
+                                                <option value="NO_SPAREPART" @selected(($laporan->status_pengaduan ?? null) === 'NO_SPAREPART')>No Sparepart</option>
                                             </select>
                                         </div>
                                         <button class="detail-btn" type="submit">Simpan</button>
                                     </form>
                                 </td>
                             </tr>
+                            @endif
                         @empty
                             <tr data-empty-row><td colspan="7" class="empty-state">Belum ada laporan pengaduan.</td></tr>
                         @endforelse
@@ -225,15 +236,17 @@
         const statusLabel = esc(data.statusLabel || data.status);
 
         return `
-            <div class="detail-photo-wrap">${foto}</div>
-            <div class="detail-panel">
-                <div class="modal-row"><span>ID</span><span>:</span><span>${esc(data.id)}</span></div>
-                <div class="modal-row"><span>Status</span><span>:</span><span><mark class="status-badge ${statusClass}">${statusLabel}</mark></span></div>
-                <div class="modal-row"><span>Pelapor</span><span>:</span><span>${esc(data.pelapor)}</span></div>
-                <div class="modal-row"><span>Lokasi</span><span>:</span><span>${esc(data.lokasi)}</span></div>
-                <div class="modal-row"><span>Fasilitas</span><span>:</span><span>${esc(data.fasilitas)}</span></div>
-                <div class="modal-row"><span>Tgl Lapor</span><span>:</span><span>${esc(data.tanggal)}</span></div>
-                <div class="modal-row modal-row-description"><span>Deskripsi</span><span>:</span><div class="description-box">${esc(data.deskripsi)}</div></div>
+            <div class="detail-grid">
+                <div class="detail-photo-wrap">${foto}</div>
+                <div class="detail-panel">
+                    <div class="modal-row"><span class="modal-label">ID</span><span>:</span><span>${esc(data.id)}</span></div>
+                    <div class="modal-row"><span class="modal-label">Status</span><span>:</span><span><mark class="status-badge ${statusClass}">${statusLabel}</mark></span></div>
+                    <div class="modal-row"><span class="modal-label">Pelapor</span><span>:</span><span>${esc(data.pelapor)}</span></div>
+                    <div class="modal-row"><span class="modal-label">Lokasi</span><span>:</span><span>${esc(data.lokasi)}</span></div>
+                    <div class="modal-row"><span class="modal-label">Fasilitas</span><span>:</span><span>${esc(data.fasilitas)}</span></div>
+                    <div class="modal-row"><span class="modal-label">Tgl Lapor</span><span>:</span><span>${esc(data.tanggal)}</span></div>
+                    <div class="modal-row modal-row-description"><span class="modal-label">Deskripsi</span><span>:</span><div class="description-box">${esc(data.deskripsi)}</div></div>
+                </div>
             </div>
         `;
     }
@@ -241,7 +254,7 @@
     document.addEventListener('click', async function (event) {
         const modal = document.getElementById('detailModal');
         const modalContent = document.getElementById('modalContent');
-        const detailButton = event.target.closest('.detail-btn');
+        const detailButton = event.target.closest('[data-detail-url]');
         const closeButton = event.target.closest('[data-close-modal]');
 
         if (!modal || !modalContent) return;
@@ -264,6 +277,13 @@
         } catch (error) {
             modalContent.innerHTML = '<p>Detail laporan belum bisa ditampilkan.</p>';
         }
+    });
+
+    document.addEventListener('click', function (event) {
+        const editButton = event.target.closest('[data-edit-target]');
+        if (!editButton) return;
+        const row = document.getElementById(editButton.dataset.editTarget);
+        if (row) row.hidden = !row.hidden;
     });
 
     const searchInput = document.querySelector('[data-laporan-search]');

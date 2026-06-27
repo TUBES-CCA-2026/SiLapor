@@ -16,9 +16,9 @@ return new class extends Migration
         });
 
         DB::table('status_pengaduan')->insert([
-            ['kode_status' => 'NEW', 'nama_status' => 'Baru'],
-            ['kode_status' => 'HANDLED', 'nama_status' => 'Dalam Penanganan'],
-            ['kode_status' => 'DONE', 'nama_status' => 'Selesai'],
+            ['kode_status' => 'NEW', 'nama_status' => 'New'],
+            ['kode_status' => 'HANDLED', 'nama_status' => 'On Progress'],
+            ['kode_status' => 'DONE', 'nama_status' => 'Done'],
         ]);
     }
 

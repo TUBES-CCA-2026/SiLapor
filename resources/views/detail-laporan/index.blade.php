@@ -104,8 +104,6 @@
     .laporan-status.progress { color: #756000; background: #FFD400; }
     .laporan-status.done { color: #187C28; background: #59FF45; }
     .laporan-status.new { color: #095E9C; background: #D8ECFF; }
-    .status-arrow { font-size: 12px; opacity: .75; }
-
     .modal-backdrop { position: fixed; inset: 0; z-index: 60; padding: 20px; background: rgba(15, 23, 42, .35); display: grid; place-items: center; }
     .modal-backdrop[hidden] { display: none !important; }
     .modal-card { width: min(520px, 96vw); max-height: 92vh; overflow: hidden; border-radius: 1.5rem; background: #fff; box-shadow: 0 18px 35px rgba(0,0,0,.18); }
@@ -239,9 +237,11 @@
 
     $statusMeta = function ($status) {
         return match ($status) {
-            'NEW' => ['label' => 'Baru', 'class' => 'new'],
+            'NEW' => ['label' => 'New', 'class' => 'new'],
             'HANDLED' => ['label' => 'On Progress', 'class' => 'progress'],
             'DONE' => ['label' => 'Done', 'class' => 'done'],
+            'CANCEL' => ['label' => 'Cancel', 'class' => 'cancel'],
+            'NO_SPAREPART' => ['label' => 'No Sparepart', 'class' => 'no-sparepart'],
             default => ['label' => $status ?: '-', 'class' => 'new'],
         };
     };
@@ -311,7 +311,7 @@
         padding: 0 10px;
         display: inline-flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: center;
         gap: 10px;
         border-radius: 7px;
         font-size: 12px;
@@ -334,11 +334,16 @@
         background: #dceeff;
     }
 
-    .detail-status .status-arrow {
-        margin-left: auto;
-        opacity: .8;
-        font-size: 11px;
+    .detail-status.cancel {
+        color: #B91C1C;
+        background: #FEE2E2;
     }
+
+    .detail-status.no-sparepart {
+        color: #374151;
+        background: #E5E7EB;
+    }
+
 
     .detail-laporan-btn {
         min-width: 66px;
@@ -521,6 +526,17 @@
         background: #ffe03d;
     }
 
+    .detail-modal-badge.cancel {
+        color: #B91C1C;
+        background: #FEE2E2;
+    }
+
+    .detail-modal-badge.no-sparepart {
+        color: #374151;
+        background: #E5E7EB;
+    }
+
+
     .detail-modal-description-row {
         min-height: 116px;
         align-items: start;
@@ -605,7 +621,7 @@
             <div><label class="field-label">Fasilitas</label><select name="id_fasilitas" class="form-control"><option value="">Semua Fasilitas</option>@foreach(($fasilitasList ?? collect()) as $fasilitas)<option value="{{ $fasilitas->id_fasilitas }}" {{ (string)($filters['id_fasilitas'] ?? '') === (string)$fasilitas->id_fasilitas ? 'selected' : '' }}>{{ $fasilitas->nama_fasilitas }}</option>@endforeach</select></div>
             <div><label class="field-label">Cari Laporan</label><input name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Cari laporan..." class="form-control"></div>
             <div><label class="field-label">Urutkan</label><select name="sort" class="form-control"><option value="terbaru" {{ ($filters['sort'] ?? 'terbaru') === 'terbaru' ? 'selected' : '' }}>Terbaru</option><option value="terlama" {{ ($filters['sort'] ?? '') === 'terlama' ? 'selected' : '' }}>Terlama</option></select></div>
-            <div><label class="field-label">Status Laporan</label><select name="status" class="form-control"><option value="">Semua Status</option><option value="NEW" {{ ($filters['status'] ?? '') === 'NEW' ? 'selected' : '' }}>Baru</option><option value="HANDLED" {{ ($filters['status'] ?? '') === 'HANDLED' ? 'selected' : '' }}>On Progress</option><option value="DONE" {{ ($filters['status'] ?? '') === 'DONE' ? 'selected' : '' }}>Done</option></select></div>
+            <div><label class="field-label">Status Laporan</label><select name="status" class="form-control"><option value="">Semua Status</option><option value="NEW" {{ ($filters['status'] ?? '') === 'NEW' ? 'selected' : '' }}>New</option><option value="HANDLED" {{ ($filters['status'] ?? '') === 'HANDLED' ? 'selected' : '' }}>On Progress</option><option value="DONE" {{ ($filters['status'] ?? '') === 'DONE' ? 'selected' : '' }}>Done</option><option value="CANCEL" {{ ($filters['status'] ?? '') === 'CANCEL' ? 'selected' : '' }}>Cancel</option><option value="NO_SPAREPART" {{ ($filters['status'] ?? '') === 'NO_SPAREPART' ? 'selected' : '' }}>No Sparepart</option></select></div>
             <div style="display: flex; gap: .75rem; align-items: center;"><button type="submit" class="btn-primary">Terapkan</button><a href="{{ $filterAction }}" class="btn-danger-soft">Reset</a></div>
         </div>
     </form>
@@ -628,7 +644,7 @@
                                 $fasilitas = data_get($laporan, 'fasilitas.nama_fasilitas', '-');
                                 $detailUrl = route('dashboard.pengaduan.detail', $laporan);
                             @endphp
-                            <tr><td>{{ $tanggal }}</td><td>{{ $pj }}</td><td>{{ $lokasi }}</td><td>{{ $fasilitas }}</td><td><span class="detail-status {{ $status['class'] }}">{{ $status['label'] }} <span class="status-arrow">▾</span></span></td><td class="text-center"><button type="button" class="detail-laporan-btn" data-detail-laporan-url="{{ $detailUrl }}">Detail</button></td></tr>
+                            <tr><td>{{ $tanggal }}</td><td>{{ $pj }}</td><td>{{ $lokasi }}</td><td>{{ $fasilitas }}</td><td><span class="detail-status {{ $status['class'] }}">{{ $status['label'] }}</span></td><td class="text-center"><button type="button" class="detail-laporan-btn" data-detail-laporan-url="{{ $detailUrl }}">Detail</button></td></tr>
                         @empty
                             <tr><td colspan="6" class="empty-state">Belum ada laporan pada kelompok ini.</td></tr>
                         @endforelse
@@ -686,98 +702,6 @@
 
     window.addEventListener('resize', handleResponsiveSidebar);
     window.addEventListener('load', handleResponsiveSidebar);
-
-    (function () {
-        const modal = document.getElementById('detailModal');
-        const modalContent = document.getElementById('modalContent');
-
-        if (!modal || !modalContent) return;
-
-        function closeModal() {
-            modal.hidden = true;
-            modalContent.innerHTML = '';
-        }
-
-        function esc(value) {
-            return String(value ?? '-')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-
-        function renderDetail(data) {
-            const fotoItems = Array.isArray(data.fotos) && data.fotos.length
-                ? data.fotos
-                : (data.foto ? [{ url: data.foto }] : []);
-
-            const foto = fotoItems.length
-                ? fotoItems.map((item, index) => {
-                    const url = typeof item === 'string' ? item : item.url;
-                    return url
-                        ? `<img src="${esc(url)}" alt="Foto kerusakan ${index + 1}" class="modal-photo" loading="lazy">`
-                        : '';
-                }).join('')
-                : `<div class="modal-photo-placeholder">Tidak ada foto</div>`;
-
-            const statusClass = esc(data.statusClass || 'new');
-            const statusLabel = esc(data.statusLabel || data.status);
-
-            return `
-                <div class="detail-photo-wrap">${foto}</div>
-                <div class="detail-panel">
-                    <div class="modal-row"><span class="modal-label">ID</span><span>:</span><span>${esc(data.id)}</span></div>
-                    <div class="modal-row"><span class="modal-label">Status</span><span>:</span><span><mark class="status-badge ${statusClass}">${statusLabel}</mark></span></div>
-                    <div class="modal-row"><span class="modal-label">Pelapor</span><span>:</span><span>${esc(data.pelapor)}</span></div>
-                    <div class="modal-row"><span class="modal-label">Lokasi</span><span>:</span><span>${esc(data.lokasi)}</span></div>
-                    <div class="modal-row"><span class="modal-label">Fasilitas</span><span>:</span><span>${esc(data.fasilitas)}</span></div>
-                    <div class="modal-row"><span class="modal-label">Tgl Lapor</span><span>:</span><span>${esc(data.tanggal)}</span></div>
-                    <div class="modal-row modal-row-description"><span class="modal-label">Deskripsi</span><span>:</span><div class="description-box">${esc(data.deskripsi)}</div></div>
-                </div>
-            `;
-        }
-
-        document.addEventListener('click', async function (event) {
-            const detailButton = event.target.closest('.detail-btn');
-            const closeButton = event.target.closest('[data-close-modal]');
-
-            if (closeButton || event.target === modal) {
-                closeModal();
-                return;
-            }
-
-            if (!detailButton) return;
-
-            const url = detailButton.dataset.detailUrl;
-            modal.hidden = false;
-            modalContent.innerHTML = '<div class="loading-line"></div><div class="loading-line short"></div><div class="loading-line"></div>';
-
-            if (!url || url === '#') {
-                modalContent.innerHTML = '<p>URL detail belum tersedia.</p>';
-                return;
-            }
-
-            try {
-                const response = await fetch(url, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (!response.ok) throw new Error('Gagal mengambil detail laporan.');
-                const data = await response.json();
-                modalContent.innerHTML = renderDetail(data);
-            } catch (error) {
-                modalContent.innerHTML = '<p>Detail laporan belum bisa ditampilkan. Pastikan route detail pengaduan sudah benar.</p>';
-            }
-        });
-
-        document.addEventListener('keydown', function (event) {
-            if (event.key === 'Escape') closeModal();
-        });
-    })();
 
     (function () {
         const searchInput = document.querySelector('[data-laporan-search]');

@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/pengaduan-foto/{foto}', [PengaduanController::class, 'showFoto'])->name('pengaduan-foto.show');
+    Route::get('/users/{user}/foto', [ProfileController::class, 'showPhoto'])->name('users.photo');
 
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
@@ -101,23 +102,23 @@ Route::middleware('auth')->group(function () {
         ->name('laporan.update');
 
     Route::delete('/laporan/{pengaduan}', [DashboardController::class, 'destroyPengaduan'])
-        ->middleware('role:koordinator_lab,laboran,kepala_lab')
+        ->middleware('role:koordinator_lab,laboran')
         ->name('laporan.destroy');
 
     Route::patch('/riwayat/{pengaduan}', [DashboardController::class, 'updatePengaduan'])
-        ->middleware('role:asisten,laboran,kepala_lab')
+        ->middleware('role:asisten,laboran')
         ->name('riwayat.update');
 
     Route::delete('/riwayat/{pengaduan}', [DashboardController::class, 'destroyPengaduan'])
-        ->middleware('role:asisten,laboran,kepala_lab')
+        ->middleware('role:asisten,laboran')
         ->name('riwayat.destroy');
 
     Route::get('/rekapsulasi/export/excel', [DashboardController::class, 'exportRekapsulasiExcel'])
-        ->middleware('role:laboran,kepala_lab')
+        ->middleware('role:laboran')
         ->name('rekapsulasi.export.excel');
 
     Route::get('/rekapsulasi/export/pdf', [DashboardController::class, 'exportRekapsulasiPdf'])
-        ->middleware('role:laboran,kepala_lab')
+        ->middleware('role:laboran')
         ->name('rekapsulasi.export.pdf');
 
     Route::post('/rekapsulasi/import', [DashboardController::class, 'importRekapsulasi'])
@@ -150,6 +151,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
             Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
             Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+            Route::post('/users/import', [AdminUserController::class, 'import'])->name('users.import');
+            Route::get('/users/import-template', [AdminUserController::class, 'importTemplate'])->name('users.import-template');
             Route::get('/users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
             Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
             Route::post('/users/{user}/reset-password', [AdminUserController::class, 'resetPassword'])->name('users.reset-password');

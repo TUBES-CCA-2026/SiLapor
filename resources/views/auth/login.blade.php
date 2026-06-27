@@ -3,17 +3,14 @@
 @section('title', 'Login - SiLapor')
 
 @section('content')
-<div class="min-h-screen grid lg:grid-cols-2">
+<div class="min-h-screen grid lg:grid-cols-[60%_40%]">
 
-    {{-- Panel kiri: branding --}}
-    {{-- BACKGROUND: ganti file di public/images/lab-background.jpg dengan foto lab kamu --}}
-    <div class="relative hidden lg:flex flex-col justify-between p-12 text-white overflow-hidden bg-cover bg-center"
+     <div class="relative hidden lg:flex flex-col justify-between p-12 text-white overflow-hidden bg-cover bg-center"
          style="background-image: linear-gradient(160deg, rgba(14,58,77,.88) 0%, rgba(21,108,153,.82) 100%), url('{{ asset('images/lab-background.jpg') }}');">
         <div class="flex items-center gap-3">
-            {{-- LOGO: ganti file di public/images/logo-silapor.png --}}
-            <img src="{{ asset('images/logo-silapor.png') }}" alt="SiLapor"
-                 class="w-12 h-12 rounded-xl object-contain bg-white/15 p-1.5">
-            <span class="font-display font-extrabold text-2xl tracking-tight">SiLapor</span>
+            <img src="{{ asset('images/logo_iclabs.png') }}" alt="SiLapor"
+                 class="w-99 h-99 p-1.5">
+            <span class="font-display font-extrabold text-4xl tracking-tight">SiLapor</span>
         </div>
 
         <div>
@@ -32,7 +29,7 @@
     <div class="flex items-center justify-center p-8">
         <div class="w-full max-w-md">
             <h2 class="font-display font-bold text-3xl text-gray-900 mb-1">Sign In To Your Account</h2>
-            <p class="text-gray-500 mb-8">Welcome Back!</p>
+            <p class="text-gray-500 text-align-center mb-8">Welcome Back!</p>
 
             @if ($errors->any())
                 <div class="mb-5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3">
