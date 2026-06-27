@@ -164,10 +164,16 @@
 
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             @php
+                $formatStatistik = function ($value) {
+                    $value = (int) ($value ?? 0);
+
+                    return $value > 0 ? (string) $value : '-';
+                };
+
                 $stats = [
-                    ['Total Pengaduan', $totalPengaduan ?? 0, 'fa-triangle-exclamation', 'text-[#FF4D4D]', 'bg-[#FFEAEB]'],
-                    ['Sedang Diperbaiki', $sedangDiperbaiki ?? 0, 'fa-screwdriver-wrench', 'text-[#0090F5]', 'bg-[#EAF5FE]'],
-                    ['Done', $selesai ?? 0, 'fa-circle-check', 'text-[#22C55E]', 'bg-[#E6F9EE]'],
+                    ['Total Pengaduan', $formatStatistik($totalPengaduan ?? null), 'fa-triangle-exclamation', 'text-[#FF4D4D]', 'bg-[#FFEAEB]'],
+                    ['Sedang Diperbaiki', $formatStatistik($sedangDiperbaiki ?? null), 'fa-screwdriver-wrench', 'text-[#0090F5]', 'bg-[#EAF5FE]'],
+                    ['Done', $formatStatistik($selesai ?? null), 'fa-circle-check', 'text-[#22C55E]', 'bg-[#E6F9EE]'],
                 ];
             @endphp
 
@@ -182,7 +188,7 @@
                             {{ $label }}
                         </p>
                         <p class="text-2xl md:text-3xl font-extrabold text-[#2C3E50]">
-                            {{ (int) $value }}
+                            {{ $value }}
                         </p>
                     </div>
                 </div>

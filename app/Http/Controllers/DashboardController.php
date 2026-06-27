@@ -384,9 +384,12 @@ class DashboardController extends Controller
             ->take(20)
             ->get();
 
-        $totalPengaduan = $tugas->count();
-        $sedangDiperbaiki = $tugas->where('status_penanganan', 'ON PROGRES')->count();
-        $selesai = $tugas->where('status_penanganan', 'DONE')->count();
+        $statistikTugas = TindakLanjut::query()
+            ->where('id_petugas', $user->id_user);
+
+        $totalPengaduan = (clone $statistikTugas)->count();
+        $sedangDiperbaiki = (clone $statistikTugas)->statusKode('ON PROGRES')->count();
+        $selesai = (clone $statistikTugas)->statusKode('DONE')->count();
 
         return view('dashboard.asisten', compact(
             'user',
