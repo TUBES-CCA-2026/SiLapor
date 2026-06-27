@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,21 +14,21 @@ class ProfileController extends Controller
 {
     public function index(): View
     {
-        $user = Auth::user()->load('profile', 'roleData');
+        $user = Auth::user()->load('profile', 'roleData', 'laboratoriumPenanggungJawab');
 
         return view('profile.index', compact('user'));
     }
 
     public function edit(): View
     {
-        $user = Auth::user()->load('profile', 'roleData');
+        $user = Auth::user()->load('profile', 'roleData', 'laboratoriumPenanggungJawab');
 
         return view('profile.index', compact('user'));
     }
 
     public function update(Request $request): RedirectResponse
     {
-        $user = Auth::user()->load('profile');
+        $user = Auth::user()->load('profile', 'laboratoriumPenanggungJawab');
 
         $validated = $request->validate([
             'name' => ['nullable', 'string', 'max:120'],
@@ -93,6 +94,12 @@ class ProfileController extends Controller
             'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
         ]);
 
+        if ($this->passwordLooksSimilar($validated['current_password'], $validated['password'])) {
+            return back()
+                ->withErrors(['password' => 'Password baru tidak boleh sama atau terlalu mirip dengan password lama. Gunakan kombinasi yang benar-benar berbeda.'])
+                ->withInput($request->except(['current_password', 'password', 'password_confirmation']));
+        }
+
         Auth::user()->update([
             'password' => Hash::make($validated['password']),
         ]);
@@ -101,4 +108,52 @@ class ProfileController extends Controller
             ->with('success', 'Kata sandi berhasil diubah.')
             ->with('profile_form', 'password');
     }
+
+    public function showPhoto(User $user)
+    {
+        $fallback = 'https://ui-avatars.com/api/?name=' . urlencode($user->nama ?: $user->email ?: 'User') . '&background=FFFFFF&color=0090F5';
+        $photoPath = ltrim((string) $user->foto, '/');
+
+        if ($photoPath === '') {
+            return redirect()->away($fallback);
+        }
+
+        $storagePath = storage_path('app/public/' . $photoPath);
+        $publicPath = public_path('storage/' . $photoPath);
+
+        if (is_file($storagePath)) {
+            return response()->file($storagePath, [
+                'Cache-Control' => 'private, max-age=86400',
+            ]);
+        }
+
+        if (is_file($publicPath)) {
+            return response()->file($publicPath, [
+                'Cache-Control' => 'private, max-age=86400',
+            ]);
+        }
+
+        return redirect()->away($fallback);
+    }
+
+    private function passwordLooksSimilar(string $currentPassword, string $newPassword): bool
+    {
+        $current = strtolower(trim($currentPassword));
+        $new = strtolower(trim($newPassword));
+
+        if ($current === $new) {
+            return true;
+        }
+
+        if (strlen($current) >= 5 && (str_contains($new, $current) || str_contains($current, $new))) {
+            return true;
+        }
+
+        similar_text($current, $new, $percentage);
+
+        return $percentage >= 70;
+    }
+
 }
+      
+

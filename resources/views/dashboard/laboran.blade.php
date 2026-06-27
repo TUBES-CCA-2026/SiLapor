@@ -197,7 +197,7 @@
                         <span class="font-bold text-[#2C3E50]">{{ $proses ?? 0 }}</span>
                     </div>
                     <div class="flex items-center justify-between text-sm">
-                        <span class="text-gray-500">Laporan Selesai</span>
+                        <span class="text-gray-500">Laporan Done</span>
                         <span class="font-bold text-[#2C3E50]">{{ $selesai ?? 0 }}</span>
                     </div>
 
@@ -248,9 +248,9 @@
                                     default => 'bg-[#EAF5FE] text-[#0090F5]',
                                 };
                                 $statusLabel = match($statusKode) {
-                                    'DONE' => 'Selesai',
+                                    'DONE' => 'Done',
                                     'HANDLED' => 'On Progress',
-                                    default => 'Baru',
+                                    default => 'New',
                                 };
                             @endphp
                             <tr class="hover:bg-slate-50">

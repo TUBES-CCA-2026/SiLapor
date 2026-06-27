@@ -15,9 +15,11 @@ class StatusPengaduan extends Model
     public static function idByKode(string $kodeStatus): int
     {
         $namaStatus = match ($kodeStatus) {
-            'NEW' => 'Baru',
-            'HANDLED' => 'Dalam Penanganan',
-            'DONE' => 'Selesai',
+            'NEW' => 'New',
+            'HANDLED' => 'On Progress',
+            'DONE' => 'Done',
+            'CANCEL' => 'Cancel',
+            'NO_SPAREPART' => 'No Sparepart',
             default => $kodeStatus,
         };
 

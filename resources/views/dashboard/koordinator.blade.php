@@ -138,7 +138,7 @@
             $stats = [
                 ['Total Laporan', $totalLaporan ?? 0, 'fa-triangle-exclamation', 'text-[#FF4D4D]', 'bg-[#FFEAEB]'],
                 ['Sedang Diproses', $proses ?? 0, 'fa-screwdriver-wrench', 'text-[#0090F5]', 'bg-[#EAF5FE]'],
-                ['Selesai', $selesai ?? 0, 'fa-circle-check', 'text-[#22C55E]', 'bg-[#E6F9EE]'],
+                ['Done', $selesai ?? 0, 'fa-circle-check', 'text-[#22C55E]', 'bg-[#E6F9EE]'],
             ];
         @endphp
 
@@ -187,9 +187,9 @@
                                     default => 'bg-[#EAF5FE] text-[#0090F5]',
                                 };
                                 $statusLabel = match($statusKode) {
-                                    'DONE' => 'Selesai',
+                                    'DONE' => 'Done',
                                     'HANDLED' => 'On Progress',
-                                    default => 'Baru',
+                                    default => 'New',
                                 };
                             @endphp
                             <tr class="hover:bg-slate-50">
