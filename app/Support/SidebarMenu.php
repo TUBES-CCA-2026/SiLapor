@@ -50,13 +50,20 @@ final class SidebarMenu
                 ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $url('detail-laporan.index')],
                 ['profil', 'Profil', 'fa-regular fa-user', $url('profile.index')],
             ],
-            'asisten' => [
-                ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $url('dashboard')],
-                ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $url('pengaduan.index')],
-                ['tindak-lanjut', $isPj ? 'Penugasan' : 'Teknisi', 'fa-solid fa-screwdriver-wrench', $url('tindak-lanjut.index')],
-                ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $url('riwayat.index')],
-                ['profil', 'Profil', 'fa-regular fa-user', $url('profile.index')],
-            ],
+            'asisten' => (function() use ($isPj, $url) {
+                $menu = [
+                    ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $url('dashboard')],
+                    ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $url('pengaduan.index')],
+                ];
+                if ($isPj) {
+                    $menu[] = ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $url('penugasan.index')];
+                } else {
+                    $menu[] = ['tindak-lanjut', 'Teknisi', 'fa-solid fa-screwdriver-wrench', $url('tindak-lanjut.index')];
+                }
+                $menu[] = ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $url('riwayat.index')];
+                $menu[] = ['profil', 'Profil', 'fa-regular fa-user', $url('profile.index')];
+                return $menu;
+            })(),
             'kepala_lab' => [
                 ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $url('dashboard')],
                 ['laporan', 'Laporan', 'fa-regular fa-file-lines', $url('laporan.index')],

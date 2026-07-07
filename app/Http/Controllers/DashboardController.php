@@ -79,6 +79,11 @@ class DashboardController extends Controller
 
     public function penugasan()
     {
+        $user = Auth::user();
+
+        // Cari ID laboratorium di mana asisten ini ditunjuk sebagai PJ
+        $labIds = Laboratorium::where('id_penanggung_jawab', $user->id_user)->pluck('id_laboratorium')->toArray();
+
         $pengaduanList = Pengaduan::with([
             'fasilitas.laboratorium',
             'pelapor',
@@ -87,12 +92,13 @@ class DashboardController extends Controller
             'fotoUtama',
             'fotos',
         ])
+            ->whereHas('fasilitas.laboratorium', function ($query) use ($labIds) {
+                $query->whereIn('id_laboratorium', $labIds);
+            })
             ->orderByDesc('id_pengaduan')
             ->get();
 
-        $asisten = User::role('asisten')
-            ->orderBy('nama')
-            ->get();
+        $asisten = collect(); // Dropdown sekarang spesifik per laboratorium di view
 
         return view('penugasan.index', compact('pengaduanList', 'asisten'));
     }

@@ -15,6 +15,10 @@ class Laboratorium extends Model
         'kapasitas', 'keterangan',
     ];
 
+    protected $casts = [
+        'id_pendamping' => 'array',
+    ];
+
     public function penanggungJawabUser()
     {
         return $this->belongsTo(User::class, 'id_penanggung_jawab', 'id_user');
@@ -22,7 +26,19 @@ class Laboratorium extends Model
 
     public function pendampingUser()
     {
-        return $this->belongsTo(User::class, 'id_pendamping', 'id_user');
+        return $this->belongsTo(User::class, 'id_penanggung_jawab', 'id_user')->whereRaw('1 = 0');
+    }
+
+    public function getPendampingUsersAttribute()
+    {
+        $ids = $this->id_pendamping;
+        if (empty($ids)) {
+            return collect();
+        }
+        if (is_string($ids)) {
+            $ids = json_decode($ids, true) ?: explode(',', $ids);
+        }
+        return User::whereIn('id_user', (array)$ids)->get();
     }
 
     public function koordinator()

@@ -225,10 +225,16 @@ class PengaduanController extends Controller
                 // Auto-assign TindakLanjut berdasarkan PJ & Pendamping lab
                 $lab = $fasilitas->laboratorium;
                 if ($lab && $lab->id_penanggung_jawab) {
+                    $pendampingIds = $lab->id_pendamping;
+                    if (is_string($pendampingIds)) {
+                        $pendampingIds = json_decode($pendampingIds, true) ?: explode(',', $pendampingIds);
+                    }
+                    $firstPendampingId = !empty($pendampingIds) && is_array($pendampingIds) ? reset($pendampingIds) : null;
+
                     TindakLanjut::create([
                         'id_pengaduan' => $pengaduan->id_pengaduan,
                         'id_petugas' => $lab->id_penanggung_jawab,
-                        'id_teknisi' => $lab->id_pendamping,
+                        'id_teknisi' => $firstPendampingId,
                         'status_penanganan' => 'ON PROGRES',
                         'tanggal_penanganan' => now()->toDateString(),
                     ]);

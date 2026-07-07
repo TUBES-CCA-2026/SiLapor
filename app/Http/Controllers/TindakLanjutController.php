@@ -63,10 +63,14 @@ class TindakLanjutController extends Controller
             ->role('asisten')
             ->firstOrFail();
 
+        $lab = $pengaduan->fasilitas?->laboratorium;
+        $pjId = $lab?->id_penanggung_jawab ?? Auth::id();
+
         $tindakLanjut = TindakLanjut::updateOrCreate(
             ['id_pengaduan' => $pengaduan->id_pengaduan],
             [
-                'id_petugas' => $asisten->id_user,
+                'id_petugas' => $pjId,
+                'id_teknisi' => $asisten->id_user,
                 'status_penanganan' => $pengaduan->status_pengaduan === 'DONE' ? 'DONE' : 'ON PROGRES',
             ]
         );

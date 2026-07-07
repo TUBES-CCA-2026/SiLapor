@@ -49,10 +49,11 @@ class LaboratoriumController extends Controller
         $user = Auth::user();
 
         if ($user && $user->role === 'koordinator_lab') {
-            // Koordinator hanya bisa set PJ & Pendamping
+            // Koordinator hanya bisa set PJ & Pendamping (array)
             $validated = $request->validate([
                 'id_penanggung_jawab' => ['nullable', 'exists:users,id_user'],
-                'id_pendamping' => ['nullable', 'exists:users,id_user'],
+                'id_pendamping' => ['nullable', 'array'],
+                'id_pendamping.*' => ['exists:users,id_user'],
             ]);
 
             $laboratorium->update($validated);

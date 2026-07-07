@@ -83,6 +83,9 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/tindak-lanjut', [TindakLanjutController::class, 'index'])->name('tindak-lanjut.index');
         Route::patch('/tindak-lanjut/{tindakLanjut}', [TindakLanjutController::class, 'update'])->name('tindak-lanjut.update');
+
+        Route::get('/penugasan', [DashboardController::class, 'penugasan'])->name('penugasan.index');
+        Route::post('/pengaduan/{pengaduan}/assign', [TindakLanjutController::class, 'assign'])->name('tindak-lanjut.assign');
     });
 
     Route::get('/riwayat', [RiwayatController::class, 'index'])

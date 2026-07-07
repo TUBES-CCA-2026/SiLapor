@@ -213,7 +213,6 @@
             <button type="submit" class="btn-primary">
                 <i class="fa-solid fa-file-import" style="margin-right: .45rem;"></i>Import
             </button>
-            <a href="{{ route('admin.users.import-template') }}" class="btn-secondary-light">Download Format</a>
         </form>
 
         @if(session('import_errors') && count(session('import_errors')) > 0)

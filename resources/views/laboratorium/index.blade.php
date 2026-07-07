@@ -80,7 +80,7 @@
                     <input name="kode_laboratorium" placeholder="Kode" class="form-control">
                     <input name="lokasi" placeholder="Lokasi" class="form-control">
                     <button class="btn-mini btn-primary-mini" type="submit">
-                        <i class="fa-solid fa-plus"></i>Lab
+                        Submit
                     </button>
                 </form>
                 @endif
@@ -91,7 +91,9 @@
                             <div class="lab-row">
                                 <div>
                                     <p class="lab-title">
-                                        {{ $lab->nama_laboratorium }}
+                                        <span @if($isKoordinator) onclick="togglePjForm('{{ $lab->id_laboratorium }}')" style="cursor: pointer;" class="hover:underline hover:text-[#0090F5] transition-colors" @endif>
+                                            {{ $lab->nama_laboratorium }}
+                                        </span>
                                         @if($lab->kode_laboratorium)
                                             <span class="text-xs text-gray-400 font-semibold">({{ $lab->kode_laboratorium }})</span>
                                         @endif
@@ -99,21 +101,15 @@
                                     <p class="lab-meta">{{ $lab->lokasi ?? '—' }}</p>
                                     <p class="lab-pj">
                                         PJ: {{ $lab->penanggungJawabUser?->nama ?? 'Belum ditentukan' }}
-                                        · Pendamping: {{ $lab->pendampingUser?->nama ?? 'Belum ditentukan' }}
+                                        · Pendamping: {{ $lab->pendamping_users->pluck('nama')->join(', ') ?: 'Belum ditentukan' }}
                                         · {{ $lab->fasilitas_count }} fasilitas
                                     </p>
                                 </div>
-
-                                @if($isKoordinator)
-                                <button type="button" class="btn-mini btn-outline-mini" onclick="document.getElementById('pj-form-{{ $lab->id_laboratorium }}').toggleAttribute('hidden')">
-                                    <i class="fa-solid fa-pen"></i>Set PJ
-                                </button>
-                                @endif
                             </div>
 
                             {{-- Koordinator: form set PJ & Pendamping --}}
                             @if($isKoordinator)
-                            <div id="pj-form-{{ $lab->id_laboratorium }}" hidden class="pj-form">
+                            <div id="pj-form-{{ $lab->id_laboratorium }}" class="pj-form" style="display: none;">
                                 <form method="POST" action="{{ route('laboratorium.update', $lab) }}" style="display:contents;">
                                     @csrf
                                     @method('PATCH')
@@ -149,37 +145,46 @@
                                         </div>
                                         <input type="hidden" name="id_penanggung_jawab" value="{{ $lab->id_penanggung_jawab }}">
                                     </div>
-                                    <div class="relative custom-searchable-select">
+                                    <div class="relative custom-searchable-multiselect">
                                         <label class="field-label">Pendamping</label>
                                         <div class="relative">
                                             <input 
                                                 type="text" 
                                                 placeholder="— Pilih Pendamping —" 
-                                                class="form-control searchable-select-trigger cursor-pointer bg-white"
+                                                class="form-control searchable-multiselect-trigger cursor-pointer bg-white"
                                                 readonly
                                             >
                                             <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" style="margin-top: 10px;">
                                                 <i class="fa-solid fa-chevron-down"></i>
                                             </span>
                                         </div>
-                                        <div class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 hidden searchable-select-dropdown" style="max-height: 280px; overflow: hidden; width: 100%; min-width: 200px;">
+                                        <div class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 hidden searchable-multiselect-dropdown" style="max-height: 280px; overflow: hidden; width: 100%; min-width: 200px;">
                                             <div class="p-2 border-b border-gray-100">
                                                 <input 
                                                     type="text" 
                                                     placeholder="Cari asisten..." 
-                                                    class="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-silapor-500 searchable-select-search"
+                                                    class="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-silapor-500 searchable-multiselect-search"
                                                 >
                                             </div>
-                                            <ul class="max-h-48 overflow-y-auto py-1 text-sm text-gray-700 searchable-select-options">
-                                                <li data-value="" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-gray-400">— Pilih Pendamping —</li>
+                                            <ul class="max-h-48 overflow-y-auto py-1 text-sm text-gray-700 searchable-multiselect-options">
+                                                @php
+                                                    $currentPendamping = (array) $lab->id_pendamping;
+                                                @endphp
                                                 @foreach($asistenList as $asisten)
-                                                    <li data-value="{{ $asisten->id_user }}" class="px-4 py-2 hover:bg-gray-50 cursor-pointer">
-                                                        {{ $asisten->nama }}
+                                                    <li class="px-4 py-2 hover:bg-gray-50 cursor-pointer flex items-center gap-2">
+                                                        <input 
+                                                            type="checkbox" 
+                                                            name="id_pendamping[]" 
+                                                            value="{{ $asisten->id_user }}"
+                                                            class="searchable-multiselect-checkbox"
+                                                            data-name="{{ $asisten->nama }}"
+                                                            @checked(in_array((string)$asisten->id_user, array_map('strval', $currentPendamping), true))
+                                                        >
+                                                        <span>{{ $asisten->nama }}</span>
                                                     </li>
                                                 @endforeach
                                             </ul>
                                         </div>
-                                        <input type="hidden" name="id_pendamping" value="{{ $lab->id_pendamping }}">
                                     </div>
                                     <button type="submit" class="btn-mini btn-primary-mini">
                                         <i class="fa-solid fa-floppy-disk"></i>Simpan
@@ -198,6 +203,20 @@
 </div>
 
 <script>
+    function togglePjForm(labId) {
+        // Hide all other PJ forms
+        document.querySelectorAll('.pj-form').forEach(function (form) {
+            if (form.id !== 'pj-form-' + labId) {
+                form.style.display = 'none';
+            }
+        });
+        // Toggle target form
+        const target = document.getElementById('pj-form-' + labId);
+        if (target) {
+            target.style.display = target.style.display === 'none' ? 'grid' : 'none';
+        }
+    }
+
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar-menu');
         const overlay = document.getElementById('sidebar-overlay');
@@ -207,6 +226,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
+        // Searchable Select Component Logic
         document.querySelectorAll('.custom-searchable-select').forEach(function (wrapper) {
             const trigger = wrapper.querySelector('.searchable-select-trigger');
             const dropdown = wrapper.querySelector('.searchable-select-dropdown');
@@ -225,7 +245,7 @@
             // Click trigger to open dropdown
             trigger.addEventListener('click', function (e) {
                 e.stopPropagation();
-                document.querySelectorAll('.searchable-select-dropdown').forEach(d => {
+                document.querySelectorAll('.searchable-select-dropdown, .searchable-multiselect-dropdown').forEach(d => {
                     if (d !== dropdown) d.classList.add('hidden');
                 });
                 dropdown.classList.toggle('hidden');
@@ -261,9 +281,76 @@
             });
         });
 
+        // Searchable Multiselect Component Logic
+        document.querySelectorAll('.custom-searchable-multiselect').forEach(function (wrapper) {
+            const trigger = wrapper.querySelector('.searchable-multiselect-trigger');
+            const dropdown = wrapper.querySelector('.searchable-multiselect-dropdown');
+            const searchInput = wrapper.querySelector('.searchable-multiselect-search');
+            const optionsList = wrapper.querySelector('.searchable-multiselect-options');
+            const checkboxes = optionsList.querySelectorAll('.searchable-multiselect-checkbox');
+            const items = optionsList.querySelectorAll('li');
+
+            function updateTriggerText() {
+                const selectedNames = [];
+                checkboxes.forEach(function (cb) {
+                    if (cb.checked) {
+                        selectedNames.push(cb.getAttribute('data-name'));
+                    }
+                });
+                trigger.value = selectedNames.length > 0 ? selectedNames.join(', ') : '';
+            }
+
+            updateTriggerText();
+
+            // Toggle dropdown
+            trigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+                document.querySelectorAll('.searchable-select-dropdown, .searchable-multiselect-dropdown').forEach(d => {
+                    if (d !== dropdown) d.classList.add('hidden');
+                });
+                dropdown.classList.toggle('hidden');
+                if (!dropdown.classList.contains('hidden')) {
+                    searchInput.value = '';
+                    items.forEach(li => li.style.display = '');
+                    searchInput.focus();
+                }
+            });
+
+            dropdown.addEventListener('click', function (e) {
+                e.stopPropagation();
+            });
+
+            // Filtering search
+            searchInput.addEventListener('input', function () {
+                const query = searchInput.value.toLowerCase();
+                items.forEach(function (li) {
+                    const text = li.textContent.toLowerCase();
+                    li.style.display = text.includes(query) ? '' : 'none';
+                });
+            });
+
+            // Clicking list item toggles checkbox
+            items.forEach(function (li) {
+                li.addEventListener('click', function (e) {
+                    if (e.target.tagName !== 'INPUT') {
+                        const cb = li.querySelector('.searchable-multiselect-checkbox');
+                        if (cb) {
+                            cb.checked = !cb.checked;
+                            updateTriggerText();
+                        }
+                    }
+                });
+            });
+
+            // Checking checkbox directly updates trigger text
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', updateTriggerText);
+            });
+        });
+
         // Click outside closes dropdowns
         document.addEventListener('click', function () {
-            document.querySelectorAll('.searchable-select-dropdown').forEach(d => d.classList.add('hidden'));
+            document.querySelectorAll('.searchable-select-dropdown, .searchable-multiselect-dropdown').forEach(d => d.classList.add('hidden'));
         });
     });
 </script>
