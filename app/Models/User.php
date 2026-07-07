@@ -86,11 +86,12 @@ class User extends Authenticatable
     public function getRoleLabelAttribute(): string
     {
         return match ($this->role) {
+            'admin' => 'Admin',
             'kepala_lab' => 'Kepala Lab',
             'koordinator_lab' => 'Koordinator Lab',
             'laboran' => 'Laboran',
             'asisten' => 'Asisten Lab',
-                        default => 'User',
+            default => 'User',
         };
     }
 
@@ -169,6 +170,6 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return false;
+        return $this->role === 'admin';
     }
 }

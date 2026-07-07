@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
+use Illuminate\Support\Facades\Cookie;
+
 class LoginController extends Controller
 {
     // Tampilkan halaman login (sesuai desain SiLapor)
@@ -16,7 +18,9 @@ class LoginController extends Controller
             return redirect()->route('dashboard');
         }
 
-        return view('auth.login');
+        $rememberEmail = Cookie::get('remember_email');
+
+        return view('auth.login', compact('rememberEmail'));
     }
 
     /**
@@ -36,8 +40,15 @@ class LoginController extends Controller
 
         $remember = $request->boolean('remember');
 
+        $user = \App\Models\User::where('email', $credentials['email'])->first();
+
+        if (!$user) {
+            return back()
+                ->withErrors(['email' => 'Akun belum terdaftar.'])
+                ->withInput($request->only('email'));
+        }
+
         if (!Auth::attempt($credentials, $remember)) {
-            // sesuai flowchart: "Salah 3x atau lebih?" baru tampilkan captcha/lockout
             $attempts = $request->session()->increment('login_attempts');
 
             if ($attempts >= 3) {
@@ -49,6 +60,13 @@ class LoginController extends Controller
             return back()
                 ->withErrors(['email' => 'Username atau password salah.'])
                 ->withInput($request->only('email'));
+        }
+
+        // Simpan email ke cookie jika "Remember Me" dicentang
+        if ($remember) {
+            Cookie::queue('remember_email', $credentials['email'], 1209600); // 14 hari
+        } else {
+            Cookie::queue(Cookie::forget('remember_email'));
         }
 
         $request->session()->forget('login_attempts');

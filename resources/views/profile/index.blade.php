@@ -35,13 +35,7 @@
         default => 'Nama User',
     };
 
-    $idFieldLabel = match($user?->role) {
-        'kepala_lab' => 'ID Kepala Lab',
-        'koordinator_lab' => 'ID Koordinator Lab',
-        'laboran' => 'ID Laboran',
-        'asisten' => 'ID Asisten Lab',
-        default => 'ID User',
-    };
+
 
     $avatarUrl = $user?->profile_photo_url
         ?? ('https://ui-avatars.com/api/?name=' . urlencode($user?->nama ?? 'User') . '&background=F3F4F6&color=9CA3AF');
@@ -156,13 +150,9 @@
                 </div>
 
                 <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
+                    <div class="md:col-span-2">
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{{ $nameFieldLabel }}</label>
                         <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $user->nama ?? '-' }}</div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{{ $idFieldLabel }}</label>
-                        <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $user->id_user ?? '-' }}</div>
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Email</label>
@@ -239,13 +229,9 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="sm:col-span-1">
+                    <div class="sm:col-span-2">
                         <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">{{ $nameFieldLabel }}</label>
                         <input type="text" name="name" value="{{ old('name', $user->nama) }}" required class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800">
-                    </div>
-                    <div class="sm:col-span-1">
-                        <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">{{ $idFieldLabel }}</label>
-                        <input type="text" value="{{ $user->id_user }}" disabled class="w-full mt-1.5 p-3.5 bg-gray-100 border border-gray-200 rounded-2xl font-medium text-sm text-gray-400 cursor-not-allowed">
                     </div>
                     <div class="sm:col-span-2">
                         <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email</label>

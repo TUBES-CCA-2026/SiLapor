@@ -2,6 +2,8 @@
 
 @section('title', 'Reset Password - SiLapor')
 
+@section('suppress_global_notification', 'true')
+
 @section('content')
 <div class="min-h-screen flex items-center justify-center p-8 bg-gray-50">
     <div class="w-full max-w-md">
@@ -12,6 +14,12 @@
 
         <h2 class="font-display font-bold text-2xl text-gray-900 mb-1">Buat Password Baru</h2>
         <p class="text-gray-500 mb-8">Kode OTP terverifikasi. Masukkan password baru kamu.</p>
+
+        @if (session('success'))
+            <div class="mb-5 rounded-xl bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3">
+                {{ session('success') }}
+            </div>
+        @endif
 
         @if ($errors->any())
             <div class="mb-5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3">

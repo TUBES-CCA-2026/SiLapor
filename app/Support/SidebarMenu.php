@@ -21,6 +21,12 @@ final class SidebarMenu
         };
 
         return match ($role) {
+            'admin' => [
+                ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $url('dashboard')],
+                ['users', 'Kelola User', 'fa-solid fa-users-gear', $url('admin.users.index')],
+                ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $url('fasilitas.index')],
+                ['profil', 'Profil', 'fa-regular fa-user', $url('profile.index')],
+            ],
             'laboran' => [
                 ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $url('dashboard')],
                 ['laporan', 'Laporan', 'fa-regular fa-file-lines', $url('laporan.index')],

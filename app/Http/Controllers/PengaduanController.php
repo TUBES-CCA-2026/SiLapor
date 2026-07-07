@@ -159,7 +159,7 @@ class PengaduanController extends Controller
                 ? ['required', 'integer', 'exists:fasilitas_lab,id_fasilitas']
                 : ['prohibited'],
             'deskripsi_kerusakan' => ['required', 'string', 'max:2000'],
-            'foto_kerusakan' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'foto_kerusakan' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'id_user' => $isGuest
                 ? ['required', 'integer', 'exists:users,id_user']
                 : ['prohibited'],
@@ -167,7 +167,6 @@ class PengaduanController extends Controller
             'id_fasilitas.required' => 'Fasilitas yang dilaporkan wajib dipilih.',
             'id_fasilitas.exists' => 'Fasilitas yang dipilih tidak valid.',
             'deskripsi_kerusakan.required' => 'Deskripsi kerusakan wajib diisi.',
-            'foto_kerusakan.required' => 'Foto kerusakan wajib diunggah.',
             'foto_kerusakan.image' => 'File yang diunggah harus berupa gambar.',
             'foto_kerusakan.mimes' => 'Foto kerusakan harus berformat JPG, JPEG, PNG, atau WEBP.',
             'foto_kerusakan.max' => 'Ukuran foto maksimal 4 MB.',
@@ -184,7 +183,7 @@ class PengaduanController extends Controller
         bool $showSuccessPopup = true
     ): RedirectResponse {
         $uploadedPhoto = $request->file('foto_kerusakan');
-        $photoBinary = file_get_contents($uploadedPhoto->getRealPath());
+        $photoBinary = $uploadedPhoto ? file_get_contents($uploadedPhoto->getRealPath()) : null;
 
         try {
             $pengaduan = DB::transaction(function () use ($validated, $fasilitas, $uploadedPhoto, $photoBinary) {
@@ -196,18 +195,20 @@ class PengaduanController extends Controller
                     'id_fasilitas' => $fasilitas->id_fasilitas,
                 ]);
 
-                $pengaduan->foto()->create([
-                    // Nilai ini dipertahankan supaya database lama yang masih mewajibkan
-                    // kolom file_path tetap bisa menerima insert baru. File foto sebenarnya
-                    // disimpan sebagai binary pada kolom file_data di tabel pengaduan_foto.
-                    'file_path' => 'database',
-                    'file_data' => $photoBinary,
-                    'file_base64' => null,
-                    'mime_type' => $uploadedPhoto->getMimeType(),
-                    'original_name' => $uploadedPhoto->getClientOriginalName(),
-                    'file_size' => $uploadedPhoto->getSize(),
-                    'created_at' => now(),
-                ]);
+                if ($uploadedPhoto) {
+                    $pengaduan->foto()->create([
+                        // Nilai ini dipertahankan supaya database lama yang masih mewajibkan
+                        // kolom file_path tetap bisa menerima insert baru. File foto sebenarnya
+                        // disimpan sebagai binary pada kolom file_data di tabel pengaduan_foto.
+                        'file_path' => 'database',
+                        'file_data' => $photoBinary,
+                        'file_base64' => null,
+                        'mime_type' => $uploadedPhoto->getMimeType(),
+                        'original_name' => $uploadedPhoto->getClientOriginalName(),
+                        'file_size' => $uploadedPhoto->getSize(),
+                        'created_at' => now(),
+                    ]);
+                }
 
                 return $pengaduan;
             });

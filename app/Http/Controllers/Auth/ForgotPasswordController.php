@@ -23,23 +23,38 @@ class ForgotPasswordController extends Controller
             'email' => ['required', 'email'],
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $email = strtolower(trim($request->email));
+
+        // Setiap permintaan reset langsung disiapkan untuk lanjut ke halaman OTP.
+        // otp_verified wajib dihapus supaya OTP lama tidak bisa melompati step verifikasi.
+        session([
+            'reset_email' => $email,
+            'otp_verified' => false,
+        ]);
 
         // Pesan sukses SELALU sama walau email tidak ditemukan, supaya orang
         // tidak bisa menebak-nebak email mana saja yang terdaftar di sistem.
         $genericMessage = 'Jika email tersebut terdaftar, kode OTP sudah kami kirim.';
 
+        $user = User::where('email', $email)->first();
+
         if (!$user) {
-            return redirect()->route('password.request')->with('success', $genericMessage);
+            return redirect()->route('password.otp.form')->with('success', $genericMessage);
         }
 
         // Anti-spam: tidak boleh minta kode baru < 60 detik dari permintaan terakhir.
         $last = PasswordResetOtp::where('id_user', $user->id_user)->latest('id')->first();
         if ($last && $last->created_at && $last->created_at->diffInSeconds(now()) < 60) {
-            return back()->withErrors(['email' => 'Tunggu beberapa saat sebelum minta kode baru.']);
+            return redirect()
+                ->route('password.otp.form')
+                ->withErrors(['email' => 'Kode OTP sudah dikirim. Tunggu beberapa saat sebelum minta kode baru.']);
         }
 
         $otp = (string) random_int(100000, 999999);
+
+        // Hanya OTP terbaru yang boleh dipakai. Manusia sering memasukkan kode lama,
+        // jadi kita kurangi peluang kekacauan enam digit ini.
+        PasswordResetOtp::where('id_user', $user->id_user)->delete();
 
         PasswordResetOtp::create([
             'id_user' => $user->id_user,
@@ -49,9 +64,6 @@ class ForgotPasswordController extends Controller
         ]);
 
         Mail::to($user->email)->send(new OtpMail($otp, $user));
-
-        // Simpan email di session, BUKAN di URL, supaya tidak mudah ditebak/dibagikan.
-        session(['reset_email' => $user->email]);
 
         return redirect()->route('password.otp.form')->with('success', $genericMessage);
     }
@@ -84,7 +96,11 @@ class ForgotPasswordController extends Controller
             return redirect()->route('password.request');
         }
 
-        $user = User::where('email', $email)->firstOrFail();
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            return back()->withErrors(['otp' => 'Kode OTP salah atau sudah kedaluwarsa.']);
+        }
+
         $record = PasswordResetOtp::where('id_user', $user->id_user)->latest('id')->first();
 
         if (!$record || $record->expires_at->isPast() || !Hash::check($request->otp, $record->otp)) {
@@ -140,7 +156,11 @@ class ForgotPasswordController extends Controller
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
-        $user = User::where('email', session('reset_email'))->firstOrFail();
+        $user = User::where('email', session('reset_email'))->first();
+        if (!$user) {
+            return redirect()->route('password.request')->withErrors(['email' => 'Sesi reset password tidak valid. Silakan ulangi dari awal.']);
+        }
+
         $user->update(['password' => Hash::make($validated['password'])]);
 
         PasswordResetOtp::where('id_user', $user->id_user)->delete();

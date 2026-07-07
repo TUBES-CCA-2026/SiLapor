@@ -13,7 +13,7 @@
             <span class="font-display font-extrabold text-4xl tracking-tight">SiLapor</span>
         </div>
 
-        <div>
+        <div mb-2>
             <h1 class="font-display font-extrabold text-4xl leading-tight mb-4">
                 Integrated Computer<br>Laboratory System
             </h1>
@@ -27,22 +27,16 @@
 
     {{-- Panel kanan: form login --}}
     <div class="flex items-center justify-center p-8">
-        <div class="w-full max-w-md">
-            <h2 class="font-display font-bold text-3xl text-gray-900 mb-1">Sign In To Your Account</h2>
-            <p class="text-gray-500 text-align-center mb-8">Welcome Back!</p>
-
-            @if ($errors->any())
-                <div class="mb-5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3">
-                    {{ $errors->first() }}
-                </div>
-            @endif
+        <div class="w-full max-w-md justify-center">
+            <h2 class="font-display font-bold text-3xl text-gray-900 mb-1 text-center">Sign In To Your Account</h2>
+            <p class="text-gray-500 text-center mb-8">Welcome Back!</p>
 
             <form method="POST" action="{{ route('login.attempt') }}" class="space-y-5">
                 @csrf
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">User</label>
-                    <input type="text" name="email" value="{{ old('email') }}" autofocus
+                    <input type="text" name="email" value="{{ old('email', $rememberEmail ?? '') }}" autofocus
                            placeholder="Nama Pengguna"
                            class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-silapor-500">
                 </div>
@@ -57,7 +51,7 @@
                 </div>
 
                 <label class="flex items-center gap-2 text-sm text-gray-600">
-                    <input type="checkbox" name="remember" class="rounded border-gray-300 text-silapor-600 focus:ring-silapor-500">
+                    <input type="checkbox" name="remember" {{ (old('remember') || isset($rememberEmail)) ? 'checked' : '' }} class="rounded border-gray-300 text-silapor-600 focus:ring-silapor-500">
                     Remember Me
                 </label>
 

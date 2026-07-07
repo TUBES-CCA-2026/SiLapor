@@ -140,16 +140,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/rekapsulasi', [DashboardController::class, 'rekapsulasi'])->name('rekapsulasi.index');
     });
 
-    Route::middleware('role:laboran')->group(function () {
+    Route::middleware('role:laboran,admin')->group(function () {
         Route::get('/fasilitas', [FasilitasController::class, 'index'])->name('fasilitas.index');
         Route::post('/fasilitas', [FasilitasController::class, 'store'])->name('fasilitas.store');
         Route::post('/fasilitas/{fasilitas}/regenerate-qr', [FasilitasController::class, 'regenerateQr'])->name('fasilitas.regenerate-qr');
         Route::delete('/fasilitas/{fasilitas}/qr', [FasilitasController::class, 'deleteQr'])->name('fasilitas.delete-qr');
-
-        Route::get('/laboratorium', [LaboratoriumController::class, 'index'])->name('laboratorium.index');
-        Route::post('/laboratorium', [LaboratoriumController::class, 'store'])->name('laboratorium.store');
-        Route::patch('/laboratorium/{laboratorium}', [LaboratoriumController::class, 'update'])->name('laboratorium.update');
-        Route::delete('/laboratorium/{laboratorium}', [LaboratoriumController::class, 'destroy'])->name('laboratorium.destroy');
 
         Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
@@ -162,5 +157,12 @@ Route::middleware('auth')->group(function () {
             Route::post('/users/{user}/reset-password', [AdminUserController::class, 'resetPassword'])->name('users.reset-password');
             Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
         });
+    });
+
+    Route::middleware('role:laboran')->group(function () {
+        Route::get('/laboratorium', [LaboratoriumController::class, 'index'])->name('laboratorium.index');
+        Route::post('/laboratorium', [LaboratoriumController::class, 'store'])->name('laboratorium.store');
+        Route::patch('/laboratorium/{laboratorium}', [LaboratoriumController::class, 'update'])->name('laboratorium.update');
+        Route::delete('/laboratorium/{laboratorium}', [LaboratoriumController::class, 'destroy'])->name('laboratorium.destroy');
     });
 });

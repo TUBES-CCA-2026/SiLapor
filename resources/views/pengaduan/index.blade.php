@@ -220,11 +220,7 @@
                                     value="{{ $item->id_fasilitas }}"
                                     @selected((string) $selectedFacilityId === (string) $item->id_fasilitas)
                                 >
-                                    {{ $item->nama_fasilitas }}
-                                    @if ($item->no_fasilitas)
-                                        ({{ $item->no_fasilitas }})
-                                    @endif
-                                    — {{ $item->laboratorium?->nama_laboratorium ?? '-' }}
+                                    {{ $item->nama_fasilitas }} — {{ $item->laboratorium?->nama_laboratorium ?? '-' }}
                                 </option>
                             @endforeach
                         </select>
@@ -237,21 +233,9 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">
-                            Kode Barang
-                        </label>
+                <input type="hidden" id="kode_barang" value="{{ $selectedKodeBarang }}">
 
-                        <input
-                            id="kode_barang"
-                            type="text"
-                            value="{{ $selectedKodeBarang }}"
-                            readonly
-                            class="w-full border border-gray-200 rounded-2xl px-5 py-4 bg-gray-100 text-gray-600"
-                        >
-                    </div>
-
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">
                             Nama Fasilitas
@@ -307,7 +291,6 @@
                             accept="image/*"
                             class="hidden"
                             id="fileInput"
-                            required
                         >
 
                         <label for="fileInput" class="flex flex-col items-center cursor-pointer">

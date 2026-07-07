@@ -145,11 +145,7 @@
                                 value="{{ $item->id_fasilitas }}"
                                 {{ $selectedFacilityId === (string) $item->id_fasilitas ? 'selected' : '' }}
                             >
-                                {{ $item->nama_fasilitas }}
-                                @if ($item->no_fasilitas)
-                                    ({{ $item->no_fasilitas }})
-                                @endif
-                                — {{ $item->laboratorium?->nama_laboratorium ?? '-' }}
+                                {{ $item->nama_fasilitas }} — {{ $item->laboratorium?->nama_laboratorium ?? '-' }}
                             </option>
                         @endforeach
                     </select>
@@ -162,21 +158,9 @@
                 </div>
             @endif
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Kode Barang
-                    </label>
+            <input type="hidden" id="kode_barang" value="{{ $selectedKodeBarang }}">
 
-                    <input
-                        id="kode_barang"
-                        type="text"
-                        value="{{ $selectedKodeBarang }}"
-                        readonly
-                        class="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-2.5 text-gray-600"
-                    >
-                </div>
-
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
                         Nama Fasilitas
@@ -208,7 +192,7 @@
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Foto Kerusakan <span class="text-red-500">*</span>
+                    Foto Kerusakan
                 </label>
 
                 <input
@@ -216,7 +200,6 @@
                     name="foto_kerusakan"
                     accept="image/*"
                     capture="environment"
-                    required
                     class="w-full text-sm rounded-xl border border-gray-300 px-3 py-2.5 file:mr-3 file:rounded-lg file:border-0 file:bg-silapor-50 file:text-silapor-700 file:px-3 file:py-1.5"
                 >
             </div>

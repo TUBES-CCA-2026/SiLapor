@@ -18,6 +18,10 @@ class DashboardController extends Controller
     {
         $user = Auth::user()->load('profile', 'roleData');
 
+        if ($user->isAdmin()) {
+            return $this->dashboardAdmin($user);
+        }
+
         if ($user->isAsisten()) {
             return $this->dashboardAsisten($user);
         }
@@ -35,6 +39,20 @@ class DashboardController extends Controller
         }
 
         return view('dashboard.default', compact('user'));
+    }
+
+    protected function dashboardAdmin($user)
+    {
+        $totalLaboratorium = Laboratorium::count();
+        $totalFasilitas = FasilitasLab::activeQr()->count();
+        $totalPengguna = User::count();
+
+        return view('dashboard.admin', compact(
+            'user',
+            'totalLaboratorium',
+            'totalFasilitas',
+            'totalPengguna'
+        ));
     }
 
     public function laporan()
@@ -387,7 +405,7 @@ class DashboardController extends Controller
         $statistikTugas = TindakLanjut::query()
             ->where('id_petugas', $user->id_user);
 
-        $totalPengaduan = (clone $statistikTugas)->count();
+        $totalPengaduan = Pengaduan::count();
         $sedangDiperbaiki = (clone $statistikTugas)->statusKode('ON PROGRES')->count();
         $selesai = (clone $statistikTugas)->statusKode('DONE')->count();
 
