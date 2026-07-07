@@ -11,8 +11,19 @@ class Laboratorium extends Model
 
     protected $fillable = [
         'nama_laboratorium', 'kode_laboratorium', 'lokasi',
-        'id_koordinator', 'kapasitas', 'keterangan',
+        'id_koordinator', 'id_penanggung_jawab', 'id_pendamping',
+        'kapasitas', 'keterangan',
     ];
+
+    public function penanggungJawabUser()
+    {
+        return $this->belongsTo(User::class, 'id_penanggung_jawab', 'id_user');
+    }
+
+    public function pendampingUser()
+    {
+        return $this->belongsTo(User::class, 'id_pendamping', 'id_user');
+    }
 
     public function koordinator()
     {

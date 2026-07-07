@@ -347,16 +347,16 @@
                                             </p>
 
                                             <select name="status_penanganan" class="w-full border border-gray-200 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#0090F5]/20 bg-white">
-                                                <option value="ON PROGRES" {{ $statusPenanganan === 'ON PROGRES' ? 'selected' : '' }}>
+                                                <option value="ON PROGRES" {{ $statusPenanganan === 'ON PROGRES' ? 'selected' : '' }} style="background-color: #FBBF24; color: #fff;">
                                                     On Progress
                                                 </option>
-                                                <option value="DONE" {{ $statusPenanganan === 'DONE' ? 'selected' : '' }}>
+                                                <option value="DONE" {{ $statusPenanganan === 'DONE' ? 'selected' : '' }} style="background-color: #4ADE80; color: #fff;">
                                                     Done
                                                 </option>
-                                                <option value="CANCEL" {{ $statusPenanganan === 'CANCEL' ? 'selected' : '' }}>
+                                                <option value="CANCEL" {{ $statusPenanganan === 'CANCEL' ? 'selected' : '' }} style="background-color: #EF4444; color: #fff;">
                                                     Cancel
                                                 </option>
-                                                <option value="NO SPAREPART" {{ in_array($statusPenanganan, ['NO SPAREPART', 'NO_SPAREPART'], true) ? 'selected' : '' }}>
+                                                <option value="NO SPAREPART" {{ in_array($statusPenanganan, ['NO SPAREPART', 'NO_SPAREPART'], true) ? 'selected' : '' }} style="background-color: #9CA3AF; color: #fff;">
                                                     No Sparepart
                                                 </option>
                                             </select>

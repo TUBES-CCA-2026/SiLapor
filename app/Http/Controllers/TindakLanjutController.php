@@ -17,8 +17,11 @@ class TindakLanjutController extends Controller
     public function index()
     {
         $user = Auth::user();
+        
+        // Cek apakah asisten ini merupakan PJ di lab manapun
+        $isPj = \App\Models\Laboratorium::where('id_penanggung_jawab', $user->id_user)->exists();
 
-        $tugas = TindakLanjut::with([
+        $query = TindakLanjut::with([
                 'pengaduan.user',
                 'pengaduan.pelapor',
                 'pengaduan.fasilitas.laboratorium',
@@ -27,14 +30,22 @@ class TindakLanjutController extends Controller
                 'asisten',
                 'statusData',
             ])
-            ->where('id_petugas', $user->id_user)
             ->whereHas('statusData', function ($status) {
                 $status->where('kode_status', '!=', 'DONE');
             })
-            ->latest('id_tindak_lanjut')
-            ->get();
+            ->latest('id_tindak_lanjut');
 
-        return view('tindak_lanjut.index', compact('tugas'));
+        if ($isPj) {
+            // PJ melihat tugas di mana dia adalah petugas utama (PJ)
+            $query->where('id_petugas', $user->id_user);
+        } else {
+            // Asisten non-PJ melihat tugas di mana dia adalah pendamping/teknisi
+            $query->where('id_teknisi', $user->id_user);
+        }
+
+        $tugas = $query->get();
+
+        return view('tindak_lanjut.index', compact('tugas', 'isPj'));
     }
 
     /**
@@ -149,7 +160,8 @@ class TindakLanjutController extends Controller
 
     protected function authorizeAsisten(TindakLanjut $tindakLanjut): void
     {
-        if (Auth::id() !== $tindakLanjut->id_petugas) {
+        $userId = Auth::id();
+        if ($userId !== $tindakLanjut->id_petugas && $userId !== $tindakLanjut->id_teknisi) {
             abort(403);
         }
     }

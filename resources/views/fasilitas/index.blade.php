@@ -142,89 +142,7 @@
 @endonce
 
 <div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
-    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop md:sticky md:top-0 md:h-screen rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
-        <div class="p-8 flex-1 flex flex-col overflow-y-auto custom-scrollbar">
-            <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 text-decoration-none">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
-                    <i class="fa-solid fa-square-poll-vertical text-xl"></i>
-                </div>
-                <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-[#0090F5] to-[#1E3A8A] bg-clip-text text-transparent">SiLapor</span>
-            </a>
-
-            @php
-                $activeMenu = 'fasilitas';
-                $routeSafe = function (string $name, string $fallback = '#') {
-                    return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
-                };
-                $sidebarUser = auth()->user();
-                $sidebarRole = $sidebarUser?->role;
-
-                if ($sidebarRole === 'laboran') {
-                    $menuItems = [
-                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-                        ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
-                        ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-                        ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
-                        ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-                    ];
-                } elseif ($sidebarRole === 'koordinator_lab') {
-                    $menuItems = [
-                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-                        ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
-                        ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
-                        ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-                    ];
-                } elseif ($sidebarRole === 'asisten') {
-                    $menuItems = [
-                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-                        ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
-                        ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
-                        ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-                                    ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-                    ];
-                } else {
-                    $menuItems = [
-                        ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-                        ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-                    ];
-                }
-            @endphp
-
-            @php
-                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
-            @endphp
-            <nav class="mt-10 space-y-7">
-                @foreach($menuItems as [$key, $label, $icon, $url])
-                    @if($activeMenu === $key)
-                        <a href="{{ $url }}" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm group transition-all">
-                            <div class="flex items-center gap-3.5">
-                                <i class="{{ $icon }} text-lg text-[#0090F5]"></i>
-                                <span>{{ $label }}</span>
-                            </div>
-                            <div class="w-1.5 h-6 rounded-full bg-[#0090F5]"></div>
-                        </a>
-                    @else
-                        <a href="{{ $url }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                            <i class="{{ $icon }} text-lg"></i>
-                            <span>{{ $label }}</span>
-                        </a>
-                    @endif
-                @endforeach
-            </nav>
-        </div>
-
-        <div class="mt-auto p-8 border-t border-gray-100 bg-white rounded-br-[36px] md:rounded-br-none">
-            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-red-50 hover:text-red-600 font-semibold text-sm transition-all">
-                <i class="fa-solid fa-right-from-bracket text-lg"></i>
-                <span>Logout</span>
-            </a>
-            <form id="logout-form" action="{{ $routeSafe('logout') }}" method="POST" class="hidden">@csrf</form>
-        </div>
-    </aside>
-
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 z-40 hidden" onclick="toggleSidebar()"></div>
+    @include('partials.sidebar', ['user' => auth()->user(), 'activeMenu' => 'fasilitas'])
 
 <main class="w-full min-w-0 px-4 py-6 md:px-8 md:py-8 space-y-6">
     <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2">
@@ -247,7 +165,12 @@
                 <h2 class="section-title" style="margin-bottom: .35rem;">Fasilitas Lab & QR Code</h2>
                 <p style="margin: 0; color: #64748B; font-size: .9rem;">Setiap fasilitas punya QR unik untuk pelaporan kerusakan.</p>
             </div>
-            <a href="{{ route('laboratorium.index') }}" class="btn-outline-blue">Kelola Laboratorium</a>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <button type="button" onclick="printAllQrs()" class="btn-mini btn-outline-mini">
+                    <i class="fa-solid fa-print"></i>Cetak Semua QR
+                </button>
+                <a href="{{ route('laboratorium.index') }}" class="btn-outline-blue">Kelola Laboratorium</a>
+            </div>
         </div>
 <form method="POST" action="{{ route('fasilitas.store') }}" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-bottom: 2rem;">
             @csrf
@@ -315,6 +238,58 @@
 </div>
 
 <script>
+
+    function printAllQrs() {
+        const qrAreas = document.querySelectorAll('.qr-print-area');
+        if (!qrAreas.length) {
+            alert('Belum ada QR Code untuk dicetak.');
+            return;
+        }
+
+        const printWindow = window.open('', '_blank', 'width=800,height=600');
+        if (!printWindow) return;
+
+        let cardsHtml = '';
+        qrAreas.forEach(area => {
+            const name = area.dataset.fasilitasName || 'Fasilitas';
+            const lab = area.dataset.fasilitasLab || '-';
+            const url = area.dataset.fasilitasUrl || '';
+            const qrHtml = area.innerHTML;
+            
+            cardsHtml += `
+                <div class="card">
+                    <div class="brand">SiLapor</div>
+                    <div class="qr">${qrHtml}</div>
+                    <div class="name">${name}</div>
+                    <div class="lab">${lab}</div>
+                    <div class="url">${url}</div>
+                </div>
+            `;
+        });
+
+        printWindow.document.write(`
+            <html><head><title>Cetak Semua QR</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+                .card { width: 220px; border: 1px solid #E5E7EB; border-radius: 14px; padding: 16px; text-align: center; page-break-inside: avoid; }
+                .brand { color:#0090F5; font-weight:800; font-size:18px; margin-bottom: 8px; }
+                .name { font-weight:800; color:#111827; margin: 8px 0 4px; font-size: 14px; }
+                .lab { color:#64748B; font-size: 11px; margin-bottom: 8px; }
+                .qr { display:flex; justify-content:center; margin: 8px 0; }
+                .qr img { width: 120px !important; height: 120px !important; }
+                .url { word-break: break-all; color:#64748B; font-size: 9px; }
+                @media print {
+                    body { margin: 0; }
+                    .card { page-break-inside: avoid; }
+                }
+            </style></head><body>
+                ${cardsHtml}
+            </body></html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => printWindow.print(), 350);
+    }
 
     function printQr(id) {
         const target = document.getElementById(id);

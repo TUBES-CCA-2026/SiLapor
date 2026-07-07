@@ -67,129 +67,30 @@
 
 <div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
     
-    <!-- SIDEBAR KIRI (Persis seperti mockup TINDAK LANJUT.png) -->
-    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop md:sticky md:top-0 md:h-screen rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
-        
-        <!-- Bagian Atas Sidebar -->
-        <div class="p-8 flex-1 flex flex-col overflow-y-auto">
-            <!-- Brand Logo SiLapor -->
-            <div class="flex items-center gap-3 px-4">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
-                    <i class="fa-solid fa-square-poll-vertical text-xl"></i>
-                </div>
-                <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-[#0090F5] to-[#1E3A8A] bg-clip-text text-transparent">SiLapor</span>
-            </div>
+    @php
+        $user = auth()->user();
+        $isPj = \App\Models\Laboratorium::where('id_penanggung_jawab', $user->id_user)->exists();
+        $activeMenu = 'tindak-lanjut';
+        $featureTitle = $isPj ? 'Penugasan' : 'Teknisi';
+    @endphp
 
-            <!-- List Menu Navigasi -->
-            @php
-    $user = auth()->user();
-    $role = $user?->role;
-    $sidebarUser = $user;
-    $sidebarRole = $role;
-    $activeMenu = 'tindak-lanjut';
-    $pageTitle = $pageTitle ?? strtoupper(str_replace('-', ' ', $activeMenu));
-
-    $routeSafe = function (string $name, string $fallback = '#') {
-        return \Illuminate\Support\Facades\Route::has($name) ? route($name) : $fallback;
-    };
-
-    $roleLabel = match($role) {
-        'laboran' => 'Laboran',
-        'koordinator_lab' => 'Koordinator Lab',
-        'asisten' => 'Asisten Lab',
-        default => 'User',
-    };
-
-    if ($role === 'laboran') {
-        $menuItems = [
-            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-            ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
-            ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-            ['rekapsulasi', 'Rekapsulasi', 'fa-regular fa-rectangle-list', $routeSafe('rekapsulasi.index')],
-            ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $routeSafe('laboratorium.index')],
-            ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $routeSafe('fasilitas.index')],
-            ['users', 'Kelola User', 'fa-solid fa-users-gear', $routeSafe('admin.users.index')],
-            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-        ];
-    } elseif ($role === 'koordinator_lab') {
-        $menuItems = [
-            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-            ['laporan', 'Laporan', 'fa-regular fa-file-lines', $routeSafe('laporan.index')],
-            ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $routeSafe('penugasan.index')],
-            ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $routeSafe('detail-laporan.index')],
-            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-        ];
-    } elseif ($role === 'asisten') {
-        $menuItems = [
-            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-            ['pengaduan', 'Pengaduan', 'fa-regular fa-file-lines', $routeSafe('pengaduan.index')],
-            ['tindak-lanjut', 'Tindak Lanjut', 'fa-solid fa-screwdriver-wrench', $routeSafe('tindak-lanjut.index')],
-            ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $routeSafe('riwayat.index')],
-            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-        ];
-    } else {
-        $menuItems = [
-            ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $routeSafe('dashboard')],
-            ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
-        ];
-    }
-@endphp
-
-            @php
-                $menuItems = \App\Support\SidebarMenu::forRole($sidebarRole ?? $role ?? auth()->user()?->role);
-            @endphp
-            <nav class="mt-10 space-y-7">
-                @foreach($menuItems as [$key, $label, $icon, $url])
-                    @if($activeMenu === $key)
-                        <a href="{{ $url }}" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm group transition-all">
-                            <div class="flex items-center gap-3.5">
-                                <i class="{{ $icon }} text-lg text-[#0090F5]"></i>
-                                <span>{{ $label }}</span>
-                            </div>
-                            <div class="w-1.5 h-6 rounded-full bg-[#0090F5]"></div>
-                        </a>
-                    @else
-                        <a href="{{ $url }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
-                            <i class="{{ $icon }} text-lg"></i>
-                            <span>{{ $label }}</span>
-                        </a>
-                    @endif
-                @endforeach
-            </nav>
-        </div>
-
-        <!-- Bagian Bawah Sidebar (Logout) -->
-        <div class="mt-auto p-8 border-t border-gray-100 bg-white rounded-br-[36px] md:rounded-br-none">
-            <a href="#" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-red-50 hover:text-red-600 font-semibold text-sm transition-all"
-                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                <i class="fa-solid fa-right-from-bracket text-lg"></i>
-                <span>Logout</span>
-            </a>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
-                @csrf
-            </form>
-        </div>
-    </aside>
-
-    <!-- Overlay Background saat Sidebar Mobile Terbuka -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 z-40 hidden" onclick="toggleSidebar()"></div>
+    @include('partials.sidebar', ['user' => $user, 'activeMenu' => $activeMenu])
 
     <!-- KONTEN UTAMA (Kanan) -->
     <main class="w-full min-w-0 px-4 py-6 md:px-8 md:py-8 space-y-6">
         
-        <!-- HEADER NAVBAR (Sesuai mockup) -->
+        <!-- HEADER NAVBAR -->
         <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-8">
-    <div class="flex items-center gap-4">
-        <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 focus:outline-none hide-on-desktop">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-        </button>
-        <h1 class="text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-wider uppercase">Tindak Lanjut</h1>
-    </div>
-    
-    @include('partials.user-welcome-box', ['user' => $user ?? auth()->user()])
-    </header>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 focus:outline-none hide-on-desktop">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <h1 class="text-xl md:text-2xl font-extrabold text-[#2C3E50] tracking-wider uppercase">{{ $featureTitle }}</h1>
+            </div>
+            @include('partials.user-welcome-box', ['user' => $user])
+        </header>
 
         <!-- CONTAINER TABEL UTAMA TINDAK LANJUT -->
         <section class="bg-white border border-gray-150 rounded-[32px] overflow-hidden shadow-figma-container">
@@ -253,10 +154,10 @@
                                         @endphp
                                         <select name="status_penanganan" onchange="document.getElementById('form-status-{{ $t->id_tindak_lanjut }}').submit()" 
                                             class="inline-block text-xs font-bold px-3 py-1.5 rounded-md text-center appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0090F5]/30 {{ $statusSelectClass }}">
-                                            <option value="ON PROGRES" {{ $t->status_penanganan === 'ON PROGRES' ? 'selected' : '' }}>On Progress</option>
-                                            <option value="DONE" {{ $t->status_penanganan === 'DONE' ? 'selected' : '' }}>Done</option>
-                                            <option value="CANCEL" {{ $t->status_penanganan === 'CANCEL' ? 'selected' : '' }}>Cancel</option>
-                                            <option value="NO SPAREPART" {{ $t->status_penanganan === 'NO SPAREPART' ? 'selected' : '' }}>No Sparepart</option>
+                                            <option value="ON PROGRES" {{ $t->status_penanganan === 'ON PROGRES' ? 'selected' : '' }} style="background-color: #FBBF24; color: #fff;">On Progress</option>
+                                            <option value="DONE" {{ $t->status_penanganan === 'DONE' ? 'selected' : '' }} style="background-color: #4ADE80; color: #fff;">Done</option>
+                                            <option value="CANCEL" {{ $t->status_penanganan === 'CANCEL' ? 'selected' : '' }} style="background-color: #EF4444; color: #fff;">Cancel</option>
+                                            <option value="NO SPAREPART" {{ $t->status_penanganan === 'NO SPAREPART' ? 'selected' : '' }} style="background-color: #9CA3AF; color: #fff;">No Sparepart</option>
                                         </select>
                                     </form>
                                 </td>

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\FasilitasLab;
+use App\Models\Laboratorium;
 use App\Models\Pengaduan;
 use App\Models\PengaduanFoto;
+use App\Models\TindakLanjut;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -66,6 +68,11 @@ class PengaduanController extends Controller
             ->whereNull('qr_deleted_at')
             ->firstOrFail();
 
+        // Cek duplikat: apakah fasilitas ini sudah punya laporan aktif
+        if ($this->hasDuplicateReport($fasilitas->id_fasilitas)) {
+            return back()->withInput()->with('duplicate_error', 'Fasilitas ini telah dilaporkan dan sedang dalam proses penanganan.');
+        }
+
         $validated = $this->validateReport($request, false);
 
         return $this->persistReport($request, $validated, $fasilitas, Auth::check());
@@ -85,6 +92,11 @@ class PengaduanController extends Controller
     public function storeManual(Request $request): RedirectResponse
     {
         $validated = $this->validateReport($request, true);
+
+        // Cek duplikat: apakah fasilitas ini sudah punya laporan aktif
+        if ($this->hasDuplicateReport($validated['id_fasilitas'])) {
+            return back()->withInput()->with('duplicate_error', 'Fasilitas ini telah dilaporkan dan sedang dalam proses penanganan.');
+        }
 
         $fasilitas = FasilitasLab::with('laboratorium')
             ->findOrFail($validated['id_fasilitas']);
@@ -210,6 +222,20 @@ class PengaduanController extends Controller
                     ]);
                 }
 
+                // Auto-assign TindakLanjut berdasarkan PJ & Pendamping lab
+                $lab = $fasilitas->laboratorium;
+                if ($lab && $lab->id_penanggung_jawab) {
+                    TindakLanjut::create([
+                        'id_pengaduan' => $pengaduan->id_pengaduan,
+                        'id_petugas' => $lab->id_penanggung_jawab,
+                        'id_teknisi' => $lab->id_pendamping,
+                        'status_penanganan' => 'ON PROGRES',
+                        'tanggal_penanganan' => now()->toDateString(),
+                    ]);
+
+                    $pengaduan->update(['status_pengaduan' => 'HANDLED']);
+                }
+
                 return $pengaduan;
             });
         } catch (Throwable $exception) {
@@ -257,5 +283,14 @@ class PengaduanController extends Controller
             ->header('Content-Type', $foto->mime_type ?: 'image/jpeg')
             ->header('Content-Length', (string) strlen($binary))
             ->header('Cache-Control', 'private, max-age=86400');
+    }
+    /**
+     * Cek apakah fasilitas sudah memiliki laporan aktif (NEW atau HANDLED).
+     */
+    private function hasDuplicateReport(int $fasilitasId): bool
+    {
+        return Pengaduan::where('id_fasilitas', $fasilitasId)
+            ->statusKode(['NEW', 'HANDLED'])
+            ->exists();
     }
 }

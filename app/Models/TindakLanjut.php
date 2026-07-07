@@ -10,7 +10,7 @@ class TindakLanjut extends Model
     protected $primaryKey = 'id_tindak_lanjut';
 
     protected $fillable = [
-        'id_pengaduan', 'id_petugas', 'id_status_penanganan',
+        'id_pengaduan', 'id_petugas', 'id_teknisi', 'id_status_penanganan',
         'catatan_perbaikan', 'tanggal_penanganan',
         'status_penanganan', 'id_asisten',
     ];
@@ -37,6 +37,11 @@ class TindakLanjut extends Model
     public function penugas()
     {
         return $this->belongsTo(User::class, 'id_petugas', 'id_user');
+    }
+
+    public function teknisi()
+    {
+        return $this->belongsTo(User::class, 'id_teknisi', 'id_user');
     }
 
     public function statusData()

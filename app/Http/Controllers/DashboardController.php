@@ -57,16 +57,22 @@ class DashboardController extends Controller
 
     public function laporan()
     {
-        $pengaduanList = Pengaduan::with([
+        $query = Pengaduan::with([
             'fasilitas.laboratorium',
             'pelapor',
             'tindakLanjut.asisten',
             'statusData',
             'fotoUtama',
             'fotos',
-        ])
-            ->orderByDesc('id_pengaduan')
-            ->get();
+        ]);
+
+        // Laboran hanya melihat laporan berstatus NO_SPAREPART
+        $user = auth()->user();
+        if ($user && $user->role === 'laboran') {
+            $query->statusKode('NO_SPAREPART');
+        }
+
+        $pengaduanList = $query->orderByDesc('id_pengaduan')->get();
 
         return view('laporan.index', compact('pengaduanList'));
     }

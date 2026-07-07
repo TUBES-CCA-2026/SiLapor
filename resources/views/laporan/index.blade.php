@@ -119,7 +119,9 @@
                             <th>Lokasi Masalah</th>
                             <th>Deskripsi Kerusakan</th>
                             <th>Status</th>
+                            @if($user?->role !== 'laboran')
                             <th class="text-center">Aksi</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -132,6 +134,7 @@
                                 $deskripsi = $laporan->deskripsi_kerusakan ?? '-';
                                 $status = $statusMeta($laporan->status_pengaduan ?? null);
                                 $detailUrl = route('dashboard.pengaduan.detail', $laporan);
+                                $colCount = $user?->role === 'laboran' ? 6 : 7;
                             @endphp
                             <tr data-laporan-row>
                                 <td>{{ $tanggal }}</td>
@@ -140,6 +143,7 @@
                                 <td>{{ $lokasi }}</td>
                                 <td class="laporan-description" title="{{ $deskripsi }}">{{ \Illuminate\Support\Str::limit($deskripsi, 45) }}</td>
                                 <td><span class="laporan-status {{ $status['class'] }}">{{ $status['label'] }}</span></td>
+                                @if($user?->role !== 'laboran')
                                 <td class="text-center">
                                     <div class="inline-flex items-center gap-2 justify-center">
                                         <button type="button" class="detail-btn" data-detail-url="{{ $detailUrl }}">Detail</button>
@@ -155,10 +159,11 @@
                                         @endif
                                     </div>
                                 </td>
+                                @endif
                             </tr>
-                            @if($canManageLaporan)
+                            @if($canManageLaporan && $user?->role !== 'laboran')
                             <tr id="edit-laporan-{{ $laporan->id_pengaduan }}" hidden>
-                                <td colspan="7" style="background:#F8FAFC; padding:1rem 1.25rem;">
+                                <td colspan="{{ $colCount }}" style="background:#F8FAFC; padding:1rem 1.25rem;">
                                     <form method="POST" action="{{ route('laporan.update', $laporan) }}" style="display:grid; grid-template-columns: 1fr 180px 120px; gap:.75rem; align-items:end;">
                                         @csrf
                                         @method('PATCH')
@@ -182,11 +187,11 @@
                             </tr>
                             @endif
                         @empty
-                            <tr data-empty-row><td colspan="7" class="empty-state">Belum ada laporan pengaduan.</td></tr>
+                            <tr data-empty-row><td colspan="{{ $user?->role === 'laboran' ? 6 : 7 }}" class="empty-state">Belum ada laporan pengaduan.</td></tr>
                         @endforelse
 
                         @if($rows->isNotEmpty())
-                            <tr data-empty-row hidden><td colspan="7" class="empty-state">Data laporan tidak ditemukan.</td></tr>
+                            <tr data-empty-row hidden><td colspan="{{ $user?->role === 'laboran' ? 6 : 7 }}" class="empty-state">Data laporan tidak ditemukan.</td></tr>
                         @endif
                     </tbody>
                 </table>

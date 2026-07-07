@@ -10,7 +10,8 @@
 @php
     $user = auth()->user();
     $activeMenu = 'laboratorium';
-    $pjOptions = $penanggungJawabs ?? $koordinators ?? collect();
+    $isLaboran = $user?->role === 'laboran';
+    $isKoordinator = $user?->role === 'koordinator_lab';
 @endphp
 
 @once
@@ -28,10 +29,7 @@
     .btn-danger-mini { background:#FEE2E2; color:#DC2626; border:1px solid #FCA5A5; }
     .btn-danger-mini:hover { background:#DC2626; color:#fff; }
     .btn-danger-mini:disabled { opacity:.45; cursor:not-allowed; }
-    .lab-form { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:.85rem; align-items:start; margin-bottom:1.25rem; padding:1rem; border:1px solid #E5E7EB; border-radius:1rem; background:#fff; }
-    .pj-checks { display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:.45rem; padding:.75rem; border:1px solid #D1D5DB; border-radius:.75rem; background:#F8FAFC; max-height:132px; overflow:auto; }
-    .pj-check { display:flex; align-items:center; gap:.45rem; color:#475569; font-size:.82rem; font-weight:700; }
-    .pj-check input { accent-color:#0090F5; }
+    .lab-form { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; gap:.85rem; align-items:end; margin-bottom:1.25rem; padding:1rem; border:1px solid #E5E7EB; border-radius:1rem; background:#fff; }
     .lab-list { border:1px solid #E5E7EB; border-radius:1rem; overflow:hidden; background:#fff; }
     .lab-item { padding:1rem 1.25rem; border-bottom:1px solid #F1F5F9; }
     .lab-item:last-child { border-bottom:0; }
@@ -39,8 +37,11 @@
     .lab-title { margin:0; color:#111827; font-weight:800; }
     .lab-meta { margin:.22rem 0 0; color:#64748B; font-size:.84rem; }
     .lab-pj { margin:.22rem 0 0; color:#94A3B8; font-size:.78rem; }
+    .pj-form { display:grid; grid-template-columns: 1fr 1fr auto; gap:.75rem; align-items:end; margin-top:.75rem; padding:1rem; border:1px solid #DCE6F1; border-radius:1rem; background:#F8FAFC; }
+    .field-label { display:block; font-size:.72rem; font-weight:800; color:#64748B; text-transform:uppercase; letter-spacing:.04em; margin-bottom:.35rem; }
     @media (max-width: 920px) {
         .lab-form { grid-template-columns:1fr; }
+        .pj-form { grid-template-columns:1fr; }
         .lab-row { align-items:flex-start; flex-direction:column; }
     }
 </style>
@@ -64,43 +65,28 @@
             <div class="lab-body">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
                     <h2 class="text-lg font-extrabold text-[#2C3E50] m-0">Data Laboratorium</h2>
+                    @if(!$isKoordinator)
                     <a href="{{ route('fasilitas.index') }}" class="btn-mini btn-outline-mini">
                         <i class="fa-solid fa-qrcode"></i>Fasilitas
                     </a>
+                    @endif
                 </div>
 
+                {{-- Form Tambah Lab: hanya untuk laboran --}}
+                @if($isLaboran)
                 <form method="POST" action="{{ route('laboratorium.store') }}" class="lab-form">
                     @csrf
                     <input name="nama_laboratorium" placeholder="Nama lab" required class="form-control">
                     <input name="kode_laboratorium" placeholder="Kode" class="form-control">
                     <input name="lokasi" placeholder="Lokasi" class="form-control">
-
-                    <div class="md:col-span-2">
-                        <div class="pj-checks">
-                            @forelse($pjOptions as $k)
-                                <label class="pj-check">
-                                    <input type="checkbox" name="id_penanggung_jawab[]" value="{{ $k->id_user }}">
-                                    <span>{{ $k->nama }}</span>
-                                </label>
-                            @empty
-                                <span class="text-sm text-gray-400">Belum ada asisten.</span>
-                            @endforelse
-                        </div>
-                    </div>
-
                     <button class="btn-mini btn-primary-mini" type="submit">
                         <i class="fa-solid fa-plus"></i>Lab
                     </button>
                 </form>
+                @endif
 
                 <div class="lab-list">
                     @forelse($laboratoriums as $lab)
-                        @php
-                            $selectedPj = $lab->penanggungJawabs->pluck('id_user')->map(fn($id) => (string) $id)->all();
-                            if (empty($selectedPj) && $lab->id_koordinator) {
-                                $selectedPj[] = (string) $lab->id_koordinator;
-                            }
-                        @endphp
                         <div class="lab-item">
                             <div class="lab-row">
                                 <div>
@@ -111,49 +97,96 @@
                                         @endif
                                     </p>
                                     <p class="lab-meta">{{ $lab->lokasi ?? '—' }}</p>
-                                    <p class="lab-pj">PJ: {{ $lab->penanggungJawabs->pluck('nama')->join(', ') ?: ($lab->koordinator?->nama ?? 'Belum ditentukan') }} · {{ $lab->fasilitas_count }} fasilitas</p>
+                                    <p class="lab-pj">
+                                        PJ: {{ $lab->penanggungJawabUser?->nama ?? 'Belum ditentukan' }}
+                                        · Pendamping: {{ $lab->pendampingUser?->nama ?? 'Belum ditentukan' }}
+                                        · {{ $lab->fasilitas_count }} fasilitas
+                                    </p>
                                 </div>
 
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <button type="button" class="btn-mini btn-outline-mini" onclick="document.getElementById('edit-lab-{{ $lab->id_laboratorium }}').toggleAttribute('hidden')">
-                                        <i class="fa-solid fa-pen"></i>Edit
-                                    </button>
-                                    <form method="POST" action="{{ route('laboratorium.destroy', $lab) }}" onsubmit="return confirm('Hapus laboratorium {{ $lab->nama_laboratorium }}?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn-mini btn-danger-mini" {{ $lab->fasilitas_count > 0 ? 'disabled' : '' }}>
-                                            <i class="fa-solid fa-trash"></i>Hapus
-                                        </button>
-                                    </form>
-                                </div>
+                                @if($isKoordinator)
+                                <button type="button" class="btn-mini btn-outline-mini" onclick="document.getElementById('pj-form-{{ $lab->id_laboratorium }}').toggleAttribute('hidden')">
+                                    <i class="fa-solid fa-pen"></i>Set PJ
+                                </button>
+                                @endif
                             </div>
 
-                            <div id="edit-lab-{{ $lab->id_laboratorium }}" hidden class="mt-4 p-4 rounded-2xl border border-[#DCE6F1] bg-[#F8FAFC]">
-                                <form method="POST" action="{{ route('laboratorium.update', $lab) }}" class="lab-form" style="margin-bottom:0;background:transparent;border:0;padding:0;">
+                            {{-- Koordinator: form set PJ & Pendamping --}}
+                            @if($isKoordinator)
+                            <div id="pj-form-{{ $lab->id_laboratorium }}" hidden class="pj-form">
+                                <form method="POST" action="{{ route('laboratorium.update', $lab) }}" style="display:contents;">
                                     @csrf
                                     @method('PATCH')
-                                    <input name="nama_laboratorium" value="{{ $lab->nama_laboratorium }}" required class="form-control" placeholder="Nama lab">
-                                    <input name="kode_laboratorium" value="{{ $lab->kode_laboratorium }}" class="form-control" placeholder="Kode">
-                                    <input name="lokasi" value="{{ $lab->lokasi }}" class="form-control" placeholder="Lokasi">
-
-                                    <div class="md:col-span-2">
-                                        <div class="pj-checks">
-                                            @forelse($pjOptions as $k)
-                                                <label class="pj-check">
-                                                    <input type="checkbox" name="id_penanggung_jawab[]" value="{{ $k->id_user }}" @checked(in_array((string) $k->id_user, $selectedPj, true))>
-                                                    <span>{{ $k->nama }}</span>
-                                                </label>
-                                            @empty
-                                                <span class="text-sm text-gray-400">Belum ada asisten.</span>
-                                            @endforelse
+                                    <div class="relative custom-searchable-select">
+                                        <label class="field-label">Penanggung Jawab</label>
+                                        <div class="relative">
+                                            <input 
+                                                type="text" 
+                                                placeholder="— Pilih PJ —" 
+                                                class="form-control searchable-select-trigger cursor-pointer bg-white"
+                                                readonly
+                                            >
+                                            <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" style="margin-top: 10px;">
+                                                <i class="fa-solid fa-chevron-down"></i>
+                                            </span>
                                         </div>
+                                        <div class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 hidden searchable-select-dropdown" style="max-height: 280px; overflow: hidden; width: 100%; min-width: 200px;">
+                                            <div class="p-2 border-b border-gray-100">
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="Cari asisten..." 
+                                                    class="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-silapor-500 searchable-select-search"
+                                                >
+                                            </div>
+                                            <ul class="max-h-48 overflow-y-auto py-1 text-sm text-gray-700 searchable-select-options">
+                                                <li data-value="" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-gray-400">— Pilih PJ —</li>
+                                                @foreach($asistenList as $asisten)
+                                                    <li data-value="{{ $asisten->id_user }}" class="px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                                        {{ $asisten->nama }}
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                        <input type="hidden" name="id_penanggung_jawab" value="{{ $lab->id_penanggung_jawab }}">
                                     </div>
-
+                                    <div class="relative custom-searchable-select">
+                                        <label class="field-label">Pendamping</label>
+                                        <div class="relative">
+                                            <input 
+                                                type="text" 
+                                                placeholder="— Pilih Pendamping —" 
+                                                class="form-control searchable-select-trigger cursor-pointer bg-white"
+                                                readonly
+                                            >
+                                            <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" style="margin-top: 10px;">
+                                                <i class="fa-solid fa-chevron-down"></i>
+                                            </span>
+                                        </div>
+                                        <div class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 hidden searchable-select-dropdown" style="max-height: 280px; overflow: hidden; width: 100%; min-width: 200px;">
+                                            <div class="p-2 border-b border-gray-100">
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="Cari asisten..." 
+                                                    class="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-silapor-500 searchable-select-search"
+                                                >
+                                            </div>
+                                            <ul class="max-h-48 overflow-y-auto py-1 text-sm text-gray-700 searchable-select-options">
+                                                <li data-value="" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-gray-400">— Pilih Pendamping —</li>
+                                                @foreach($asistenList as $asisten)
+                                                    <li data-value="{{ $asisten->id_user }}" class="px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                                        {{ $asisten->nama }}
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                        <input type="hidden" name="id_pendamping" value="{{ $lab->id_pendamping }}">
+                                    </div>
                                     <button type="submit" class="btn-mini btn-primary-mini">
                                         <i class="fa-solid fa-floppy-disk"></i>Simpan
                                     </button>
                                 </form>
                             </div>
+                            @endif
                         </div>
                     @empty
                         <p class="m-0 p-6 text-sm text-gray-400">Belum ada data laboratorium.</p>
@@ -172,5 +205,66 @@
         sidebar.classList.toggle('-translate-x-full');
         overlay.classList.toggle('hidden');
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.custom-searchable-select').forEach(function (wrapper) {
+            const trigger = wrapper.querySelector('.searchable-select-trigger');
+            const dropdown = wrapper.querySelector('.searchable-select-dropdown');
+            const searchInput = wrapper.querySelector('.searchable-select-search');
+            const optionsList = wrapper.querySelector('.searchable-select-options');
+            const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+            const options = optionsList.querySelectorAll('li');
+
+            // Set initial trigger text
+            const initialValue = hiddenInput.value;
+            const initialOption = Array.from(options).find(opt => opt.getAttribute('data-value') === initialValue);
+            if (initialOption) {
+                trigger.value = initialOption.textContent.trim();
+            }
+
+            // Click trigger to open dropdown
+            trigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+                document.querySelectorAll('.searchable-select-dropdown').forEach(d => {
+                    if (d !== dropdown) d.classList.add('hidden');
+                });
+                dropdown.classList.toggle('hidden');
+                if (!dropdown.classList.contains('hidden')) {
+                    searchInput.value = '';
+                    options.forEach(opt => opt.style.display = '');
+                    searchInput.focus();
+                }
+            });
+
+            dropdown.addEventListener('click', function (e) {
+                e.stopPropagation();
+            });
+
+            // Filtering search inputs
+            searchInput.addEventListener('input', function () {
+                const query = searchInput.value.toLowerCase();
+                options.forEach(function (option) {
+                    const text = option.textContent.toLowerCase();
+                    option.style.display = text.includes(query) ? '' : 'none';
+                });
+            });
+
+            // Select an option
+            options.forEach(function (option) {
+                option.addEventListener('click', function () {
+                    const val = option.getAttribute('data-value');
+                    const text = option.textContent.trim();
+                    hiddenInput.value = val;
+                    trigger.value = val ? text : '';
+                    dropdown.classList.add('hidden');
+                });
+            });
+        });
+
+        // Click outside closes dropdowns
+        document.addEventListener('click', function () {
+            document.querySelectorAll('.searchable-select-dropdown').forEach(d => d.classList.add('hidden'));
+        });
+    });
 </script>
 @endsection

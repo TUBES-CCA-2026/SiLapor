@@ -131,9 +131,6 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:koordinator_lab')->group(function () {
         Route::get('/detail-laporan', [DashboardController::class, 'detailLaporan'])->name('detail-laporan.index');
-        Route::get('/penugasan', [DashboardController::class, 'penugasan'])->name('penugasan.index');
-        Route::post('/pengaduan/{pengaduan}/assign', [TindakLanjutController::class, 'assign'])->name('tindak-lanjut.assign');
-        Route::post('/notifikasi/{notifikasi}/kirim-ulang', [TindakLanjutController::class, 'kirimUlang'])->name('notifikasi.kirim-ulang');
     });
 
     Route::middleware('role:laboran,kepala_lab')->group(function () {
@@ -159,7 +156,7 @@ Route::middleware('auth')->group(function () {
         });
     });
 
-    Route::middleware('role:laboran')->group(function () {
+    Route::middleware('role:laboran,koordinator_lab')->group(function () {
         Route::get('/laboratorium', [LaboratoriumController::class, 'index'])->name('laboratorium.index');
         Route::post('/laboratorium', [LaboratoriumController::class, 'store'])->name('laboratorium.store');
         Route::patch('/laboratorium/{laboratorium}', [LaboratoriumController::class, 'update'])->name('laboratorium.update');

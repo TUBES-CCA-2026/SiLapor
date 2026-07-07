@@ -207,23 +207,37 @@
                             Fasilitas yang Dilaporkan
                         </label>
 
-                        <select
-                            id="id_fasilitas"
-                            name="id_fasilitas"
-                            required
-                            class="w-full border border-gray-200 rounded-2xl px-5 py-4 focus:ring-2 focus:ring-[#0090F5] bg-[#F8FAFC]"
-                        >
-                            <option value="">— Pilih fasilitas —</option>
-
-                            @foreach ($facilities as $item)
-                                <option
-                                    value="{{ $item->id_fasilitas }}"
-                                    @selected((string) $selectedFacilityId === (string) $item->id_fasilitas)
+                        <div class="relative custom-searchable-select">
+                            <div class="relative">
+                                <input 
+                                    type="text" 
+                                    placeholder="— Pilih fasilitas —" 
+                                    class="w-full border border-gray-200 rounded-2xl px-5 py-4 focus:ring-2 focus:ring-[#0090F5] bg-[#F8FAFC] searchable-select-trigger cursor-pointer font-medium text-gray-700"
+                                    readonly
                                 >
-                                    {{ $item->nama_fasilitas }} — {{ $item->laboratorium?->nama_laboratorium ?? '-' }}
-                                </option>
-                            @endforeach
-                        </select>
+                                <span class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                    <i class="fa-solid fa-chevron-down text-sm"></i>
+                                </span>
+                            </div>
+                            <div class="absolute left-0 right-0 mt-2 bg-white border border-gray-250 rounded-2xl shadow-lg z-50 hidden searchable-select-dropdown">
+                                <div class="p-3 border-b border-gray-100">
+                                    <input 
+                                        type="text" 
+                                        placeholder="Cari fasilitas..." 
+                                        class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0090F5] searchable-select-search"
+                                    >
+                                </div>
+                                <ul class="max-h-60 overflow-y-auto py-2 text-sm text-gray-700 searchable-select-options">
+                                    <li data-value="" class="px-5 py-2.5 hover:bg-gray-50 cursor-pointer text-gray-400">— Pilih fasilitas —</li>
+                                    @foreach ($facilities as $item)
+                                        <li data-value="{{ $item->id_fasilitas }}" class="px-5 py-2.5 hover:bg-gray-50 cursor-pointer">
+                                            {{ $item->nama_fasilitas }} — {{ $item->laboratorium?->nama_laboratorium ?? '-' }}
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            <input type="hidden" name="id_fasilitas" id="id_fasilitas" value="{{ $selectedFacilityId }}" required>
+                        </div>
 
                         @if ($facilities->isEmpty())
                             <p class="text-xs text-red-500 mt-1">
@@ -325,6 +339,70 @@
 </div>
 
 <script>
+    // Searchable Select Component Logic
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.custom-searchable-select').forEach(function (wrapper) {
+            const trigger = wrapper.querySelector('.searchable-select-trigger');
+            const dropdown = wrapper.querySelector('.searchable-select-dropdown');
+            const searchInput = wrapper.querySelector('.searchable-select-search');
+            const optionsList = wrapper.querySelector('.searchable-select-options');
+            const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+            const options = optionsList.querySelectorAll('li');
+
+            // Update trigger text initially
+            const initialValue = hiddenInput.value;
+            const initialOption = Array.from(options).find(opt => opt.getAttribute('data-value') === initialValue);
+            if (initialOption) {
+                trigger.value = initialOption.textContent.trim();
+            }
+
+            // Open/close dropdown
+            trigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+                document.querySelectorAll('.searchable-select-dropdown').forEach(d => {
+                    if (d !== dropdown) d.classList.add('hidden');
+                });
+                dropdown.classList.toggle('hidden');
+                if (!dropdown.classList.contains('hidden')) {
+                    searchInput.value = '';
+                    options.forEach(opt => opt.style.display = '');
+                    searchInput.focus();
+                }
+            });
+
+            dropdown.addEventListener('click', function (e) {
+                e.stopPropagation();
+            });
+
+            // Filter search
+            searchInput.addEventListener('input', function () {
+                const query = searchInput.value.toLowerCase();
+                options.forEach(function (option) {
+                    const text = option.textContent.toLowerCase();
+                    option.style.display = text.includes(query) ? '' : 'none';
+                });
+            });
+
+            // Select value
+            options.forEach(function (option) {
+                option.addEventListener('click', function () {
+                    const val = option.getAttribute('data-value');
+                    const text = option.textContent.trim();
+                    hiddenInput.value = val;
+                    trigger.value = val ? text : '';
+                    dropdown.classList.add('hidden');
+                    
+                    // Dispatch change event to trigger other calculations
+                    hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+            });
+        });
+
+        document.addEventListener('click', function () {
+            document.querySelectorAll('.searchable-select-dropdown').forEach(d => d.classList.add('hidden'));
+        });
+    });
+
     const facilities = @json($facilityPayload ?? []);
     const facilityMap = Object.fromEntries(facilities.map((item) => [String(item.id), item]));
 
