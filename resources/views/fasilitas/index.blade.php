@@ -83,6 +83,33 @@
     .btn-primary { background: #0090F5; color: #fff; border: 0; border-radius: .875rem; padding: .75rem 1rem; font-weight: 800; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
     .btn-primary:hover { background: #007CD5; }
     .btn-danger-soft { background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; border-radius: .875rem; padding: .65rem 1rem; font-weight: 700; text-decoration: none; cursor: pointer; }
+    .btn-cetak-qr {
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        color: #ffffff !important;
+        border: none;
+        border-radius: 0.75rem;
+        padding: 0.6rem 1.25rem;
+        font-size: 0.82rem;
+        font-weight: 800;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        min-height: 36px;
+    }
+    .btn-cetak-qr:hover {
+        background: linear-gradient(135deg, #F87171 0%, #DC2626 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
+    }
+    .btn-cetak-qr:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 10px rgba(220, 38, 38, 0.2);
+    }
     .qr-actions { display:flex; gap:.4rem; justify-content:center; flex-wrap:wrap; }
     .qr-action-btn { min-width:0; border-radius:.55rem; padding:.42rem .62rem; font-size:.72rem; font-weight:800; line-height:1; display:inline-flex; align-items:center; gap:.3rem; border:1px solid #CBD5E1; background:#fff; color:#334155; cursor:pointer; text-decoration:none; }
     .qr-action-btn:hover { border-color:#0090F5; color:#0090F5; background:#F0F9FF; }
@@ -134,6 +161,23 @@
     .loading-line { height: 13px; margin: 13px 0; border-radius: 30px; background: linear-gradient(90deg, #edf2f7, #f8fbff, #edf2f7); }
     .loading-line.short { width: 60%; }
 
+    .btn-secondary-light { border: 1px solid #D8E1EC; color: #334155; background: #F8FAFC; border-radius: .875rem; padding: .75rem 1rem; font-weight: 800; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: .45rem; }
+    .btn-secondary-light:hover { border-color: #0090F5; color: #0090F5; background: #EEF8FF; }
+    .import-fasilitas-card { margin-bottom: 1.5rem; padding: 1.25rem; border: 1px solid #E5E7EB; border-radius: 1.5rem; background: #F8FAFC; display: grid; grid-template-columns: 1.2fr 1fr auto; gap: 1rem; align-items: end; }
+    .import-fasilitas-title { margin: 0; color: #1F2937; font-size: .95rem; font-weight: 800; }
+    .import-fasilitas-help { margin: .25rem 0 0; color: #64748B; font-size: .78rem; line-height: 1.5; }
+    .import-fasilitas-card .form-control { height: 44px; padding: .62rem .85rem; border-radius: .75rem; font-size: .84rem; background: #fff; }
+    .import-fasilitas-card .btn-primary { height: 44px; padding: 0 1.25rem; border-radius: .75rem; font-size: .84rem; white-space: nowrap; }
+    .import-result-box { margin-bottom: 1.25rem; padding: .9rem 1rem; border: 1px solid #FBBF24; border-radius: 1rem; background: #FFFBEB; color: #92400E; font-size: .84rem; line-height: 1.5; }
+    .import-result-box strong { display: block; margin-bottom: .35rem; font-weight: 800; }
+    .import-result-box ul { margin: .35rem 0 0 1rem; padding: 0; list-style-type: disc; }
+    .import-result-box li + li { margin-top: .25rem; }
+
+    @media (max-width: 900px) {
+        .import-fasilitas-card { grid-template-columns: 1fr; }
+        .import-fasilitas-card .btn-primary { width: 100%; }
+    }
+
     @media (min-width: 850px) {
         .sidebar-desktop { transform: translateX(0) !important; }
         .hide-on-desktop { display: none !important; }
@@ -166,12 +210,49 @@
                 <p style="margin: 0; color: #64748B; font-size: .9rem;">Setiap fasilitas punya QR unik untuk pelaporan kerusakan.</p>
             </div>
             <div style="display: flex; gap: 0.5rem; align-items: center;">
-                <button type="button" onclick="printAllQrs()" class="btn-mini btn-outline-mini">
+                <a href="{{ route('fasilitas.import-template') }}" class="btn-secondary-light">
+                    <i class="fa-solid fa-file-arrow-down"></i>Template CSV
+                </a>
+                <button type="button" onclick="printAllQrs()" class="btn-cetak-qr">
                     <i class="fa-solid fa-print"></i>Cetak Semua QR
                 </button>
                 <a href="{{ route('laboratorium.index') }}" class="btn-outline-blue">Kelola Laboratorium</a>
             </div>
         </div>
+
+        @if(session('import_errors') && count(session('import_errors')) > 0)
+            <div class="import-result-box">
+                <strong>Catatan import</strong>
+                <ul>
+                    @foreach(session('import_errors') as $importError)
+                        <li>{{ $importError }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="import-result-box">
+                <strong>Data belum bisa diproses</strong>
+                <ul>
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('fasilitas.import') }}" enctype="multipart/form-data" class="import-fasilitas-card">
+            @csrf
+            <div>
+                <p class="import-fasilitas-title">Import Spreadsheet Fasilitas</p>
+                <p class="import-fasilitas-help">Gunakan file .xlsx atau .csv. Header yang didukung: nama_fasilitas, kode_laboratorium, no_fasilitas.</p>
+            </div>
+            <input type="file" name="spreadsheet" accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required class="form-control">
+            <button type="submit" class="btn-primary">
+                <i class="fa-solid fa-file-import" style="margin-right: .45rem;"></i>Import
+            </button>
+        </form>
 <form method="POST" action="{{ route('fasilitas.store') }}" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-bottom: 2rem;">
             @csrf
             <input name="nama_fasilitas" placeholder="Nama fasilitas" required class="form-control">
@@ -182,7 +263,7 @@
                 @endforeach
             </select>
             <input name="no_fasilitas" placeholder="Kode aset" class="form-control">
-            <button class="btn-primary">+ Tambah Fasilitas</button>
+            <button class="btn-primary">Add Fasilitas</button>
         </form>
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
             @forelse ($fasilitas as $f)

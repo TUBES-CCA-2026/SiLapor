@@ -33,7 +33,6 @@ class LaboratoriumController extends Controller
         $validated = $request->validate([
             'nama_laboratorium' => ['required', 'string', 'max:120'],
             'kode_laboratorium' => ['nullable', 'string', 'max:20'],
-            'lokasi' => ['nullable', 'string', 'max:120'],
         ]);
 
         Laboratorium::create($validated);
@@ -65,7 +64,6 @@ class LaboratoriumController extends Controller
         $validated = $request->validate([
             'nama_laboratorium' => ['required', 'string', 'max:120'],
             'kode_laboratorium' => ['nullable', 'string', 'max:20'],
-            'lokasi' => ['nullable', 'string', 'max:120'],
         ]);
 
         $laboratorium->update($validated);
@@ -75,11 +73,8 @@ class LaboratoriumController extends Controller
 
     public function destroy(Laboratorium $laboratorium): RedirectResponse
     {
-        if ($laboratorium->fasilitas()->activeQr()->exists()) {
-            return back()->withErrors([
-                'laboratorium' => 'Laboratorium tidak dapat dihapus karena masih memiliki fasilitas aktif.',
-            ]);
-        }
+        // Unlink related facilities (set id_laboratorium to null)
+        $laboratorium->semuaFasilitas()->update(['id_laboratorium' => null]);
 
         $nama = $laboratorium->nama_laboratorium;
         $laboratorium->delete();

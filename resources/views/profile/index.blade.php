@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('title', 'Profil - SiLapor')
-@section('suppress_global_notification', 'true')
 
 @section('content')
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -78,11 +77,7 @@
             @include('partials.user-welcome-box', ['user' => $user])
         </header>
 
-        @if(session('success') && session('profile_form') !== 'password')
-            <div class="rounded-2xl border border-green-200 bg-green-50 text-green-700 px-5 py-4 text-sm font-semibold">
-                {{ session('success') }}
-            </div>
-        @endif
+
 
         @if($errors->any() && old('_form') !== 'password')
             <div class="rounded-2xl border border-red-200 bg-red-50 text-red-700 px-5 py-4 text-sm font-semibold">
@@ -168,11 +163,7 @@
                 @method('PUT')
                 <input type="hidden" name="_form" value="profile">
 
-                @if(session('success') && session('profile_form') === 'profile')
-                    <div class="rounded-2xl border border-green-200 bg-green-50 text-green-700 px-4 py-3 text-sm font-semibold">
-                        {{ session('success') }}
-                    </div>
-                @endif
+
 
                 @if($errors->any() && old('_form') === 'profile')
                     <div class="rounded-2xl border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm font-semibold">
@@ -250,11 +241,7 @@
                 @method('PUT')
                 <input type="hidden" name="_form" value="password">
 
-                @if(session('success') && session('profile_form') === 'password')
-                    <div class="rounded-2xl border border-green-200 bg-green-50 text-green-700 px-4 py-3 text-sm font-semibold">
-                        {{ session('success') }}
-                    </div>
-                @endif
+
 
                 @if($errors->any() && old('_form') === 'password')
                     <div class="rounded-2xl border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm font-semibold">

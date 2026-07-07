@@ -197,7 +197,7 @@
                     <i class="fa-solid fa-file-arrow-down"></i>Template CSV
                 </a>
                 <a href="{{ route('admin.users.create') }}" class="btn-primary">
-                    <i class="fa-solid fa-plus" style="margin-right: .45rem;"></i>Tambah User
+                    Add User
                 </a>
             </div>
         </div>
@@ -253,7 +253,7 @@
                             <td style="font-weight: 800;">{{ $u->nama }}</td>
                             <td>{{ $u->email }}</td>
                             <td><span class="status-chip new">{{ $u->role }}</span></td>
-                            <td class="text-center"><a href="{{ route('admin.users.edit', $u->id_user) }}" class="btn-outline-blue">Edit / Reset Password</a></td>
+                            <td class="text-center"><a href="{{ route('admin.users.edit', $u->id_user) }}" class="btn-outline-blue">Edit</a></td>
                         </tr>
                     @empty
                         <tr><td colspan="4" class="empty-state">Belum ada user.</td></tr>

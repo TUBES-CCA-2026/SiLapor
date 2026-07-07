@@ -65,7 +65,6 @@
             <div class="xl:col-span-2 bg-white border rounded-[32px] overflow-hidden shadow-figma-container">
                 <div class="px-8 py-6 border-b flex flex-col sm:flex-row justify-between items-center gap-4">
                     <h2 class="font-bold text-xl text-gray-800">Akses Cepat Laboran</h2>
-                    <span class="text-sm text-gray-400">Semua fitur admin telah dipindahkan ke role laboran</span>
                 </div>
                 <div class="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                     <a href="{{ route('admin.users.index') }}" class="rounded-3xl border border-gray-200 p-5 hover:border-[#0090F5] hover:bg-sky-50/40 transition-all">
@@ -112,7 +111,10 @@
                             @forelse($laboratoriumList as $lab)
                                 <div class="rounded-2xl border border-gray-100 px-4 py-3">
                                     <p class="font-semibold text-[#2C3E50] text-sm">{{ $lab->nama_laboratorium }}</p>
-                                    <p class="text-xs text-gray-500 mt-1">{{ $lab->lokasi ?? '-' }}</p>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        PJ: {{ $lab->penanggungJawabUser?->nama ?? 'Belum ditentukan' }}
+                                        · {{ $lab->fasilitas_count ?? 0 }} fasilitas
+                                    </p>
                                 </div>
                             @empty
                                 <p class="text-sm text-gray-400">Belum ada data laboratorium.</p>

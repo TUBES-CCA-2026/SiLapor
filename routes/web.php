@@ -143,6 +143,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:laboran,admin')->group(function () {
         Route::get('/fasilitas', [FasilitasController::class, 'index'])->name('fasilitas.index');
         Route::post('/fasilitas', [FasilitasController::class, 'store'])->name('fasilitas.store');
+        Route::get('/fasilitas/import-template', [FasilitasController::class, 'importTemplate'])->name('fasilitas.import-template');
+        Route::post('/fasilitas/import', [FasilitasController::class, 'import'])->name('fasilitas.import');
         Route::post('/fasilitas/{fasilitas}/regenerate-qr', [FasilitasController::class, 'regenerateQr'])->name('fasilitas.regenerate-qr');
         Route::delete('/fasilitas/{fasilitas}/qr', [FasilitasController::class, 'deleteQr'])->name('fasilitas.delete-qr');
 

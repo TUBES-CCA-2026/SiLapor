@@ -372,7 +372,8 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        $laboratoriumList = Laboratorium::with('koordinator')
+        $laboratoriumList = Laboratorium::with(['koordinator', 'penanggungJawabUser'])
+            ->withCount('fasilitas')
             ->orderBy('nama_laboratorium')
             ->take(8)
             ->get();

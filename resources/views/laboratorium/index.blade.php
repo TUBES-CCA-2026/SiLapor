@@ -29,7 +29,7 @@
     .btn-danger-mini { background:#FEE2E2; color:#DC2626; border:1px solid #FCA5A5; }
     .btn-danger-mini:hover { background:#DC2626; color:#fff; }
     .btn-danger-mini:disabled { opacity:.45; cursor:not-allowed; }
-    .lab-form { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; gap:.85rem; align-items:end; margin-bottom:1.25rem; padding:1rem; border:1px solid #E5E7EB; border-radius:1rem; background:#fff; }
+    .lab-form { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)) auto; gap:.85rem; align-items:end; margin-bottom:1.25rem; padding:1rem; border:1px solid #E5E7EB; border-radius:1rem; background:#fff; }
     .lab-list { border:1px solid #E5E7EB; border-radius:1rem; overflow:hidden; background:#fff; }
     .lab-item { padding:1rem 1.25rem; border-bottom:1px solid #F1F5F9; }
     .lab-item:last-child { border-bottom:0; }
@@ -78,7 +78,6 @@
                     @csrf
                     <input name="nama_laboratorium" placeholder="Nama lab" required class="form-control">
                     <input name="kode_laboratorium" placeholder="Kode" class="form-control">
-                    <input name="lokasi" placeholder="Lokasi" class="form-control">
                     <button class="btn-mini btn-primary-mini" type="submit">
                         Submit
                     </button>
@@ -98,14 +97,48 @@
                                             <span class="text-xs text-gray-400 font-semibold">({{ $lab->kode_laboratorium }})</span>
                                         @endif
                                     </p>
-                                    <p class="lab-meta">{{ $lab->lokasi ?? '—' }}</p>
                                     <p class="lab-pj">
                                         PJ: {{ $lab->penanggungJawabUser?->nama ?? 'Belum ditentukan' }}
                                         · Pendamping: {{ $lab->pendamping_users->pluck('nama')->join(', ') ?: 'Belum ditentukan' }}
                                         · {{ $lab->fasilitas_count }} fasilitas
                                     </p>
                                 </div>
+                                @if($isLaboran)
+                                <div class="flex items-center gap-2">
+                                    <button onclick="toggleEditForm('{{ $lab->id_laboratorium }}')" class="btn-mini btn-outline-mini">
+                                        <i class="fa-solid fa-pen"></i>Edit
+                                    </button>
+                                    <form action="{{ route('laboratorium.destroy', $lab) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laboratorium ini?')" style="display: inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-mini btn-danger-mini">
+                                            <i class="fa-solid fa-trash"></i>Hapus
+                                        </button>
+                                    </form>
+                                </div>
+                                @endif
                             </div>
+
+                            {{-- Laboran: form edit detail lab --}}
+                            @if($isLaboran)
+                            <div id="edit-form-{{ $lab->id_laboratorium }}" class="pj-form" style="display: none; margin-top: .75rem;">
+                                <form method="POST" action="{{ route('laboratorium.update', $lab) }}" style="display:contents;">
+                                    @csrf
+                                    @method('PATCH')
+                                    <div>
+                                        <label class="field-label">Nama Laboratorium</label>
+                                        <input name="nama_laboratorium" value="{{ $lab->nama_laboratorium }}" required class="form-control">
+                                    </div>
+                                    <div>
+                                        <label class="field-label">Kode Laboratorium</label>
+                                        <input name="kode_laboratorium" value="{{ $lab->kode_laboratorium }}" class="form-control">
+                                    </div>
+                                    <button type="submit" class="btn-mini btn-primary-mini">
+                                        <i class="fa-solid fa-floppy-disk"></i>Simpan
+                                    </button>
+                                </form>
+                            </div>
+                            @endif
 
                             {{-- Koordinator: form set PJ & Pendamping --}}
                             @if($isKoordinator)
@@ -203,6 +236,20 @@
 </div>
 
 <script>
+    function toggleEditForm(labId) {
+        // Hide all other edit forms
+        document.querySelectorAll('[id^="edit-form-"]').forEach(function (form) {
+            if (form.id !== 'edit-form-' + labId) {
+                form.style.display = 'none';
+            }
+        });
+        // Toggle target form
+        const target = document.getElementById('edit-form-' + labId);
+        if (target) {
+            target.style.display = target.style.display === 'none' ? 'grid' : 'none';
+        }
+    }
+
     function togglePjForm(labId) {
         // Hide all other PJ forms
         document.querySelectorAll('.pj-form').forEach(function (form) {
