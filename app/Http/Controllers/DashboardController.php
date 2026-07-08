@@ -415,12 +415,24 @@ class DashboardController extends Controller
             ->take(20)
             ->get();
 
-        $statistikTugas = TindakLanjut::query()
-            ->where('id_petugas', $user->id_user);
+        // Fetch labs where the assistant is either PJ or companion
+        $labIds = Laboratorium::where('id_penanggung_jawab', $user->id_user)
+            ->orWhereJsonContains('id_pendamping', (string)$user->id_user)
+            ->orWhereJsonContains('id_pendamping', (int)$user->id_user)
+            ->pluck('id_laboratorium')
+            ->toArray();
 
-        $totalPengaduan = Pengaduan::count();
-        $sedangDiperbaiki = (clone $statistikTugas)->statusKode('ON PROGRES')->count();
-        $selesai = (clone $statistikTugas)->statusKode('DONE')->count();
+        $totalPengaduan = Pengaduan::whereHas('fasilitas', function ($query) use ($labIds) {
+            $query->whereIn('id_laboratorium', $labIds);
+        })->count();
+
+        $sedangDiperbaiki = Pengaduan::whereHas('fasilitas', function ($query) use ($labIds) {
+            $query->whereIn('id_laboratorium', $labIds);
+        })->statusKode('HANDLED')->count();
+
+        $selesai = Pengaduan::whereHas('fasilitas', function ($query) use ($labIds) {
+            $query->whereIn('id_laboratorium', $labIds);
+        })->statusKode('DONE')->count();
 
         return view('dashboard.asisten', compact(
             'user',

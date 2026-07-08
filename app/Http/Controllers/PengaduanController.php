@@ -144,7 +144,7 @@ class PengaduanController extends Controller
                 'lokasi_lab' => $this->formatLokasiLab($item),
             ])->values(),
             'isGuest' => !Auth::check(),
-            'users' => User::with('roleData')->orderBy('nama')->get(['id_user', 'id_role', 'nama']),
+            'users' => User::role('asisten')->with('roleData')->orderBy('nama')->get(['id_user', 'id_role', 'nama']),
         ];
     }
 

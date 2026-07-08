@@ -36,7 +36,7 @@ class ProfileController extends Controller
             'email' => ['required', 'email', 'max:120', 'unique:users,email,' . $user->id_user . ',id_user'],
             'no_hp' => ['nullable', 'string', 'max:15'],
             'phone' => ['nullable', 'string', 'max:15'],
-            'nim' => ['nullable', 'string', 'max:12'],
+            'nim' => ['nullable', 'numeric', 'digits:11'],
             'jurusan' => ['nullable', 'string', 'max:20'],
             'peminatan' => ['nullable', 'string', 'max:20'],
             'pj' => ['nullable', 'string', 'max:20'],

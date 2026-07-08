@@ -172,9 +172,8 @@
                 <div><label class="field-label">Role</label><select name="role" id="role-select" required class="form-control">@foreach ($roles as $r)<option value="{{ $r }}" {{ old('role', $editingUser->role) === $r ? 'selected' : '' }}>{{ $r }}</option>@endforeach</select></div>
                 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem;">
                     <div><label class="field-label">No. HP</label><input name="phone" value="{{ old('phone', $editingUser->phone) }}" class="form-control"></div>
-                    <div data-asisten-only><label class="field-label">NIM</label><input name="nim" value="{{ old('nim', $editingUser->nim) }}" class="form-control"></div>
+                    <div data-asisten-only><label class="field-label">NIM</label><input type="text" inputmode="numeric" pattern="[0-9]*" name="nim" value="{{ old('nim', $editingUser->nim) }}" class="form-control" maxlength="11"></div>
                     <div data-asisten-only><label class="field-label">Jurusan</label><input name="jurusan" value="{{ old('jurusan', $editingUser->jurusan) }}" class="form-control"></div>
-                    <div data-asisten-only style="grid-column: 1 / -1;"><label class="field-label">Penanggung Jawab</label><input name="penanggung_jawab" value="{{ old('penanggung_jawab', $editingUser->penanggung_jawab) }}" class="form-control"></div>
                 </div>
                 <button type="submit" class="btn-primary" style="width: 100%;">Simpan Profil</button>
             </form>

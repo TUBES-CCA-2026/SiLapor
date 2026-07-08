@@ -56,6 +56,8 @@
             ['profil', 'Profil', 'fa-regular fa-user', $routeSafe('profile.index')],
         ];
     }
+
+    $groupedFasilitas = $fasilitas->groupBy('id_laboratorium');
 @endphp
 
 @once
@@ -118,6 +120,14 @@
     .form-control { width: 100%; border: 1px solid #D1D5DB; border-radius: .875rem; padding: .75rem 1rem; background: #fff; outline: none; }
     .form-control:focus { border-color: #0090F5; box-shadow: 0 0 0 3px rgba(0, 144, 245, .14); }
     .field-label { display: block; margin-bottom: .45rem; font-size: .75rem; color: #6B7280; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+    .inline-form-grid { display: grid; grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr auto; gap: 0.75rem; align-items: end; padding: 1.25rem; border: 1px solid #E5E7EB; border-radius: 1.25rem; background: #F8FAFC; }
+    @media (max-width: 1024px) {
+        .inline-form-grid { grid-template-columns: 1fr; align-items: stretch; }
+    }
+    .category-form-grid { display: grid; grid-template-columns: 1fr auto; gap: 0.75rem; align-items: end; padding: 1.25rem; border: 1px solid #E5E7EB; border-radius: 1.25rem; background: #F8FAFC; max-width: 500px; }
+    @media (max-width: 640px) {
+        .category-form-grid { grid-template-columns: 1fr; align-items: stretch; max-width: 100%; }
+    }
     .info-box { padding: 1rem; background: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 1rem; font-weight: 700; color: #374151; }
     .status-chip { display: inline-flex; align-items: center; gap: .35rem; padding: .35rem .7rem; border-radius: .5rem; font-size: .75rem; font-weight: 800; }
     .status-chip.progress { background: #FFD400; color: #7A6200; }
@@ -253,64 +263,147 @@
                 <i class="fa-solid fa-file-import" style="margin-right: .45rem;"></i>Import
             </button>
         </form>
-<form method="POST" action="{{ route('fasilitas.store') }}" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-            @csrf
-            <input name="nama_fasilitas" placeholder="Nama fasilitas" required class="form-control">
-            <select name="id_laboratorium" required class="form-control">
-                <option value="" disabled selected>Pilih Laboratorium</option>
-                @foreach ($laboratoriums as $lab)
-                    <option value="{{ $lab->id_laboratorium }}">{{ $lab->nama_laboratorium }}</option>
-                @endforeach
-            </select>
-            <input name="no_fasilitas" placeholder="Kode aset" class="form-control">
-            <button class="btn-primary">Add Fasilitas</button>
-        </form>
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
-            @forelse ($fasilitas as $f)
-                @continue($f->qr_deleted_at || blank($f->qr_code))
-                <div id="fasilitas-card-{{ $f->id_fasilitas }}" style="background: #fff; border: {{ session('new_fasilitas_id') == $f->id_fasilitas ? '2px solid #0090F5' : '1px solid #E5E7EB' }}; border-radius: 1.25rem; padding: 1.25rem; text-align: center;">
-                    <p style="margin: 0; font-weight: 800; color: #2C3E50;">{{ $f->nama_fasilitas }}</p>
-                    <p style="margin: .25rem 0 1rem; color: #64748B; font-size: .82rem;">{{ $f->laboratorium->nama_laboratorium }}</p>
-                    @if($f->qr_deleted_at)
-                        <div style="display:grid;place-items:center;margin-bottom:1rem;min-height:168px;color:#DC2626;font-size:.85rem;font-weight:800;border:1px dashed #FCA5A5;border-radius:1rem;background:#FEF2F2;">QR sudah dihapus/nonaktif</div>
-                    @else
-                        <div class="qr-print-area" data-fasilitas-name="{{ $f->nama_fasilitas }}" data-fasilitas-lab="{{ $f->laboratorium->nama_laboratorium ?? '-' }}" data-fasilitas-url="{{ $f->scanUrl() }}" style="display: flex; justify-content: center; margin-bottom: 1rem; min-height: 140px; align-items: center;" id="qr-{{ $f->id_fasilitas }}"></div>
-                    @endif
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            const target = document.getElementById('qr-{{ $f->id_fasilitas }}');
-                            if (!target) return;
-                            target.innerHTML = '';
-                            if (window.QRCode) {
-                                new QRCode(target, {
-                                    text: @json($f->scanUrl()),
-                                    width: 168,
-                                    height: 168,
-                                    correctLevel: QRCode.CorrectLevel.H
+        <div style="display: grid; gap: 1rem; margin-bottom: 2rem;">
+            <!-- Form Tambah Fasilitas -->
+            <form method="POST" action="{{ route('fasilitas.store') }}" class="inline-form-grid">
+                @csrf
+                <div>
+                    <label class="field-label">Nama Fasilitas</label>
+                    <input name="nama_fasilitas" placeholder="Nama fasilitas" required class="form-control" style="height: 42px; padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+                </div>
+                <div>
+                    <label class="field-label">Laboratorium</label>
+                    <select name="id_laboratorium" required class="form-control" style="height: 42px; padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+                        <option value="" disabled selected>Pilih Laboratorium</option>
+                        @foreach ($laboratoriums as $lab)
+                            <option value="{{ $lab->id_laboratorium }}">{{ $lab->nama_laboratorium }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="field-label">Kategori</label>
+                    <select name="id_kategori" class="form-control" style="height: 42px; padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+                        <option value="" selected>Pilih Kategori</option>
+                        @foreach ($categories as $cat)
+                            <option value="{{ $cat->id_kategori }}">{{ $cat->nama_kategori }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="field-label">Kode Aset</label>
+                    <input name="no_fasilitas" placeholder="Kode aset" class="form-control" style="height: 42px; padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+                </div>
+                <div>
+                    <button class="btn-primary" style="height: 42px; padding: 0 1.25rem; font-size: 0.85rem; font-weight: 800; white-space: nowrap;">
+                        ADD
+                    </button>
+                </div>
+            </form>
+
+            <!-- Form Tambah Kategori -->
+            <form method="POST" action="{{ route('fasilitas.kategori.store') }}" class="category-form-grid">
+                @csrf
+                <div>
+                    <label class="field-label">Nama Kategori Baru</label>
+                    <input name="nama_kategori" placeholder="Nama kategori (misal: Komputer, Kursi)" required class="form-control" style="height: 42px; padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+                </div>
+                <div>
+                    <button class="btn-primary" style="height: 42px; padding: 0 1.25rem; font-size: 0.85rem; font-weight: 800; background: #F59E0B; border: none; white-space: nowrap;">
+                        ADD
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="space-y-4">
+            @foreach ($laboratoriums as $lab)
+                @php
+                    $labFasilitas = $groupedFasilitas->get($lab->id_laboratorium) ?? collect();
+                    $activeFasilitas = $labFasilitas->filter(fn($f) => !$f->qr_deleted_at && !blank($f->qr_code));
+                @endphp
+                <div class="border border-gray-200 rounded-[24px] bg-white overflow-hidden shadow-sm">
+                    <!-- Lab Header -->
+                    <div onclick="toggleLabFacilities('{{ $lab->id_laboratorium }}')" class="flex items-center justify-between px-6 py-4 bg-gray-50/50 hover:bg-gray-50 cursor-pointer transition-all">
+                        <div>
+                            <h3 class="font-extrabold text-[#2C3E50] text-base flex items-center gap-2">
+                                <i class="fa-regular fa-building text-gray-400"></i>
+                                {{ $lab->nama_laboratorium }}
+                                @if($lab->kode_laboratorium)
+                                    <span class="text-xs font-semibold text-gray-400">({{ $lab->kode_laboratorium }})</span>
+                                @endif
+                            </h3>
+                            <p class="text-xs text-gray-500 mt-1 font-semibold">
+                                {{ $activeFasilitas->count() }} Fasilitas Aktif
+                            </p>
+                        </div>
+                        <span id="chevron-{{ $lab->id_laboratorium }}" class="text-gray-400 transition-transform duration-200">
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </span>
+                    </div>
+
+                    <!-- Lab Facilities (Collapsible) -->
+                    <div id="lab-facilities-{{ $lab->id_laboratorium }}" class="hidden p-6 border-t border-gray-100 bg-white">
+                        @if($activeFasilitas->isEmpty())
+                            <p class="text-sm text-gray-400 text-center py-4">Belum ada fasilitas di laboratorium ini.</p>
+                        @else
+                            @php
+                                $facilitiesByCategory = $activeFasilitas->groupBy(function($item) {
+                                    return $item->kategori?->nama_kategori ?? 'Tanpa Kategori';
                                 });
-                            } else {
-                                target.innerHTML = '<p style="font-size:.75rem;color:#64748B;word-break:break-all;">' + @json($f->scanUrl()) + '</p>';
-                            }
-                        });
-                    </script>
-                    <div class="qr-actions">
-                        <form method="POST" action="{{ route('fasilitas.regenerate-qr', $f->id_fasilitas) }}">
-                            @csrf
-                            <button class="qr-action-btn" type="submit" title="Regenerasi QR"><i class="fa-solid fa-rotate"></i><span>QR Baru</span></button>
-                        </form>
-                        @if(! $f->qr_deleted_at)
-                            <button type="button" class="qr-action-btn" onclick="printQr('qr-{{ $f->id_fasilitas }}')" title="Cetak QR"><i class="fa-solid fa-print"></i><span>Cetak</span></button>
-                            <form method="POST" action="{{ route('fasilitas.delete-qr', $f->id_fasilitas) }}" data-confirm-delete data-confirm-title="Hapus/nonaktifkan QR code fasilitas ini?" data-confirm-text="QR fasilitas ini akan dinonaktifkan dan tidak bisa digunakan untuk pelaporan.">
-                                @csrf
-                                @method('DELETE')
-                                <button class="qr-action-btn danger" type="submit" title="Hapus QR"><i class="fa-solid fa-trash"></i><span>Hapus</span></button>
-                            </form>
+                            @endphp
+                            <div class="space-y-6">
+                                @foreach($facilitiesByCategory as $categoryName => $catItems)
+                                    <div>
+                                        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-1">
+                                            {{ $categoryName }} ({{ $catItems->count() }})
+                                        </h4>
+                                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
+                                            @foreach($catItems as $f)
+                                                <div id="fasilitas-card-{{ $f->id_fasilitas }}" style="background: #fff; border: {{ session('new_fasilitas_id') == $f->id_fasilitas ? '2px solid #0090F5' : '1px solid #E5E7EB' }}; border-radius: 1.25rem; padding: 1.25rem; text-align: center;">
+                                                    <p style="margin: 0; font-weight: 800; color: #2C3E50;">{{ $f->nama_fasilitas }}</p>
+                                                    <p style="margin: .25rem 0 1rem; color: #64748B; font-size: .82rem;">{{ $f->no_fasilitas ?: 'Tanpa Kode Aset' }}</p>
+                                                    
+                                                    <div class="qr-print-area" data-fasilitas-name="{{ $f->nama_fasilitas }}" data-fasilitas-lab="{{ $f->laboratorium->nama_laboratorium ?? '-' }}" data-fasilitas-url="{{ $f->scanUrl() }}" style="display: flex; justify-content: center; margin-bottom: 1rem; min-height: 140px; align-items: center;" id="qr-{{ $f->id_fasilitas }}"></div>
+                                                    
+                                                    <script>
+                                                        document.addEventListener('DOMContentLoaded', function () {
+                                                            const target = document.getElementById('qr-{{ $f->id_fasilitas }}');
+                                                            if (!target) return;
+                                                            target.innerHTML = '';
+                                                            if (window.QRCode) {
+                                                                new QRCode(target, {
+                                                                    text: @json($f->scanUrl()),
+                                                                    width: 168,
+                                                                    height: 168,
+                                                                    correctLevel: QRCode.CorrectLevel.H
+                                                                });
+                                                            } else {
+                                                                target.innerHTML = '<p style="font-size:.75rem;color:#64748B;word-break:break-all;">' + @json($f->scanUrl()) + '</p>';
+                                                            }
+                                                        });
+                                                    </script>
+                                                    <div class="qr-actions">
+                                                        <form method="POST" action="{{ route('fasilitas.regenerate-qr', $f->id_fasilitas) }}">
+                                                            @csrf
+                                                            <button class="qr-action-btn" type="submit" title="Regenerasi QR"><i class="fa-solid fa-rotate"></i><span>QR Baru</span></button>
+                                                        </form>
+                                                        <button type="button" class="qr-action-btn" onclick="printQr('qr-{{ $f->id_fasilitas }}')" title="Cetak QR"><i class="fa-solid fa-print"></i><span>Cetak</span></button>
+                                                        <form method="POST" action="{{ route('fasilitas.delete-qr', $f->id_fasilitas) }}" data-confirm-delete data-confirm-title="Hapus/nonaktifkan QR code fasilitas ini?" data-confirm-text="QR fasilitas ini akan dinonaktifkan dan tidak bisa digunakan untuk pelaporan.">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button class="qr-action-btn danger" type="submit" title="Hapus QR"><i class="fa-solid fa-trash"></i><span>Hapus</span></button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
                         @endif
                     </div>
                 </div>
-            @empty
-                <p class="empty-state">Belum ada fasilitas.</p>
-            @endforelse
+            @endforeach
         </div>
     </div>
 </section>
@@ -561,6 +654,21 @@
             }
         });
     })();
+
+    function toggleLabFacilities(labId) {
+        const el = document.getElementById('lab-facilities-' + labId);
+        const chevron = document.getElementById('chevron-' + labId);
+        if (el) {
+            const isHidden = el.classList.contains('hidden');
+            if (isHidden) {
+                el.classList.remove('hidden');
+                if (chevron) chevron.style.transform = 'rotate(180deg)';
+            } else {
+                el.classList.add('hidden');
+                if (chevron) chevron.style.transform = '';
+            }
+        }
+    }
 </script>
 
 @endsection

@@ -274,7 +274,7 @@
     }
 
     .penugasan-status {
-        min-width: 126px;
+        min-width: 100px;
         height: 30px;
         padding: 0 10px;
         display: inline-flex;

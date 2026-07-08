@@ -66,17 +66,11 @@
                 <div class="px-8 py-6 border-b flex flex-col sm:flex-row justify-between items-center gap-4">
                     <h2 class="font-bold text-xl text-gray-800">Akses Cepat Laboran</h2>
                 </div>
-                <div class="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <a href="{{ route('admin.users.index') }}" class="rounded-3xl border border-gray-200 p-5 hover:border-[#0090F5] hover:bg-sky-50/40 transition-all">
                         <div class="w-12 h-12 rounded-2xl bg-[#EAF5FE] text-[#0090F5] flex items-center justify-center text-lg mb-4"><i class="fa-solid fa-users"></i></div>
                         <h3 class="font-bold text-[#2C3E50]">Kelola User</h3>
                         <p class="text-sm text-gray-500 mt-1">Tambah akun, ubah data, reset password pengguna.</p>
-                    </a>
-
-                    <a href="{{ route('fasilitas.index') }}" class="rounded-3xl border border-gray-200 p-5 hover:border-[#0090F5] hover:bg-sky-50/40 transition-all">
-                        <div class="w-12 h-12 rounded-2xl bg-[#FFF9E6] text-[#F59E0B] flex items-center justify-center text-lg mb-4"><i class="fa-solid fa-qrcode"></i></div>
-                        <h3 class="font-bold text-[#2C3E50]">Fasilitas & QR</h3>
-                        <p class="text-sm text-gray-500 mt-1">Kelola fasilitas laboratorium dan regenerate QR Code.</p>
                     </a>
 
                     <a href="{{ route('laboratorium.index') }}" class="rounded-3xl border border-gray-200 p-5 hover:border-[#0090F5] hover:bg-sky-50/40 transition-all">

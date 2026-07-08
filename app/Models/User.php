@@ -50,8 +50,7 @@ class User extends Authenticatable
 
     public function laboratoriumPenanggungJawab()
     {
-        return $this->belongsToMany(Laboratorium::class, 'laboratorium_penanggung_jawab', 'id_user', 'id_laboratorium')
-            ->withTimestamps();
+        return $this->hasMany(Laboratorium::class, 'id_penanggung_jawab', 'id_user');
     }
 
     public function pengaduanDilaporkan()
@@ -141,6 +140,13 @@ class User extends Authenticatable
     public function getPjAttribute(): ?string
     {
         return $this->penanggung_jawab;
+    }
+
+    public function getLaboratoriumPendampingAttribute()
+    {
+        return Laboratorium::whereJsonContains('id_pendamping', (string) $this->id_user)
+            ->orWhereJsonContains('id_pendamping', (int) $this->id_user)
+            ->get();
     }
 
     public function scopeRole($query, string $role)

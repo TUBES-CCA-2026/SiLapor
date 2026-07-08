@@ -11,7 +11,7 @@ class FasilitasLab extends Model
     protected $primaryKey = 'id_fasilitas';
 
     protected $fillable = [
-        'nama_fasilitas', 'id_laboratorium', 'no_fasilitas',
+        'nama_fasilitas', 'id_laboratorium', 'id_kategori', 'no_fasilitas',
         'qr_code', 'qr_generated_date', 'qr_deleted_at',
     ];
 
@@ -23,6 +23,11 @@ class FasilitasLab extends Model
     public function laboratorium()
     {
         return $this->belongsTo(Laboratorium::class, 'id_laboratorium', 'id_laboratorium');
+    }
+
+    public function kategori()
+    {
+        return $this->belongsTo(KategoriFasilitas::class, 'id_kategori', 'id_kategori');
     }
 
     public function scopeActiveQr(Builder $query): Builder

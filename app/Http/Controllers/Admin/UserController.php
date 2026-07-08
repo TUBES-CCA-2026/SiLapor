@@ -94,7 +94,7 @@ class UserController extends Controller
                 'password' => ['required', 'string', 'min:8'],
                 'role' => ['required', 'in:' . implode(',', $this->roles)],
                 'phone' => ['nullable', 'string', 'max:15'],
-                'nim' => ['nullable', 'string', 'max:12'],
+                'nim' => ['nullable', 'numeric', 'digits:11'],
                 'jurusan' => ['nullable', 'string', 'max:20'],
                 'penanggung_jawab' => ['nullable', 'string', 'max:20'],
             ], [
@@ -538,9 +538,8 @@ class UserController extends Controller
             'password' => $user ? ['sometimes', 'nullable', 'string', 'min:8'] : ['required', 'string', 'min:8'],
             'role' => ['required', 'in:' . implode(',', $this->roles)],
             'phone' => ['nullable', 'string', 'max:15'],
-            'nim' => ['nullable', 'string', 'max:12'],
+            'nim' => ['nullable', 'numeric', 'digits:11'],
             'jurusan' => ['nullable', 'string', 'max:20'],
-            'penanggung_jawab' => ['nullable', 'string', 'max:20'],
         ]);
     }
 
@@ -554,8 +553,13 @@ class UserController extends Controller
         $profile = [
             'nim' => $validated['nim'] ?? null,
             'jurusan' => $validated['jurusan'] ?? null,
-            'penanggung_jawab' => $validated['penanggung_jawab'] ?? null,
         ];
+
+        if (array_key_exists('penanggung_jawab', $validated)) {
+            $profile['penanggung_jawab'] = $validated['penanggung_jawab'];
+        } else {
+            $profile['penanggung_jawab'] = $user->profile?->penanggung_jawab;
+        }
 
         if (array_filter($profile, fn ($value) => $value !== null && $value !== '')) {
             $user->profile()->updateOrCreate(['id_user' => $user->id_user], $profile);

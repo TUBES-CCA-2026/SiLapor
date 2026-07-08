@@ -140,14 +140,18 @@ Route::middleware('auth')->group(function () {
         Route::get('/rekapsulasi', [DashboardController::class, 'rekapsulasi'])->name('rekapsulasi.index');
     });
 
-    Route::middleware('role:laboran,admin')->group(function () {
+    Route::middleware('role:admin')->group(function () {
         Route::get('/fasilitas', [FasilitasController::class, 'index'])->name('fasilitas.index');
         Route::post('/fasilitas', [FasilitasController::class, 'store'])->name('fasilitas.store');
+        Route::post('/fasilitas/kategori', [FasilitasController::class, 'storeKategori'])->name('fasilitas.kategori.store');
         Route::get('/fasilitas/import-template', [FasilitasController::class, 'importTemplate'])->name('fasilitas.import-template');
         Route::post('/fasilitas/import', [FasilitasController::class, 'import'])->name('fasilitas.import');
         Route::post('/fasilitas/{fasilitas}/regenerate-qr', [FasilitasController::class, 'regenerateQr'])->name('fasilitas.regenerate-qr');
         Route::delete('/fasilitas/{fasilitas}/qr', [FasilitasController::class, 'deleteQr'])->name('fasilitas.delete-qr');
 
+    });
+
+    Route::middleware('role:laboran,admin')->group(function () {
         Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
             Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');

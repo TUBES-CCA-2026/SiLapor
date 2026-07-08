@@ -186,9 +186,8 @@
             </div>
             <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem;">
                 <div><label class="field-label">No. HP</label><input name="phone" value="{{ old('phone') }}" class="form-control"></div>
-                <div data-asisten-only><label class="field-label">NIM</label><input name="nim" value="{{ old('nim') }}" class="form-control"></div>
+                <div data-asisten-only><label class="field-label">NIM</label><input type="text" inputmode="numeric" pattern="[0-9]*" name="nim" value="{{ old('nim') }}" class="form-control" placeholder="11 digit angka" maxlength="11"></div>
                 <div data-asisten-only><label class="field-label">Jurusan</label><input name="jurusan" value="{{ old('jurusan') }}" class="form-control"></div>
-                <div data-asisten-only style="grid-column: 1 / -1;"><label class="field-label">Penanggung Jawab</label><input name="penanggung_jawab" value="{{ old('penanggung_jawab') }}" class="form-control"></div>
             </div>
             <button type="submit" class="btn-primary" style="width: 100%;">Simpan User</button>
             <a href="{{ route('admin.users.index') }}" class="btn-outline-blue" style="justify-self: center;">← Kembali ke daftar user</a>

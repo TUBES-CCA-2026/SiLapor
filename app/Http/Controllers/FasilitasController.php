@@ -11,15 +11,16 @@ class FasilitasController extends Controller
 {
     public function index()
     {
-        $fasilitas = FasilitasLab::with('laboratorium')
+        $fasilitas = FasilitasLab::with(['laboratorium', 'kategori'])
             ->activeQr()
             ->orderBy('id_laboratorium')
             ->orderBy('nama_fasilitas')
             ->get();
 
         $laboratoriums = Laboratorium::orderBy('nama_laboratorium')->get();
+        $categories = \App\Models\KategoriFasilitas::orderBy('nama_kategori')->get();
 
-        return view('fasilitas.index', compact('fasilitas', 'laboratoriums'));
+        return view('fasilitas.index', compact('fasilitas', 'laboratoriums', 'categories'));
     }
 
     public function store(Request $request)
@@ -27,6 +28,7 @@ class FasilitasController extends Controller
         $validated = $request->validate([
             'nama_fasilitas' => ['required', 'string', 'max:120'],
             'id_laboratorium' => ['required', 'exists:laboratorium,id_laboratorium'],
+            'id_kategori' => ['nullable', 'exists:kategori_fasilitas,id_kategori'],
             'no_fasilitas' => ['nullable', 'string', 'max:120'],
         ]);
 
@@ -38,6 +40,19 @@ class FasilitasController extends Controller
         return back()
             ->with('success', 'Fasilitas baru berhasil ditambahkan & QR siap dicetak.')
             ->with('new_fasilitas_id', $fasilitas->id_fasilitas);
+    }
+
+    public function storeKategori(Request $request)
+    {
+        $validated = $request->validate([
+            'nama_kategori' => ['required', 'string', 'max:100', 'unique:kategori_fasilitas,nama_kategori'],
+        ], [
+            'nama_kategori.unique' => 'Nama kategori ini sudah terdaftar.',
+        ]);
+
+        \App\Models\KategoriFasilitas::create($validated);
+
+        return back()->with('success', 'Kategori baru berhasil ditambahkan.');
     }
 
     /**

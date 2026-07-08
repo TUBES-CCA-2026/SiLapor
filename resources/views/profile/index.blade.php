@@ -42,6 +42,10 @@
     $laboratoriumPj = $user?->laboratoriumPenanggungJawab ?? collect();
     $penanggungJawabLabel = $laboratoriumPj->pluck('nama_laboratorium')->filter()->values()->join(', ');
     $penanggungJawabLabel = $penanggungJawabLabel ?: ($user->profile?->penanggung_jawab ?: '-');
+
+    $laboratoriumPendamping = $user?->laboratoriumPendamping ?? collect();
+    $pendampingLabel = $laboratoriumPendamping->pluck('nama_laboratorium')->filter()->values()->join(', ');
+    $pendampingLabel = $pendampingLabel ?: '-';
 @endphp
 
 @once
@@ -133,10 +137,18 @@
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Jurusan</label>
                             <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $user->profile?->jurusan ?? '-' }}</div>
                         </div>
-                        <div class="md:col-span-2">
+                        @if($laboratoriumPj->isNotEmpty())
+                        <div>
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Penanggung Jawab</label>
                             <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $penanggungJawabLabel }}</div>
                         </div>
+                        @endif
+                        @if($laboratoriumPendamping->isNotEmpty())
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Pendamping</label>
+                            <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $pendampingLabel }}</div>
+                        </div>
+                        @endif
                     @endif
                 </div>
             </div>
@@ -202,19 +214,33 @@
                     @if($user->role === 'asisten')
                         <div class="sm:col-span-1">
                             <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">NIM</label>
-                            <input type="text" name="nim" value="{{ old('nim', $user->profile?->nim) }}" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800">
+                            <input type="text" inputmode="numeric" pattern="[0-9]*" name="nim" value="{{ old('nim', $user->profile?->nim) }}" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800" maxlength="11">
                         </div>
                         <div class="sm:col-span-1">
                             <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Jurusan</label>
                             <input type="text" name="jurusan" value="{{ old('jurusan', $user->profile?->jurusan) }}" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800">
                         </div>
-                        <div class="col-span-2">
+                        @if($laboratoriumPj->isNotEmpty())
+                        <div class="sm:col-span-1">
                             <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Penanggung Jawab</label>
                             <div class="w-full mt-1.5 p-3.5 bg-gray-100 border border-gray-200 rounded-2xl font-medium text-sm text-gray-600">
                                 {{ $penanggungJawabLabel }}
                             </div>
-                            <p class="text-[11px] text-gray-400 mt-1 ml-1">Relasi penanggung jawab laboratorium diatur dari menu Laboratorium pada role Laboran.</p>
                         </div>
+                        @endif
+                        @if($laboratoriumPendamping->isNotEmpty())
+                        <div class="sm:col-span-1">
+                            <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Pendamping</label>
+                            <div class="w-full mt-1.5 p-3.5 bg-gray-100 border border-gray-200 rounded-2xl font-medium text-sm text-gray-600">
+                                {{ $pendampingLabel }}
+                            </div>
+                        </div>
+                        @endif
+                        @if($laboratoriumPj->isNotEmpty() || $laboratoriumPendamping->isNotEmpty())
+                        <div class="col-span-2">
+                            <p class="text-[11px] text-gray-400 mt-1 ml-1">Relasi penanggung jawab & pendamping laboratorium diatur dari menu Laboratorium pada role Laboran atau Koordinator.</p>
+                        </div>
+                        @endif
                     @endif
                 </div>
 

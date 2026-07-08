@@ -40,7 +40,6 @@ final class SidebarMenu
                 ['laporan', 'Laporan', 'fa-regular fa-file-lines', $url('laporan.index')],
                 ['rekapsulasi', 'Rekapitulasi', 'fa-regular fa-rectangle-list', $url('rekapsulasi.index')],
                 ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $url('laboratorium.index')],
-                ['fasilitas', 'Fasilitas & QR', 'fa-solid fa-qrcode', $url('fasilitas.index')],
                 ['users', 'Kelola User', 'fa-solid fa-users-gear', $url('admin.users.index')],
                 ['profil', 'Profil', 'fa-regular fa-user', $url('profile.index')],
             ],
