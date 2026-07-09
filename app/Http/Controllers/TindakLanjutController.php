@@ -18,9 +18,6 @@ class TindakLanjutController extends Controller
     {
         $user = Auth::user();
         
-        // Cek apakah asisten ini merupakan PJ di lab manapun
-        $isPj = \App\Models\Laboratorium::where('id_penanggung_jawab', $user->id_user)->exists();
-
         $query = TindakLanjut::with([
                 'pengaduan.user',
                 'pengaduan.pelapor',
@@ -35,15 +32,11 @@ class TindakLanjutController extends Controller
             })
             ->latest('id_tindak_lanjut');
 
-        if ($isPj) {
-            // PJ melihat tugas di mana dia adalah petugas utama (PJ)
-            $query->where('id_petugas', $user->id_user);
-        } else {
-            // Asisten non-PJ melihat tugas di mana dia adalah pendamping/teknisi
-            $query->where('id_teknisi', $user->id_user);
-        }
+        // Asisten hanya melihat tugas di mana dia adalah teknisi yang ditunjuk
+        $query->where('id_teknisi', $user->id_user);
 
         $tugas = $query->get();
+        $isPj = false;
 
         return view('tindak_lanjut.index', compact('tugas', 'isPj'));
     }
@@ -64,7 +57,7 @@ class TindakLanjutController extends Controller
             ->firstOrFail();
 
         $lab = $pengaduan->fasilitas?->laboratorium;
-        $pjId = $lab?->id_penanggung_jawab ?? Auth::id();
+        $pjId = $lab?->id_koordinator ?? Auth::id();
 
         $tindakLanjut = TindakLanjut::updateOrCreate(
             ['id_pengaduan' => $pengaduan->id_pengaduan],
@@ -139,34 +132,55 @@ class TindakLanjutController extends Controller
 
         $validated = $request->validate([
             'catatan_perbaikan' => ['nullable', 'string'],
-            'status_penanganan' => ['required', 'in:ON PROGRES,DONE,CANCEL,NO SPAREPART'],
+            'status_penanganan' => ['nullable', 'in:ON PROGRES,DONE,CANCEL,NO SPAREPART'],
         ]);
 
-        if (!array_key_exists('catatan_perbaikan', $validated) || $validated['catatan_perbaikan'] === null) {
-            unset($validated['catatan_perbaikan']);
+        $updateData = [];
+
+        // Hanya update catatan jika diisi
+        if (array_key_exists('catatan_perbaikan', $validated) && $validated['catatan_perbaikan'] !== null) {
+            $updateData['catatan_perbaikan'] = $validated['catatan_perbaikan'];
         }
 
-        $validated['tanggal_penanganan'] = now()->toDateString();
-        $tindakLanjut->update($validated);
+        // Hanya update status jika dikirim dari form
+        if (!empty($validated['status_penanganan'])) {
+            $updateData['status_penanganan'] = $validated['status_penanganan'];
+            $updateData['tanggal_penanganan'] = now()->toDateString();
 
-        if ($validated['status_penanganan'] === 'DONE') {
-            $tindakLanjut->pengaduan->update(['status_pengaduan' => 'DONE']);
-        } elseif ($validated['status_penanganan'] === 'CANCEL') {
-            $tindakLanjut->pengaduan->update(['status_pengaduan' => 'CANCEL']);
-        } elseif ($validated['status_penanganan'] === 'NO SPAREPART') {
-            $tindakLanjut->pengaduan->update(['status_pengaduan' => 'NO_SPAREPART']);
-        } elseif ($validated['status_penanganan'] === 'ON PROGRES') {
-            $tindakLanjut->pengaduan->update(['status_pengaduan' => 'HANDLED']);
+            // Update status pengaduan sesuai status penanganan
+            if ($validated['status_penanganan'] === 'DONE') {
+                $tindakLanjut->pengaduan->update(['status_pengaduan' => 'DONE']);
+            } elseif ($validated['status_penanganan'] === 'CANCEL') {
+                $tindakLanjut->pengaduan->update(['status_pengaduan' => 'CANCEL']);
+            } elseif ($validated['status_penanganan'] === 'NO SPAREPART') {
+                $tindakLanjut->pengaduan->update(['status_pengaduan' => 'NO_SPAREPART']);
+            } elseif ($validated['status_penanganan'] === 'ON PROGRES') {
+                $tindakLanjut->pengaduan->update(['status_pengaduan' => 'HANDLED']);
+            }
         }
 
-        return back()->with('success', 'Status perbaikan berhasil diperbarui.');
+        if (!empty($updateData)) {
+            $tindakLanjut->update($updateData);
+        }
+
+        return back()->with('success', 'Data perbaikan berhasil diperbarui.');
     }
 
     protected function authorizeAsisten(TindakLanjut $tindakLanjut): void
     {
         $userId = Auth::id();
-        if ($userId !== $tindakLanjut->id_petugas && $userId !== $tindakLanjut->id_teknisi) {
-            abort(403);
+        if ($userId === $tindakLanjut->id_petugas || $userId === $tindakLanjut->id_teknisi) {
+            return;
         }
+
+        // Cek apakah user adalah Koordinator dari laboratorium tersebut
+        $lab = $tindakLanjut->pengaduan?->fasilitas?->laboratorium;
+        if ($lab) {
+            if ($userId === $lab->id_koordinator) {
+                return;
+            }
+        }
+
+        abort(403);
     }
 }

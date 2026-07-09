@@ -21,7 +21,6 @@
                 Platform terpadu untuk manajemen laboratorium komputer yang modern dan efisien.
             </p>
         </div>
-
         <div></div>
     </div>
 

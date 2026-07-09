@@ -98,8 +98,7 @@
                                         @endif
                                     </p>
                                     <p class="lab-pj">
-                                        PJ: {{ $lab->penanggungJawabUser?->nama ?? 'Belum ditentukan' }}
-                                        · Pendamping: {{ $lab->pendamping_users->pluck('nama')->join(', ') ?: 'Belum ditentukan' }}
+                                        Koordinator: {{ $lab->koordinator?->nama ?? 'Belum ditentukan' }}
                                         · {{ $lab->fasilitas_count }} fasilitas
                                     </p>
                                 </div>
@@ -121,7 +120,7 @@
 
                             {{-- Laboran: form edit detail lab --}}
                             @if($isLaboran)
-                            <div id="edit-form-{{ $lab->id_laboratorium }}" class="pj-form" style="display: none; margin-top: .75rem;">
+                            <div id="edit-form-{{ $lab->id_laboratorium }}" class="pj-form" style="display: none; margin-top: .75rem; grid-template-columns: 1fr 1fr 1fr auto;">
                                 <form method="POST" action="{{ route('laboratorium.update', $lab) }}" style="display:contents;">
                                     @csrf
                                     @method('PATCH')
@@ -133,91 +132,16 @@
                                         <label class="field-label">Kode Laboratorium</label>
                                         <input name="kode_laboratorium" value="{{ $lab->kode_laboratorium }}" class="form-control">
                                     </div>
-                                    <button type="submit" class="btn-mini btn-primary-mini">
-                                        <i class="fa-solid fa-floppy-disk"></i>Simpan
-                                    </button>
-                                </form>
-                            </div>
-                            @endif
-
-                            {{-- Koordinator: form set PJ & Pendamping --}}
-                            @if($isKoordinator)
-                            <div id="pj-form-{{ $lab->id_laboratorium }}" class="pj-form" style="display: none;">
-                                <form method="POST" action="{{ route('laboratorium.update', $lab) }}" style="display:contents;">
-                                    @csrf
-                                    @method('PATCH')
-                                    <div class="relative custom-searchable-select">
-                                        <label class="field-label">Penanggung Jawab</label>
-                                        <div class="relative">
-                                            <input 
-                                                type="text" 
-                                                placeholder="— Pilih PJ —" 
-                                                class="form-control searchable-select-trigger cursor-pointer bg-white"
-                                                readonly
-                                            >
-                                            <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" style="margin-top: 10px;">
-                                                <i class="fa-solid fa-chevron-down"></i>
-                                            </span>
-                                        </div>
-                                        <div class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 hidden searchable-select-dropdown" style="max-height: 280px; overflow: hidden; width: 100%; min-width: 200px;">
-                                            <div class="p-2 border-b border-gray-100">
-                                                <input 
-                                                    type="text" 
-                                                    placeholder="Cari asisten..." 
-                                                    class="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-silapor-500 searchable-select-search"
-                                                >
-                                            </div>
-                                            <ul class="max-h-48 overflow-y-auto py-1 text-sm text-gray-700 searchable-select-options">
-                                                <li data-value="" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-gray-400">— Pilih PJ —</li>
-                                                @foreach($asistenList as $asisten)
-                                                    <li data-value="{{ $asisten->id_user }}" class="px-4 py-2 hover:bg-gray-50 cursor-pointer">
-                                                        {{ $asisten->nama }}
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                        <input type="hidden" name="id_penanggung_jawab" value="{{ $lab->id_penanggung_jawab }}">
-                                    </div>
-                                    <div class="relative custom-searchable-multiselect">
-                                        <label class="field-label">Pendamping</label>
-                                        <div class="relative">
-                                            <input 
-                                                type="text" 
-                                                placeholder="— Pilih Pendamping —" 
-                                                class="form-control searchable-multiselect-trigger cursor-pointer bg-white"
-                                                readonly
-                                            >
-                                            <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" style="margin-top: 10px;">
-                                                <i class="fa-solid fa-chevron-down"></i>
-                                            </span>
-                                        </div>
-                                        <div class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 hidden searchable-multiselect-dropdown" style="max-height: 280px; overflow: hidden; width: 100%; min-width: 200px;">
-                                            <div class="p-2 border-b border-gray-100">
-                                                <input 
-                                                    type="text" 
-                                                    placeholder="Cari asisten..." 
-                                                    class="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-silapor-500 searchable-multiselect-search"
-                                                >
-                                            </div>
-                                            <ul class="max-h-48 overflow-y-auto py-1 text-sm text-gray-700 searchable-multiselect-options">
-                                                @php
-                                                    $currentPendamping = (array) $lab->id_pendamping;
-                                                @endphp
-                                                @foreach($asistenList as $asisten)
-                                                    <li class="px-4 py-2 hover:bg-gray-50 cursor-pointer flex items-center gap-2">
-                                                        <input 
-                                                            type="checkbox" 
-                                                            name="id_pendamping[]" 
-                                                            value="{{ $asisten->id_user }}"
-                                                            class="searchable-multiselect-checkbox"
-                                                            data-name="{{ $asisten->nama }}"
-                                                            @checked(in_array((string)$asisten->id_user, array_map('strval', $currentPendamping), true))
-                                                        >
-                                                        <span>{{ $asisten->nama }}</span>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
+                                    <div>
+                                        <label class="field-label">Koordinator Lab</label>
+                                        <select name="id_koordinator" class="form-control">
+                                            <option value="">— Pilih Koordinator —</option>
+                                            @foreach($asistenList as $asisten)
+                                                <option value="{{ $asisten->id_user }}" @selected((string) $lab->id_koordinator === (string) $asisten->id_user)>
+                                                    {{ $asisten->nama }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                     <button type="submit" class="btn-mini btn-primary-mini">
                                         <i class="fa-solid fa-floppy-disk"></i>Simpan

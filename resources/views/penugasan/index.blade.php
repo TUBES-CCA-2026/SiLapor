@@ -392,7 +392,7 @@
                         $lokasi = data_get($laporan, 'fasilitas.laboratorium.nama_laboratorium', '-');
                         $deskripsi = $laporan->deskripsi_kerusakan ?? '-';
                         $selectedAsisten = data_get($laporan, 'tindakLanjut.id_teknisi');
-                        $allowedTeknisi = $laporan->fasilitas?->laboratorium?->pendamping_users ?? collect();
+                        $allowedTeknisi = $teknisiList;
                         $status = $statusMeta($laporan->status_pengaduan ?? null);
                     @endphp
                     <tr>
@@ -409,7 +409,7 @@
                                 <span class="teknisi-select-wrap">
                                     <select name="id_asisten" class="teknisi-select" data-assign-select data-original="{{ $selectedAsisten }}" {{ $allowedTeknisi->isEmpty() ? 'disabled' : '' }}>
                                         @if($allowedTeknisi->isEmpty())
-                                            <option value="">Belum ada teknisi</option>
+                                            <option value="">Belum ada asisten</option>
                                         @else
                                             <option value="">Pilih Teknisi</option>
                                             @foreach($allowedTeknisi as $teknisi)

@@ -534,7 +534,7 @@
     <form method="GET" action="{{ $filterAction }}" style="border: 1px solid #D1D5DB; border-radius: 1.25rem; padding: 1rem; background: #F8FAFC; margin-bottom: 1.5rem;">
         <h3 style="margin: 0 0 1rem; font-size: 1.15rem; font-weight: 800; color: #374151;">Filter Laporan</h3>
         <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; align-items: end;">
-            <div><label class="field-label">Penanggung Jawab</label><select name="id_penanggung_jawab" class="form-control"><option value="">Semua Penanggung Jawab</option>@foreach(($penanggungJawabs ?? collect()) as $pj)<option value="{{ $pj->id_user }}" {{ (string)($filters['id_penanggung_jawab'] ?? '') === (string)$pj->id_user ? 'selected' : '' }}>{{ $pj->nama }}</option>@endforeach</select></div>
+            <div><label class="field-label">Koordinator Lab</label><select name="id_penanggung_jawab" class="form-control"><option value="">Semua Koordinator</option>@foreach(($penanggungJawabs ?? collect()) as $pj)<option value="{{ $pj->id_user }}" {{ (string)($filters['id_penanggung_jawab'] ?? '') === (string)$pj->id_user ? 'selected' : '' }}>{{ $pj->nama }}</option>@endforeach</select></div>
             <div><label class="field-label">Lokasi Masalah</label><select name="id_laboratorium" class="form-control"><option value="">Semua Lokasi</option>@foreach(($laboratoriums ?? collect()) as $lab)<option value="{{ $lab->id_laboratorium }}" {{ (string)($filters['id_laboratorium'] ?? '') === (string)$lab->id_laboratorium ? 'selected' : '' }}>{{ $lab->nama_laboratorium }}</option>@endforeach</select></div>
             <div><label class="field-label">Fasilitas</label><select name="id_fasilitas" class="form-control"><option value="">Semua Fasilitas</option>@foreach(($fasilitasList ?? collect()) as $fasilitas)<option value="{{ $fasilitas->id_fasilitas }}" {{ (string)($filters['id_fasilitas'] ?? '') === (string)$fasilitas->id_fasilitas ? 'selected' : '' }}>{{ $fasilitas->nama_fasilitas }}</option>@endforeach</select></div>
             <div><label class="field-label">Cari Laporan</label><input name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Cari laporan..." class="form-control"></div>
@@ -550,7 +550,7 @@
             @if($isKoordinator)<h3 style="margin: 0; color: #2C3E50; font-size: 1.1rem; font-weight: 800;">Lokasi Lab: {{ $groupName }}</h3>@endif
             <div class="table-wrap detail-laporan-table-wrap" style="border: 1px solid #D1D5DB; border-radius: 1.25rem; overflow-x: auto; overflow-y: visible;">
                 <table class="report-table detail-laporan-table">
-                    <thead><tr><th>Tanggal</th><th>Penanggung Jawab</th><th>Lokasi Masalah</th><th>Fasilitas</th><th>Status</th><th class="text-center">Aksi</th></tr></thead>
+                    <thead><tr><th>Tanggal</th><th>Koordinator Lab</th><th>Lokasi Masalah</th><th>Fasilitas</th><th>Status</th><th class="text-center">Aksi</th></tr></thead>
                     <tbody>
                         @forelse($items as $laporan)
                             @php

@@ -1,24 +1,23 @@
 @extends('layouts.app')
 
-@section('title', 'Pengaduan - SiLapor')
+@section('title', 'Pengaduan Manual - SiLapor')
 
 @section('content')
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 @php
-    $selectedFacilityId = $mode === 'qr'
+    $isQr = $mode === 'qr';
+
+    $selectedFacilityId = $isQr
         ? (string) $fasilitas->id_fasilitas
         : (string) old('id_fasilitas', '');
 
-    $selectedFacility = $mode === 'qr'
+    $selectedFacility = $isQr
         ? $fasilitas
-        : $facilities->firstWhere('id_fasilitas', old('id_fasilitas'));
+        : ($facilities->firstWhere('id_fasilitas', old('id_fasilitas')) ?? null);
 
-    $selectedKodeBarang = $selectedFacility?->no_fasilitas ?: '-';
-    $selectedNamaFasilitas = $selectedFacility?->nama_fasilitas ?: '-';
-    $selectedLabName = $selectedFacility?->laboratorium?->nama_laboratorium ?: '-';
-    $selectedLabLocation = $selectedFacility?->laboratorium?->lokasi;
-    $selectedLokasiLab = $selectedLabLocation
-        ? $selectedLabName . ' - ' . $selectedLabLocation
-        : $selectedLabName;
+    $selectedNamaFasilitas = $selectedFacility?->nama_fasilitas ?? '-';
 
     $backUrl = null;
     $backLabel = 'Kembali';
@@ -35,224 +34,329 @@
         $backUrl = route('login');
         $backLabel = 'Kembali ke Login';
     }
+
+    $labs = $laboratoriums ?? collect();
+    $cats = $categories ?? collect();
+    $apiUrl = route('pengaduan.manual.api.fasilitas');
 @endphp
 
-<div class="min-h-screen flex items-center justify-center p-6 bg-gray-50">
+<style>
+    .font-figma { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    .pgd-select-wrapper { position: relative; }
+
+    .pgd-select-trigger {
+        width: 100%; border: 1px solid #E2E8F0; border-radius: 0.75rem;
+        padding: 0.65rem 2.5rem 0.65rem 1rem; background: #F8FAFC;
+        font-size: 0.8125rem; font-weight: 500; color: #334155;
+        cursor: pointer; outline: none; transition: all 0.2s ease;
+        text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .pgd-select-trigger:focus, .pgd-select-trigger.active {
+        border-color: #0090F5; box-shadow: 0 0 0 3px rgba(0, 144, 245, 0.12); background: #fff;
+    }
+    .pgd-select-trigger.has-value { color: #1E293B; font-weight: 600; }
+
+    .pgd-select-chevron {
+        position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%);
+        pointer-events: none; color: #94A3B8; font-size: 0.7rem; transition: transform 0.2s ease;
+    }
+    .pgd-select-wrapper.open .pgd-select-chevron { transform: translateY(-50%) rotate(180deg); }
+
+    .pgd-select-dropdown {
+        position: absolute; left: 0; right: 0; top: calc(100% + 6px);
+        background: #fff; border: 1px solid #E2E8F0; border-radius: 0.75rem;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1); z-index: 60; display: none; overflow: hidden;
+    }
+    .pgd-select-wrapper.open .pgd-select-dropdown {
+        display: block; animation: pgdDropIn 0.15s ease-out;
+    }
+    @keyframes pgdDropIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .pgd-select-search {
+        width: 100%; border: none; border-bottom: 1px solid #F1F5F9;
+        padding: 0.625rem 0.85rem; font-size: 0.8125rem; color: #334155; outline: none; background: #FAFBFC;
+    }
+    .pgd-select-search::placeholder { color: #94A3B8; }
+
+    .pgd-select-options {
+        max-height: 200px; overflow-y: auto; list-style: none; margin: 0; padding: 0.25rem 0;
+    }
+    .pgd-select-options::-webkit-scrollbar { width: 5px; }
+    .pgd-select-options::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+    .pgd-select-options li {
+        padding: 0.5rem 0.85rem; font-size: 0.8125rem; color: #475569; cursor: pointer;
+        transition: background 0.12s ease; font-weight: 500;
+    }
+    .pgd-select-options li:hover { background: #F0F9FF; color: #0090F5; }
+    .pgd-select-options li.selected { background: #EFF8FF; color: #0090F5; font-weight: 700; }
+    .pgd-select-options li.empty-msg {
+        color: #94A3B8; font-style: italic; cursor: default; text-align: center; padding: 0.75rem;
+    }
+    .pgd-select-options li.empty-msg:hover { background: transparent; color: #94A3B8; }
+
+    .pgd-field-label { display: block; font-size: 0.8125rem; font-weight: 600; color: #374151; margin-bottom: 0.35rem; }
+    .pgd-field-label .required-star { color: #EF4444; margin-left: 2px; }
+
+    .pgd-readonly-input {
+        width: 100%; border: 1px solid #E2E8F0; border-radius: 0.75rem;
+        padding: 0.65rem 1rem; background: #F1F5F9; font-size: 0.8125rem;
+        font-weight: 600; color: #64748B; cursor: not-allowed;
+    }
+
+    .pgd-section-title {
+        display: flex; align-items: center; gap: 0.4rem;
+        font-size: 0.7rem; font-weight: 800; color: #94A3B8;
+        text-transform: uppercase; letter-spacing: 0.08em;
+        margin-bottom: 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid #F1F5F9;
+    }
+    .pgd-section-title i { color: #0090F5; font-size: 0.8rem; }
+</style>
+
+<div class="font-figma min-h-screen flex items-center justify-center p-6 bg-gray-50">
     <div class="w-full max-w-2xl bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        {{-- Header --}}
         <div class="flex items-center justify-between gap-3 mb-6">
             <div class="flex items-center gap-2">
                 <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
                     <i class="fa-solid fa-square-poll-vertical text-lg"></i>
                 </div>
-                <span class="font-display font-bold text-lg text-gray-900">
-                    SiLapor
-                </span>
+                <span class="font-bold text-lg text-gray-900">SiLapor</span>
             </div>
-
         </div>
 
+        {{-- Guest / Login Alert --}}
         @if ($isGuest)
             <div class="mb-6 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-sm px-4 py-3 flex items-center justify-between gap-3">
-                <span>
-                    Anda melapor tanpa login. Nama pelapor wajib dipilih dari user yang sudah terdaftar.
-                </span>
-
-                <a href="{{ route('login') }}" class="whitespace-nowrap font-semibold text-silapor-600 hover:underline">
-                    Login dulu →
-                </a>
+                <span>Anda melapor tanpa login. Nama pelapor wajib dipilih dari user yang sudah terdaftar.</span>
+                <a href="{{ route('login') }}" class="whitespace-nowrap font-semibold text-silapor-600 hover:underline">Login dulu →</a>
             </div>
         @else
             <div class="mb-6 rounded-xl bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3">
-                Nama pelapor otomatis memakai akun login:
-                <strong>{{ auth()->user()->nama }}</strong>.
+                Nama pelapor otomatis memakai akun login: <strong>{{ auth()->user()->nama }}</strong>.
             </div>
         @endif
 
-        <p class="text-gray-500 text-sm mb-6">
-            {{ $mode === 'qr'
-                ? 'Kode barang, nama fasilitas, dan lokasi lab otomatis terkunci berdasarkan QR Code yang dipindai.'
-                : 'Pilih fasilitas yang rusak. Kode barang, nama fasilitas, dan lokasi lab akan terisi otomatis.' }}
+        {{-- Duplicate Error --}}
+        @if(session('duplicate_error'))
+            <div class="mb-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 font-semibold">
+                <i class="fa-solid fa-triangle-exclamation mr-1"></i>{{ session('duplicate_error') }}
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="mb-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 font-semibold">
+                <i class="fa-solid fa-circle-xmark mr-1"></i>
+                @foreach ($errors->all() as $error)
+                    <span>{{ $error }}</span>@if(!$loop->last), @endif
+                @endforeach
+            </div>
+        @endif
+
+         <p class="text-gray-500 text-sm mb-6">
+            @if($isQr)
+                Kode barang dan nama fasilitas otomatis terkunci berdasarkan QR Code yang dipindai.
+            @else
+                Pilih lokasi lab, kategori, dan kode barang. Nama fasilitas akan terisi otomatis.
+            @endif
         </p>
 
         <form
             method="POST"
-            action="{{ $mode === 'qr'
+            action="{{ $isQr
                 ? route('pengaduan.qr.store', $fasilitas->qr_code)
                 : route('pengaduan.manual.store') }}"
             enctype="multipart/form-data"
-            class="space-y-5"
+            class="space-y-6"
         >
             @csrf
 
-            @if ($isGuest)
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Nama Pelapor <span class="text-red-500">*</span>
-                    </label>
-
-                    <div class="relative custom-searchable-select">
-                        <div class="relative">
-                            <input 
-                                type="text" 
-                                placeholder="— Pilih nama user terdaftar —" 
-                                class="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-silapor-500 searchable-select-trigger cursor-pointer bg-white"
-                                readonly
-                            >
-                            <span class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                                <i class="fa-solid fa-chevron-down"></i>
-                            </span>
-                        </div>
-                        <div class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 hidden searchable-select-dropdown">
-                            <div class="p-2 border-b border-gray-100">
-                                <input 
-                                    type="text" 
-                                    placeholder="Cari pelapor..." 
-                                    class="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-silapor-500 searchable-select-search"
-                                >
-                            </div>
-                            <ul class="max-h-60 overflow-y-auto py-1 text-sm text-gray-700 searchable-select-options">
-                                <li data-value="" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-gray-400">— Pilih nama user terdaftar —</li>
-                                @foreach ($users as $user)
-                                    <li data-value="{{ $user->id_user }}" class="px-4 py-2 hover:bg-gray-50 cursor-pointer">
-                                        {{ $user->nama }} ({{ $user->role }})
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                        <input type="hidden" name="id_user" id="id_user" value="{{ old('id_user') }}" required>
-                    </div>
-
-                    <p class="text-xs text-gray-400 mt-1">
-                        Pengaduan tanpa login tidak bisa anonim. Pilih nama sesuai data user yang sudah terdaftar.
-                    </p>
+            {{-- Section: Identitas Pelapor --}}
+            <div>
+                <div class="pgd-section-title">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Identitas Pelapor</span>
                 </div>
-            @else
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Nama Pelapor
-                    </label>
 
-                    <input
-                        type="text"
-                        value="{{ auth()->user()->nama }}"
-                        readonly
-                        class="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-2.5 text-gray-600"
-                    >
-                </div>
-            @endif
+                @if ($isGuest)
+                    <div>
+                        <label class="pgd-field-label">
+                            Nama Pelapor <span class="required-star">*</span>
+                        </label>
 
-            @if ($mode === 'manual')
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Fasilitas yang Dilaporkan <span class="text-red-500">*</span>
-                    </label>
-
-                    <div class="relative custom-searchable-select">
-                        <div class="relative">
-                            <input 
-                                type="text" 
-                                placeholder="— Pilih fasilitas —" 
-                                class="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-silapor-500 searchable-select-trigger cursor-pointer bg-white"
-                                readonly
-                            >
-                            <span class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                                <i class="fa-solid fa-chevron-down"></i>
-                            </span>
-                        </div>
-                        <div class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 hidden searchable-select-dropdown">
-                            <div class="p-2 border-b border-gray-100">
-                                <input 
-                                    type="text" 
-                                    placeholder="Cari fasilitas..." 
-                                    class="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-silapor-500 searchable-select-search"
-                                >
+                        <div class="pgd-select-wrapper" id="pelapor-wrapper">
+                            <button type="button" class="pgd-select-trigger" id="pelapor-trigger">
+                                — Pilih nama user terdaftar —
+                            </button>
+                            <span class="pgd-select-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                            <div class="pgd-select-dropdown">
+                                <input type="text" class="pgd-select-search" placeholder="Cari pelapor...">
+                                <ul class="pgd-select-options">
+                                    @foreach ($users as $u)
+                                        <li data-value="{{ $u->id_user }}">{{ $u->nama }} ({{ $u->role }})</li>
+                                    @endforeach
+                                </ul>
                             </div>
-                            <ul class="max-h-60 overflow-y-auto py-1 text-sm text-gray-700 searchable-select-options">
-                                <li data-value="" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-gray-400">— Pilih fasilitas —</li>
-                                @foreach ($facilities as $item)
-                                    <li data-value="{{ $item->id_fasilitas }}" class="px-4 py-2 hover:bg-gray-50 cursor-pointer">
-                                        {{ $item->nama_fasilitas }} — {{ $item->laboratorium?->nama_laboratorium ?? '-' }}
-                                    </li>
-                                @endforeach
-                            </ul>
+                            <input type="hidden" name="id_user" id="id_user" value="{{ old('id_user') }}" required>
                         </div>
-                        <input type="hidden" name="id_fasilitas" id="id_fasilitas" value="{{ $selectedFacilityId }}" required>
-                    </div>
 
-                    @if ($facilities->isEmpty())
-                        <p class="text-xs text-red-500 mt-1">
-                            Belum ada fasilitas yang dapat dipilih.
+                        <p class="text-xs text-gray-400 mt-1">
+                            Pilih nama sesuai data user yang sudah terdaftar.
                         </p>
-                    @endif
-                </div>
-            @endif
-
-            <input type="hidden" id="kode_barang" value="{{ $selectedKodeBarang }}">
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Nama Fasilitas
-                    </label>
-
-                    <input
-                        id="nama_fasilitas"
-                        type="text"
-                        value="{{ $selectedNamaFasilitas }}"
-                        readonly
-                        class="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-2.5 text-gray-600"
-                    >
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Lokasi Lab
-                    </label>
-
-                    <input
-                        id="lokasi_lab"
-                        type="text"
-                        value="{{ $selectedLokasiLab }}"
-                        readonly
-                        class="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-2.5 text-gray-600"
-                    >
-                </div>
+                    </div>
+                @else
+                    <div>
+                        <label class="pgd-field-label">Nama Pelapor</label>
+                        <input type="text" value="{{ auth()->user()->nama }}" readonly class="pgd-readonly-input">
+                    </div>
+                @endif
             </div>
 
+            {{-- Section: Informasi Fasilitas --}}
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Foto Kerusakan
-                </label>
+                <div class="pgd-section-title">
+                    <i class="fa-solid fa-laptop-medical"></i>
+                    <span>Informasi Fasilitas</span>
+                </div>
 
-                <input
-                    type="file"
-                    name="foto_kerusakan"
-                    accept="image/*"
-                    capture="environment"
-                    class="w-full text-sm rounded-xl border border-gray-300 px-3 py-2.5 file:mr-3 file:rounded-lg file:border-0 file:bg-silapor-50 file:text-silapor-700 file:px-3 file:py-1.5"
-                >
+                @if ($isQr)
+                    {{-- QR Mode: locked fields --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="pgd-field-label">Kode Barang</label>
+                            <input type="text" value="{{ $selectedFacility?->no_fasilitas ?? '-' }}" readonly class="pgd-readonly-input">
+                        </div>
+                        <div>
+                            <label class="pgd-field-label">Nama Barang / Fasilitas</label>
+                            <input type="text" value="{{ $selectedNamaFasilitas }}" readonly class="pgd-readonly-input">
+                        </div>
+                    </div>
+                @else
+                    {{-- Manual Mode: cascading dropdowns --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {{-- 1. Lokasi Lab --}}
+                        <div>
+                            <label class="pgd-field-label">
+                                Lokasi Lab <span class="required-star">*</span>
+                            </label>
+
+                            <div class="pgd-select-wrapper" id="lokasi-lab-wrapper">
+                                <button type="button" class="pgd-select-trigger" id="lokasi-lab-trigger">
+                                    Pilih lokasi lab
+                                </button>
+                                <span class="pgd-select-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                                <div class="pgd-select-dropdown">
+                                    <input type="text" class="pgd-select-search" placeholder="Cari laboratorium...">
+                                    <ul class="pgd-select-options">
+                                        <li data-value="all">📍 Semua Lab</li>
+                                        @foreach ($labs as $lab)
+                                            <li data-value="{{ $lab->id_laboratorium }}">{{ $lab->nama_laboratorium }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                                <input type="hidden" id="id_laboratorium_filter" value="">
+                            </div>
+                        </div>
+
+                        {{-- 2. Kategori Barang --}}
+                        <div>
+                            <label class="pgd-field-label">
+                                Kategori Barang <span class="required-star">*</span>
+                            </label>
+
+                            <div class="pgd-select-wrapper" id="kategori-wrapper">
+                                <button type="button" class="pgd-select-trigger" id="kategori-trigger">
+                                    Pilih kategori barang
+                                </button>
+                                <span class="pgd-select-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                                <div class="pgd-select-dropdown">
+                                    <input type="text" class="pgd-select-search" placeholder="Cari kategori...">
+                                    <ul class="pgd-select-options" id="kategori-options">
+                                        @foreach ($cats as $cat)
+                                            <li data-value="{{ $cat->id_kategori }}">{{ $cat->nama_kategori }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                                <input type="hidden" id="id_kategori_filter" value="">
+                            </div>
+                        </div>
+
+                        {{-- 3. Kode Barang --}}
+                        <div>
+                            <label class="pgd-field-label">
+                                Kode Barang <span class="required-star">*</span>
+                            </label>
+
+                            <div class="pgd-select-wrapper" id="kode-barang-wrapper">
+                                <button type="button" class="pgd-select-trigger" id="kode-barang-trigger">
+                                    Pilih atau cari kode barang
+                                </button>
+                                <span class="pgd-select-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                                <div class="pgd-select-dropdown">
+                                    <input type="text" class="pgd-select-search" placeholder="Cari kode barang...">
+                                    <ul class="pgd-select-options" id="kode-barang-options">
+                                        <li class="empty-msg">Pilih lokasi lab terlebih dahulu</li>
+                                    </ul>
+                                </div>
+                                <input type="hidden" name="id_fasilitas" id="id_fasilitas" value="{{ $selectedFacilityId }}" required>
+                            </div>
+                        </div>
+
+                        {{-- 4. Nama Barang / Fasilitas (readonly auto-fill) --}}
+                        <div>
+                            <label class="pgd-field-label">Nama Barang / Fasilitas</label>
+                            <input id="nama_fasilitas" type="text" value="{{ $selectedNamaFasilitas }}" readonly class="pgd-readonly-input">
+                        </div>
+                    </div>
+                @endif
             </div>
 
+            {{-- Section: Detail Kerusakan --}}
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Deskripsi Kerusakan <span class="text-red-500">*</span>
-                </label>
+                <div class="pgd-section-title">
+                    <i class="fa-solid fa-file-pen"></i>
+                    <span>Detail Kerusakan</span>
+                </div>
 
-                <textarea
-                    name="deskripsi_kerusakan"
-                    rows="4"
-                    required
-                    placeholder="Contoh: Monitor tidak menyala sama sekali sejak pagi ini."
-                    class="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-silapor-500"
-                >{{ old('deskripsi_kerusakan') }}</textarea>
+                <div class="space-y-4">
+                    <div>
+                        <label class="pgd-field-label">
+                            Deskripsi Kerusakan <span class="required-star">*</span>
+                        </label>
+
+                        <textarea
+                            name="deskripsi_kerusakan"
+                            rows="4"
+                            required
+                            placeholder="Contoh: Monitor tidak menyala sama sekali sejak pagi ini."
+                            class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0090F5] focus:border-[#0090F5] transition-all"
+                        >{{ old('deskripsi_kerusakan') }}</textarea>
+                    </div>
+
+                    <div>
+                        <label class="pgd-field-label">Foto Kerusakan</label>
+                        <div class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center bg-[#F8FAFC] cursor-pointer hover:border-[#0090F5] transition-colors">
+                            <input type="file" name="foto_kerusakan" accept="image/*" capture="environment" class="hidden" id="fileInput">
+                            <label for="fileInput" class="flex flex-col items-center cursor-pointer">
+                                <i class="fa-solid fa-cloud-arrow-up text-2xl text-[#0090F5] mb-1"></i>
+                                <span id="fileLabel" class="text-[#0090F5] font-bold text-sm">Upload foto</span>
+                                <span class="text-xs text-gray-400 mt-1">JPG/PNG/WEBP, maksimal 4 MB</span>
+                            </label>
+                            <div id="imagePreview" class="mt-3 hidden">
+                                <img id="previewImg" src="" alt="Preview" class="max-h-32 mx-auto rounded-lg shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
+            {{-- Submit --}}
             <button
                 type="submit"
-                {{ $mode === 'manual' && $facilities->isEmpty() ? 'disabled' : '' }}
-                class="w-full bg-silapor-500 hover:bg-silapor-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl py-3 transition"
+                class="w-full bg-[#0090F5] hover:bg-[#007cd5] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold rounded-xl py-3 shadow-sm transition-all text-sm"
             >
-                Kirim Pengaduan {{ $mode === 'qr' ? 'QR' : 'Manual' }}
+                <i class="fa-solid fa-paper-plane mr-2"></i>
+                Kirim Pengaduan {{ $isQr ? 'QR' : 'Manual' }}
             </button>
         </form>
 
@@ -263,12 +367,12 @@
                 </a>
             @endif
 
-            @if ($mode === 'qr')
-                <a href="{{ auth()->check() && auth()->user()?->isAsisten() ? route('pengaduan.index') : route('pengaduan.manual.create') }}" class="flex-1 rounded-xl bg-silapor-50 px-4 py-2.5 text-silapor-700 font-semibold transition hover:bg-silapor-100">
+            @if ($isQr)
+                <a href="{{ auth()->check() && auth()->user()?->isAsisten() ? route('pengaduan.index') : route('pengaduan.manual.create') }}" class="flex-1 rounded-xl bg-blue-50 px-4 py-2.5 text-[#0090F5] font-semibold transition hover:bg-blue-100">
                     Buat pengaduan manual
                 </a>
             @else
-                <a href="{{ route('scan.index') }}" class="flex-1 rounded-xl bg-silapor-50 px-4 py-2.5 text-silapor-700 font-semibold transition hover:bg-silapor-100">
+                <a href="{{ route('scan.index') }}" class="flex-1 rounded-xl bg-blue-50 px-4 py-2.5 text-[#0090F5] font-semibold transition hover:bg-blue-100">
                     Gunakan scan QR
                 </a>
             @endif
@@ -277,100 +381,274 @@
 </div>
 
 <script>
-    // Searchable Select Component Logic
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.custom-searchable-select').forEach(function (wrapper) {
-            const trigger = wrapper.querySelector('.searchable-select-trigger');
-            const dropdown = wrapper.querySelector('.searchable-select-dropdown');
-            const searchInput = wrapper.querySelector('.searchable-select-search');
-            const optionsList = wrapper.querySelector('.searchable-select-options');
-            const hiddenInput = wrapper.querySelector('input[type="hidden"]');
-            const options = optionsList.querySelectorAll('li');
+(function () {
+    'use strict';
 
-            // Update trigger text initially
-            const initialValue = hiddenInput.value;
-            const initialOption = Array.from(options).find(opt => opt.getAttribute('data-value') === initialValue);
-            if (initialOption) {
-                trigger.value = initialOption.textContent.trim();
+    // ==========================================
+    // Searchable Select Component (same as index)
+    // ==========================================
+    function initSearchableSelect(wrapperId, config) {
+        const wrapper = document.getElementById(wrapperId);
+        if (!wrapper) return null;
+
+        const trigger = wrapper.querySelector('.pgd-select-trigger');
+        const dropdown = wrapper.querySelector('.pgd-select-dropdown');
+        const searchInput = wrapper.querySelector('.pgd-select-search');
+        const optionsList = wrapper.querySelector('.pgd-select-options');
+        const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+
+        let selectedValue = hiddenInput ? hiddenInput.value : '';
+
+        function open() {
+            wrapper.classList.add('open');
+            trigger.classList.add('active');
+            if (searchInput) { searchInput.value = ''; searchInput.focus(); }
+            filterOptions('');
+        }
+
+        function close() {
+            wrapper.classList.remove('open');
+            trigger.classList.remove('active');
+        }
+
+        function isOpen() { return wrapper.classList.contains('open'); }
+
+        function filterOptions(query) {
+            const items = optionsList.querySelectorAll('li:not(.empty-msg)');
+            const q = query.toLowerCase();
+            let visibleCount = 0;
+            items.forEach(function (item) {
+                const text = item.textContent.toLowerCase();
+                const match = text.includes(q);
+                item.style.display = match ? '' : 'none';
+                if (match) visibleCount++;
+            });
+
+            let emptyMsg = optionsList.querySelector('.empty-msg');
+            if (visibleCount === 0 && items.length > 0) {
+                if (!emptyMsg) { emptyMsg = document.createElement('li'); emptyMsg.className = 'empty-msg'; optionsList.appendChild(emptyMsg); }
+                emptyMsg.textContent = 'Tidak ditemukan';
+                emptyMsg.style.display = '';
+            } else if (emptyMsg && items.length > 0) {
+                emptyMsg.style.display = 'none';
             }
+        }
 
-            // Open/close dropdown
-            trigger.addEventListener('click', function (e) {
-                e.stopPropagation();
-                document.querySelectorAll('.searchable-select-dropdown').forEach(d => {
-                    if (d !== dropdown) d.classList.add('hidden');
+        function selectValue(value, label) {
+            selectedValue = value;
+            if (hiddenInput) hiddenInput.value = value;
+            trigger.textContent = label || config.placeholder || '';
+            trigger.classList.toggle('has-value', !!value);
+            optionsList.querySelectorAll('li').forEach(function (li) {
+                li.classList.toggle('selected', li.getAttribute('data-value') === value);
+            });
+            close();
+            if (config.onChange) config.onChange(value, label);
+        }
+
+        function reset(placeholder) {
+            selectedValue = '';
+            if (hiddenInput) hiddenInput.value = '';
+            trigger.textContent = placeholder || config.placeholder || '';
+            trigger.classList.remove('has-value');
+            optionsList.querySelectorAll('li').forEach(function (li) { li.classList.remove('selected'); });
+        }
+
+        function setOptions(items) {
+            optionsList.innerHTML = '';
+            if (!items || items.length === 0) {
+                const emptyLi = document.createElement('li');
+                emptyLi.className = 'empty-msg';
+                emptyLi.textContent = config.emptyMessage || 'Tidak ada data';
+                optionsList.appendChild(emptyLi);
+                return;
+            }
+            items.forEach(function (item) {
+                const li = document.createElement('li');
+                li.setAttribute('data-value', item.value);
+                li.innerHTML = item.label;
+                if (item.sublabel) li.innerHTML += ' <span style="color:#94A3B8"> — ' + item.sublabel + '</span>';
+                optionsList.appendChild(li);
+            });
+        }
+
+        // Event Listeners
+        trigger.addEventListener('click', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            if (isOpen()) { close(); } else {
+                document.querySelectorAll('.pgd-select-wrapper.open').forEach(function (w) { if (w !== wrapper) w.classList.remove('open'); });
+                open();
+            }
+        });
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function () { filterOptions(this.value); });
+            searchInput.addEventListener('click', function (e) { e.stopPropagation(); });
+        }
+
+        optionsList.addEventListener('click', function (e) {
+            const li = e.target.closest('li');
+            if (!li || li.classList.contains('empty-msg')) return;
+            e.stopPropagation();
+            selectValue(li.getAttribute('data-value'), li.textContent.trim());
+        });
+
+        dropdown.addEventListener('click', function (e) { e.stopPropagation(); });
+
+        // If there's an initial value, set trigger text
+        if (selectedValue) {
+            const initial = optionsList.querySelector('[data-value="' + selectedValue + '"]');
+            if (initial) {
+                trigger.textContent = initial.textContent.trim();
+                trigger.classList.add('has-value');
+            }
+        }
+
+        return { reset, setOptions, selectValue, getValue: function () { return selectedValue; } };
+    }
+
+    // Close all on outside click
+    document.addEventListener('click', function () {
+        document.querySelectorAll('.pgd-select-wrapper.open').forEach(function (w) {
+            w.classList.remove('open');
+            w.querySelector('.pgd-select-trigger')?.classList.remove('active');
+        });
+    });
+
+    // ==========================================
+    // Init pelapor select (guest only)
+    // ==========================================
+    initSearchableSelect('pelapor-wrapper', {
+        placeholder: '— Pilih nama user terdaftar —',
+    });
+
+    // ==========================================
+    // Cascading Fasilitas Logic (manual mode only)
+    // ==========================================
+    const isQrMode = @json($isQr);
+
+    if (!isQrMode) {
+        const apiFasilitasUrl = @json($apiUrl);
+
+        async function fetchFasilitas(params) {
+            const url = new URL(apiFasilitasUrl, window.location.origin);
+            Object.keys(params).forEach(function (key) {
+                if (params[key]) url.searchParams.set(key, params[key]);
+            });
+            try {
+                const response = await fetch(url.toString(), {
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
                 });
-                dropdown.classList.toggle('hidden');
-                if (!dropdown.classList.contains('hidden')) {
-                    searchInput.value = '';
-                    options.forEach(opt => opt.style.display = '');
-                    searchInput.focus();
+                if (!response.ok) throw new Error('Network error');
+                return await response.json();
+            } catch (err) {
+                console.error('Failed to fetch fasilitas:', err);
+                return [];
+            }
+        }
+
+        let cachedFasilitas = [];
+
+        const lokasiLabSelect = initSearchableSelect('lokasi-lab-wrapper', {
+            placeholder: 'Pilih lokasi lab',
+            onChange: async function (value) {
+                kategoriSelect.reset('Pilih kategori barang');
+                kodeBarangSelect.reset('Pilih atau cari kode barang');
+                document.getElementById('nama_fasilitas').value = '-';
+                document.getElementById('id_fasilitas').value = '';
+
+                const params = {};
+                if (value && value !== 'all') {
+                    params.id_laboratorium = value;
                 }
-            });
+                cachedFasilitas = await fetchFasilitas(params);
 
-            dropdown.addEventListener('click', function (e) {
-                e.stopPropagation();
-            });
-
-            // Filter search
-            searchInput.addEventListener('input', function () {
-                const query = searchInput.value.toLowerCase();
-                options.forEach(function (option) {
-                    const text = option.textContent.toLowerCase();
-                    option.style.display = text.includes(query) ? '' : 'none';
+                // Extract unique categories
+                const uniqueCategories = {};
+                cachedFasilitas.forEach(function (f) {
+                    if (f.id_kategori && f.id_kategori !== '0' && f.id_kategori !== '') {
+                        uniqueCategories[f.id_kategori] = f.nama_kategori;
+                    }
                 });
-            });
 
-            // Select value
-            options.forEach(function (option) {
-                option.addEventListener('click', function () {
-                    const val = option.getAttribute('data-value');
-                    const text = option.textContent.trim();
-                    hiddenInput.value = val;
-                    trigger.value = val ? text : '';
-                    dropdown.classList.add('hidden');
-                    
-                    // Dispatch change event to trigger other calculations
-                    hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+                const catOptions = Object.keys(uniqueCategories).map(function (id) {
+                    return { value: id, label: uniqueCategories[id] };
                 });
-            });
+
+                kategoriSelect.setOptions(catOptions.length > 0 ? catOptions : []);
+                updateKodeBarangOptions(cachedFasilitas);
+            }
         });
 
-        document.addEventListener('click', function () {
-            document.querySelectorAll('.searchable-select-dropdown').forEach(d => d.classList.add('hidden'));
+        const kategoriSelect = initSearchableSelect('kategori-wrapper', {
+            placeholder: 'Pilih kategori barang',
+            emptyMessage: 'Pilih lokasi lab terlebih dahulu',
+            onChange: function (value) {
+                kodeBarangSelect.reset('Pilih atau cari kode barang');
+                document.getElementById('nama_fasilitas').value = '-';
+                document.getElementById('id_fasilitas').value = '';
+
+                let filtered = cachedFasilitas;
+                if (value) {
+                    filtered = cachedFasilitas.filter(function (f) {
+                        return String(f.id_kategori) === String(value);
+                    });
+                }
+                updateKodeBarangOptions(filtered);
+            }
         });
-    });
 
-    const facilities = @json($facilityPayload);
-    const facilityMap = Object.fromEntries(facilities.map((item) => [String(item.id), item]));
+        const kodeBarangSelect = initSearchableSelect('kode-barang-wrapper', {
+            placeholder: 'Pilih atau cari kode barang',
+            emptyMessage: 'Pilih lokasi lab terlebih dahulu',
+            onChange: function (value) {
+                const found = cachedFasilitas.find(function (f) { return String(f.id) === String(value); });
+                document.getElementById('nama_fasilitas').value = found ? found.nama_fasilitas : '-';
+            }
+        });
 
-    function fillFacilityDetail(id) {
-        const detail = facilityMap[String(id)] || null;
-
-        document.getElementById('kode_barang').value = detail?.kode_barang || '-';
-        document.getElementById('nama_fasilitas').value = detail?.nama_fasilitas || '-';
-        document.getElementById('lokasi_lab').value = detail?.lokasi_lab || '-';
+        function updateKodeBarangOptions(items) {
+            if (!items || items.length === 0) {
+                kodeBarangSelect.setOptions([]);
+                return;
+            }
+            kodeBarangSelect.setOptions(items.map(function (f) {
+                return {
+                    value: f.id,
+                    label: f.no_fasilitas || '-',
+                    sublabel: f.nama_fasilitas + ' (' + f.nama_laboratorium + ')',
+                };
+            }));
+        }
     }
 
-    const facilitySelect = document.getElementById('id_fasilitas');
+    // ==========================================
+    // File Upload Preview
+    // ==========================================
+    const fileInput = document.getElementById('fileInput');
+    const fileLabel = document.getElementById('fileLabel');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
 
-    if (facilitySelect) {
-        facilitySelect.addEventListener('change', function () {
-            fillFacilityDetail(this.value);
+    if (fileInput && fileLabel) {
+        fileInput.addEventListener('change', function () {
+            const file = this.files?.[0];
+            if (file) {
+                fileLabel.textContent = file.name;
+                if (imagePreview && previewImg) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImg.src = e.target.result;
+                        imagePreview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            } else {
+                fileLabel.textContent = 'Upload foto';
+                if (imagePreview) imagePreview.classList.add('hidden');
+            }
         });
-
-        fillFacilityDetail(facilitySelect.value);
-    } else {
-        fillFacilityDetail(@json($selectedFacilityId));
     }
-    @if(session('duplicate_error'))
-    Swal.fire({
-        icon: 'warning',
-        title: 'Pelaporan Gagal',
-        text: @json(session('duplicate_error')),
-        confirmButtonColor: '#0090F5',
-        confirmButtonText: 'Mengerti',
-    });
-    @endif
+})();
 </script>
 @endsection

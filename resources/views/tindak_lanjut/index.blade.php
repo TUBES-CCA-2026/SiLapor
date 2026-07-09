@@ -69,9 +69,9 @@
     
     @php
         $user = auth()->user();
-        $isPj = \App\Models\Laboratorium::where('id_penanggung_jawab', $user->id_user)->exists();
+        $isPj = false;
         $activeMenu = 'tindak-lanjut';
-        $featureTitle = $isPj ? 'Penugasan' : 'Teknisi';
+        $featureTitle = 'Teknisi';
     @endphp
 
     @include('partials.sidebar', ['user' => $user, 'activeMenu' => $activeMenu])
@@ -102,7 +102,9 @@
                             <th class="py-5 px-6 text-center leading-tight">ID</th>
                             <th class="py-5 px-6">ID PGD</th>
                             <th class="py-5 px-6">Pelapor</th>
+                            @if($isPj)
                             <th class="py-5 px-6">PJ</th>
+                            @endif
                             <th class="py-5 px-6">Lokasi Masalah</th>
                             <th class="py-5 px-6">Fasilitas</th>
                             <th class="py-5 px-6 text-center">Status</th>
@@ -127,10 +129,12 @@
                                 <td class="py-5 px-6 text-gray-700 font-medium">
                                     {{ $t->pengaduan?->user?->nama ?? 'Tidak diketahui' }}
                                 </td>
+                                @if($isPj)
                                 <!-- PJ (Asisten yang ditugaskan) -->
                                 <td class="py-5 px-6 text-gray-700 font-semibold">
                                     {{ $t->asisten?->nama ?? 'Belum ditugaskan' }}
                                 </td>
+                                @endif
                                 <!-- Lokasi Masalah -->
                                 <td class="py-5 px-6 text-gray-600">
                                     {{ $t->pengaduan?->fasilitas?->laboratorium?->nama_laboratorium ?? 'Lab. Computer Network' }}
@@ -191,7 +195,7 @@
 
                             <!-- Baris Expandable Detail Penanganan (Sesuai Desain Flexible/Responsive) -->
                             <tr id="detail-row-{{ $t->id_tindak_lanjut }}" class="hidden bg-[#F8FAFC]">
-                                <td colspan="10" class="px-8 py-6 border-b border-gray-150">
+                                <td colspan="{{ $isPj ? 10 : 9 }}" class="px-8 py-6 border-b border-gray-150">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                                         <!-- Detail Kerusakan -->
                                         <div class="space-y-3">
@@ -226,13 +230,9 @@
                                                 >{{ $t->catatan_perbaikan }}</textarea>
 
                                                 <div class="flex gap-3 justify-end">
-                                                    <button type="submit" name="status_penanganan" value="ON PROGRES"
-                                                            class="text-xs font-bold px-5 py-2.5 rounded-full bg-slate-200 text-slate-700 hover:bg-slate-300 transition-colors">
-                                                        Simpan Progres
-                                                    </button>
-                                                    <button type="submit" name="status_penanganan" value="DONE"
+                                                    <button type="submit"
                                                             class="text-xs font-bold px-5 py-2.5 rounded-full bg-[#0090F5] text-white hover:bg-[#007cd5] shadow-sm transition-colors">
-                                                        Tandai Done
+                                                        Simpan
                                                     </button>
                                                 </div>
                                             </form>
@@ -243,7 +243,7 @@
                         @empty
                             <!-- Empty State jika tidak ada tugas tindak lanjut -->
                             <tr>
-                                <td colspan="10" class="py-12 text-center">
+                                <td colspan="{{ $isPj ? 10 : 9 }}" class="py-12 text-center">
                                     <div class="max-w-sm mx-auto space-y-3">
                                         <i class="fa-solid fa-clipboard-list text-5xl text-gray-300"></i>
                                         <p class="text-gray-400 text-sm font-semibold">Belum ada tugas perbaikan untuk Anda saat ini.</p>

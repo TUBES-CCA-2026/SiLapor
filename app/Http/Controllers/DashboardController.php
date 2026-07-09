@@ -81,8 +81,8 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        // Cari ID laboratorium di mana asisten ini ditunjuk sebagai PJ
-        $labIds = Laboratorium::where('id_penanggung_jawab', $user->id_user)->pluck('id_laboratorium')->toArray();
+        // Cari ID laboratorium di mana user ditunjuk sebagai Koordinator
+        $labIds = Laboratorium::where('id_koordinator', $user->id_user)->pluck('id_laboratorium')->toArray();
 
         $pengaduanList = Pengaduan::with([
             'fasilitas.laboratorium',
@@ -98,7 +98,8 @@ class DashboardController extends Controller
             ->orderByDesc('id_pengaduan')
             ->get();
 
-        $asisten = collect(); // Dropdown sekarang spesifik per laboratorium di view
+        // Ambil daftar semua asisten sebagai teknisi
+        $asisten = User::role('asisten')->orderBy('nama')->get();
 
         return view('penugasan.index', compact('pengaduanList', 'asisten'));
     }
@@ -118,6 +119,11 @@ class DashboardController extends Controller
         ]);
 
         if ($isKoordinator) {
+            $labIds = Laboratorium::where('id_koordinator', $request->user()->id_user)->pluck('id_laboratorium')->toArray();
+            $query->whereHas('fasilitas', function ($q) use ($labIds) {
+                $q->whereIn('id_laboratorium', $labIds);
+            });
+
             $query->whereHas('statusData', function ($status) {
                 $status->where('kode_status', '!=', 'DONE');
             });
@@ -173,7 +179,7 @@ class DashboardController extends Controller
         $pengaduanList = $query->get();
         $laboratoriums = Laboratorium::orderBy('nama_laboratorium')->get();
         $fasilitasList = FasilitasLab::activeQr()->orderBy('nama_fasilitas')->get();
-        $penanggungJawabs = User::role('asisten')->orderBy('nama')->get();
+        $penanggungJawabs = User::whereHas('roleData', fn($q) => $q->where('nama_role', 'koordinator_lab'))->orderBy('nama')->get();
         $filters = $request->only(['status', 'id_laboratorium', 'id_fasilitas', 'id_penanggung_jawab', 'sort', 'q']);
 
         return view('detail-laporan.index', compact(
@@ -326,24 +332,45 @@ class DashboardController extends Controller
 
     protected function dashboardKoordinator($user)
     {
+        // Cari ID laboratorium di mana user ditunjuk sebagai Koordinator
+        $labIds = Laboratorium::where('id_koordinator', $user->id_user)->pluck('id_laboratorium')->toArray();
+
         $pengaduanBaru = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'statusData', 'fotoUtama', 'fotos'])
+            ->whereHas('fasilitas', function ($q) use ($labIds) {
+                $q->whereIn('id_laboratorium', $labIds);
+            })
             ->statusKode('NEW')
             ->orderByDesc('id_pengaduan')
             ->get();
 
         $pengaduanDitangani = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten', 'statusData', 'fotoUtama', 'fotos'])
+            ->whereHas('fasilitas', function ($q) use ($labIds) {
+                $q->whereIn('id_laboratorium', $labIds);
+            })
             ->statusKode(['HANDLED', 'DONE'])
             ->orderByDesc('id_pengaduan')
             ->get();
 
         $pengaduanList = Pengaduan::with(['fasilitas.laboratorium', 'pelapor', 'tindakLanjut.asisten', 'statusData', 'fotoUtama', 'fotos'])
+            ->whereHas('fasilitas', function ($q) use ($labIds) {
+                $q->whereIn('id_laboratorium', $labIds);
+            })
             ->orderByDesc('id_pengaduan')
             ->take(50)
             ->get();
 
-        $totalLaporan = Pengaduan::count();
-        $proses = Pengaduan::statusKode('HANDLED')->count();
-        $selesai = Pengaduan::statusKode('DONE')->count();
+        $totalLaporan = Pengaduan::whereHas('fasilitas', function ($q) use ($labIds) {
+            $q->whereIn('id_laboratorium', $labIds);
+        })->count();
+
+        $proses = Pengaduan::whereHas('fasilitas', function ($q) use ($labIds) {
+            $q->whereIn('id_laboratorium', $labIds);
+        })->statusKode('HANDLED')->count();
+
+        $selesai = Pengaduan::whereHas('fasilitas', function ($q) use ($labIds) {
+            $q->whereIn('id_laboratorium', $labIds);
+        })->statusKode('DONE')->count();
+
         $asisten = User::role('asisten')->orderBy('nama')->get();
 
         return view('dashboard.koordinator', compact(
@@ -372,7 +399,7 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        $laboratoriumList = Laboratorium::with(['koordinator', 'penanggungJawabUser'])
+        $laboratoriumList = Laboratorium::with(['koordinator'])
             ->withCount('fasilitas')
             ->orderBy('nama_laboratorium')
             ->take(8)
@@ -402,7 +429,7 @@ class DashboardController extends Controller
             'pengaduan.fotos',
             'statusData',
         ])
-            ->where('id_petugas', $user->id_user)
+            ->where('id_teknisi', $user->id_user)
             ->whereHas('statusData', function ($status) {
                 $status->where('kode_status', '!=', 'DONE');
             })
@@ -415,24 +442,17 @@ class DashboardController extends Controller
             ->take(20)
             ->get();
 
-        // Fetch labs where the assistant is either PJ or companion
-        $labIds = Laboratorium::where('id_penanggung_jawab', $user->id_user)
-            ->orWhereJsonContains('id_pendamping', (string)$user->id_user)
-            ->orWhereJsonContains('id_pendamping', (int)$user->id_user)
-            ->pluck('id_laboratorium')
-            ->toArray();
+        $totalPengaduan = TindakLanjut::where('id_teknisi', $user->id_user)->count();
 
-        $totalPengaduan = Pengaduan::whereHas('fasilitas', function ($query) use ($labIds) {
-            $query->whereIn('id_laboratorium', $labIds);
-        })->count();
+        $sedangDiperbaiki = TindakLanjut::where('id_teknisi', $user->id_user)
+            ->whereHas('statusData', function ($status) {
+                $status->where('kode_status', 'HANDLED');
+            })->count();
 
-        $sedangDiperbaiki = Pengaduan::whereHas('fasilitas', function ($query) use ($labIds) {
-            $query->whereIn('id_laboratorium', $labIds);
-        })->statusKode('HANDLED')->count();
-
-        $selesai = Pengaduan::whereHas('fasilitas', function ($query) use ($labIds) {
-            $query->whereIn('id_laboratorium', $labIds);
-        })->statusKode('DONE')->count();
+        $selesai = TindakLanjut::where('id_teknisi', $user->id_user)
+            ->whereHas('statusData', function ($status) {
+                $status->where('kode_status', 'DONE');
+            })->count();
 
         return view('dashboard.asisten', compact(
             'user',

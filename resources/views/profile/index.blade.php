@@ -9,7 +9,7 @@
 
 @php
     $user = $user ?? auth()->user();
-    $user->loadMissing('profile', 'roleData', 'laboratoriumPenanggungJawab');
+    $user->loadMissing('profile', 'roleData', 'laboratoriumDikoordinatori');
     $activeMenu = 'profil';
 
     $routeSafe = function (string $name, string $fallback = '#') {
@@ -39,13 +39,9 @@
     $avatarUrl = $user?->profile_photo_url
         ?? ('https://ui-avatars.com/api/?name=' . urlencode($user?->nama ?? 'User') . '&background=F3F4F6&color=9CA3AF');
 
-    $laboratoriumPj = $user?->laboratoriumPenanggungJawab ?? collect();
+    $laboratoriumPj = $user?->laboratoriumDikoordinatori ?? collect();
     $penanggungJawabLabel = $laboratoriumPj->pluck('nama_laboratorium')->filter()->values()->join(', ');
     $penanggungJawabLabel = $penanggungJawabLabel ?: ($user->profile?->penanggung_jawab ?: '-');
-
-    $laboratoriumPendamping = $user?->laboratoriumPendamping ?? collect();
-    $pendampingLabel = $laboratoriumPendamping->pluck('nama_laboratorium')->filter()->values()->join(', ');
-    $pendampingLabel = $pendampingLabel ?: '-';
 @endphp
 
 @once
@@ -128,7 +124,7 @@
                         <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $roleLabel }}</div>
                     </div>
 
-                    @if($user->role === 'asisten')
+                    @if($user->role === 'asisten' || $user->role === 'koordinator_lab')
                         <div>
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">NIM</label>
                             <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $user->profile?->nim ?? '-' }}</div>
@@ -139,14 +135,8 @@
                         </div>
                         @if($laboratoriumPj->isNotEmpty())
                         <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Penanggung Jawab</label>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Koordinator Laboratorium</label>
                             <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $penanggungJawabLabel }}</div>
-                        </div>
-                        @endif
-                        @if($laboratoriumPendamping->isNotEmpty())
-                        <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Pendamping</label>
-                            <div class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-semibold">{{ $pendampingLabel }}</div>
                         </div>
                         @endif
                     @endif

@@ -83,7 +83,7 @@
             <form action="{{ $routeSafe('rekapsulasi.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                 <input type="date" name="tanggal" value="{{ request('tanggal') }}" class="form-control">
                 <select name="id_penanggung_jawab" class="form-control">
-                    <option value="">Semua Penanggung Jawab</option>
+                    <option value="">Semua Koordinator</option>
                     @foreach(($penanggungJawabs ?? collect()) as $pj)
                         <option value="{{ $pj->id_user }}" @selected((string) request('id_penanggung_jawab') === (string) $pj->id_user)>{{ $pj->nama }}</option>
                     @endforeach

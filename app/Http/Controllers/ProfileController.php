@@ -14,21 +14,21 @@ class ProfileController extends Controller
 {
     public function index(): View
     {
-        $user = Auth::user()->load('profile', 'roleData', 'laboratoriumPenanggungJawab');
+        $user = Auth::user()->load('profile', 'roleData', 'laboratoriumDikoordinatori');
 
         return view('profile.index', compact('user'));
     }
 
     public function edit(): View
     {
-        $user = Auth::user()->load('profile', 'roleData', 'laboratoriumPenanggungJawab');
+        $user = Auth::user()->load('profile', 'roleData', 'laboratoriumDikoordinatori');
 
         return view('profile.index', compact('user'));
     }
 
     public function update(Request $request): RedirectResponse
     {
-        $user = Auth::user()->load('profile', 'laboratoriumPenanggungJawab');
+        $user = Auth::user()->load('profile', 'laboratoriumDikoordinatori');
 
         $validated = $request->validate([
             'name' => ['nullable', 'string', 'max:120'],

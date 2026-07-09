@@ -12,72 +12,107 @@ class LaboratoriumController extends Controller
 {
     public function index()
     {
-        $laboratoriums = Laboratorium::with(['koordinator', 'penanggungJawabUser', 'pendampingUser'])
+        $laboratoriums = Laboratorium::with(['koordinator'])
             ->withCount(['fasilitas' => function ($query) {
                 $query->activeQr();
             }])
             ->orderBy('nama_laboratorium')
             ->get();
 
-        // Daftar asisten untuk pilihan PJ & Pendamping (koordinator)
-        $asistenList = User::role('asisten')->orderBy('nama')->get();
+        // Daftar asisten & koordinator untuk pilihan Koordinator Lab
+        $asistenList = User::whereHas('roleData', function ($q) {
+            $q->whereIn('nama_role', ['asisten', 'koordinator_lab']);
+        })->orderBy('nama')->get();
 
         return view('laboratorium.index', compact('laboratoriums', 'asistenList'));
     }
 
     /**
-     * Laboran menambahkan lab baru (tanpa menentukan PJ/Pendamping).
+     * Laboran menambahkan lab baru.
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'nama_laboratorium' => ['required', 'string', 'max:120'],
             'kode_laboratorium' => ['nullable', 'string', 'max:20'],
+            'id_koordinator' => ['nullable', 'exists:users,id_user'],
         ]);
 
-        Laboratorium::create($validated);
+        $lab = Laboratorium::create($validated);
+
+        if ($lab->id_koordinator) {
+            $newKoordinator = User::find($lab->id_koordinator);
+            if ($newKoordinator) {
+                $newKoordinator->role = 'koordinator_lab';
+                $newKoordinator->save();
+            }
+        }
 
         return back()->with('success', 'Laboratorium baru berhasil ditambahkan.');
     }
 
     /**
-     * Koordinator menentukan PJ & Pendamping lab.
+     * Laboran/admin memperbarui data laboratorium dan menunjuk koordinator.
      */
     public function update(Request $request, Laboratorium $laboratorium)
     {
-        $user = Auth::user();
-
-        if ($user && $user->role === 'koordinator_lab') {
-            // Koordinator hanya bisa set PJ & Pendamping (array)
-            $validated = $request->validate([
-                'id_penanggung_jawab' => ['nullable', 'exists:users,id_user'],
-                'id_pendamping' => ['nullable', 'array'],
-                'id_pendamping.*' => ['exists:users,id_user'],
-            ]);
-
-            $laboratorium->update($validated);
-
-            return back()->with('success', 'Penanggung jawab & pendamping berhasil diperbarui.');
-        }
-
-        // Laboran/admin bisa edit detail lab
         $validated = $request->validate([
             'nama_laboratorium' => ['required', 'string', 'max:120'],
             'kode_laboratorium' => ['nullable', 'string', 'max:20'],
+            'id_koordinator' => ['nullable', 'exists:users,id_user'],
         ]);
 
+        $oldKoordinatorId = $laboratorium->id_koordinator;
+
         $laboratorium->update($validated);
+
+        $newKoordinatorId = $laboratorium->id_koordinator;
+
+        // Jika koordinator berubah, sinkronisasi role
+        if ($oldKoordinatorId != $newKoordinatorId) {
+            if ($newKoordinatorId) {
+                $newKoordinator = User::find($newKoordinatorId);
+                if ($newKoordinator) {
+                    $newKoordinator->role = 'koordinator_lab';
+                    $newKoordinator->save();
+                }
+            }
+
+            if ($oldKoordinatorId) {
+                $stillCoordinates = Laboratorium::where('id_koordinator', $oldKoordinatorId)->exists();
+                if (!$stillCoordinates) {
+                    $oldKoordinator = User::find($oldKoordinatorId);
+                    if ($oldKoordinator) {
+                        $oldKoordinator->role = 'asisten';
+                        $oldKoordinator->save();
+                    }
+                }
+            }
+        }
 
         return back()->with('success', 'Data laboratorium berhasil diperbarui.');
     }
 
     public function destroy(Laboratorium $laboratorium): RedirectResponse
     {
+        $oldKoordinatorId = $laboratorium->id_koordinator;
+
         // Unlink related facilities (set id_laboratorium to null)
         $laboratorium->semuaFasilitas()->update(['id_laboratorium' => null]);
 
         $nama = $laboratorium->nama_laboratorium;
         $laboratorium->delete();
+
+        if ($oldKoordinatorId) {
+            $stillCoordinates = Laboratorium::where('id_koordinator', $oldKoordinatorId)->exists();
+            if (!$stillCoordinates) {
+                $oldKoordinator = User::find($oldKoordinatorId);
+                if ($oldKoordinator) {
+                    $oldKoordinator->role = 'asisten';
+                    $oldKoordinator->save();
+                }
+            }
+        }
 
         return back()->with('success', "Laboratorium {$nama} berhasil dihapus.");
     }

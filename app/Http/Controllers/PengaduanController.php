@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\FasilitasLab;
+use App\Models\KategoriFasilitas;
 use App\Models\Laboratorium;
 use App\Models\Pengaduan;
 use App\Models\PengaduanFoto;
@@ -133,15 +134,22 @@ class PengaduanController extends Controller
             ? collect([$fasilitas])
             : $facilities;
 
+        $laboratoriums = Laboratorium::orderBy('nama_laboratorium')->get();
+        $categories = KategoriFasilitas::orderBy('nama_kategori')->get();
+
         return [
             'mode' => $mode,
             'fasilitas' => $fasilitas,
             'facilities' => $facilities,
+            'laboratoriums' => $laboratoriums,
+            'categories' => $categories,
             'facilityPayload' => $facilitySource->map(fn (FasilitasLab $item) => [
                 'id' => (string) $item->id_fasilitas,
                 'kode_barang' => $item->no_fasilitas ?: '-',
                 'nama_fasilitas' => $item->nama_fasilitas,
                 'lokasi_lab' => $this->formatLokasiLab($item),
+                'id_laboratorium' => (string) $item->id_laboratorium,
+                'id_kategori' => (string) $item->id_kategori,
             ])->values(),
             'isGuest' => !Auth::check(),
             'users' => User::role('asisten')->with('roleData')->orderBy('nama')->get(['id_user', 'id_role', 'nama']),
@@ -160,6 +168,37 @@ class PengaduanController extends Controller
         $lokasi = $laboratorium->lokasi;
 
         return $lokasi ? $nama . ' - ' . $lokasi : $nama;
+    }
+
+    /**
+     * API endpoint for cascading dropdowns: returns fasilitas filtered by lab and/or category.
+     */
+    public function apiFasilitas(Request $request)
+    {
+        $query = FasilitasLab::with(['laboratorium', 'kategori'])
+            ->whereNull('qr_deleted_at');
+
+        if ($request->filled('id_laboratorium')) {
+            $query->where('id_laboratorium', $request->id_laboratorium);
+        }
+
+        if ($request->filled('id_kategori')) {
+            $query->where('id_kategori', $request->id_kategori);
+        }
+
+        $fasilitas = $query->orderBy('nama_fasilitas')->get();
+
+        return response()->json(
+            $fasilitas->map(fn (FasilitasLab $item) => [
+                'id' => (string) $item->id_fasilitas,
+                'no_fasilitas' => $item->no_fasilitas ?: '-',
+                'nama_fasilitas' => $item->nama_fasilitas,
+                'id_laboratorium' => (string) $item->id_laboratorium,
+                'id_kategori' => (string) $item->id_kategori,
+                'nama_laboratorium' => $item->laboratorium?->nama_laboratorium ?? '-',
+                'nama_kategori' => $item->kategori?->nama_kategori ?? '-',
+            ])->values()
+        );
     }
 
     private function validateReport(Request $request, bool $isManual): array

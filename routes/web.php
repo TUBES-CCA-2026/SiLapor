@@ -50,6 +50,7 @@ Route::prefix('lapor')->name('pengaduan.')->group(function () {
     Route::post('/qr/{qr_code}', [PengaduanController::class, 'storeQr'])->name('qr.store');
     Route::get('/manual', [PengaduanController::class, 'createManual'])->name('manual.create');
     Route::post('/manual', [PengaduanController::class, 'storeManual'])->name('manual.store');
+    Route::get('/api/fasilitas', [PengaduanController::class, 'apiFasilitas'])->name('manual.api.fasilitas');
     Route::get('/sukses/{pengaduan}', [PengaduanController::class, 'success'])->name('success');
     Route::get('/{qr_code}', [PengaduanController::class, 'redirectLegacyQr'])->name('qr.legacy');
 });
@@ -79,13 +80,11 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [PengaduanController::class, 'index'])->name('index');
             Route::get('/create', [PengaduanController::class, 'create'])->name('create');
             Route::post('/', [PengaduanController::class, 'store'])->name('store');
+            Route::get('/api/fasilitas', [PengaduanController::class, 'apiFasilitas'])->name('api.fasilitas');
         });
 
         Route::get('/tindak-lanjut', [TindakLanjutController::class, 'index'])->name('tindak-lanjut.index');
         Route::patch('/tindak-lanjut/{tindakLanjut}', [TindakLanjutController::class, 'update'])->name('tindak-lanjut.update');
-
-        Route::get('/penugasan', [DashboardController::class, 'penugasan'])->name('penugasan.index');
-        Route::post('/pengaduan/{pengaduan}/assign', [TindakLanjutController::class, 'assign'])->name('tindak-lanjut.assign');
     });
 
     Route::get('/riwayat', [RiwayatController::class, 'index'])
@@ -134,6 +133,8 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:koordinator_lab')->group(function () {
         Route::get('/detail-laporan', [DashboardController::class, 'detailLaporan'])->name('detail-laporan.index');
+        Route::get('/penugasan', [DashboardController::class, 'penugasan'])->name('penugasan.index');
+        Route::post('/pengaduan/{pengaduan}/assign', [TindakLanjutController::class, 'assign'])->name('tindak-lanjut.assign');
     });
 
     Route::middleware('role:laboran,kepala_lab')->group(function () {
