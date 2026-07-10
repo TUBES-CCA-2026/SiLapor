@@ -33,9 +33,12 @@ class LaboratoriumController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama_laboratorium' => ['required', 'string', 'max:120'],
-            'kode_laboratorium' => ['nullable', 'string', 'max:20'],
+            'nama_laboratorium' => ['required', 'string', 'max:120', 'unique:laboratorium,nama_laboratorium'],
+            'kode_laboratorium' => ['nullable', 'string', 'max:20', 'unique:laboratorium,kode_laboratorium'],
             'id_koordinator' => ['nullable', 'exists:users,id_user'],
+        ], [
+            'nama_laboratorium.unique' => 'Nama laboratorium sudah terdaftar.',
+            'kode_laboratorium.unique' => 'Kode laboratorium sudah digunakan.',
         ]);
 
         $lab = Laboratorium::create($validated);
@@ -57,9 +60,12 @@ class LaboratoriumController extends Controller
     public function update(Request $request, Laboratorium $laboratorium)
     {
         $validated = $request->validate([
-            'nama_laboratorium' => ['required', 'string', 'max:120'],
-            'kode_laboratorium' => ['nullable', 'string', 'max:20'],
+            'nama_laboratorium' => ['required', 'string', 'max:120', 'unique:laboratorium,nama_laboratorium,' . $laboratorium->id_laboratorium . ',id_laboratorium'],
+            'kode_laboratorium' => ['nullable', 'string', 'max:20', 'unique:laboratorium,kode_laboratorium,' . $laboratorium->id_laboratorium . ',id_laboratorium'],
             'id_koordinator' => ['nullable', 'exists:users,id_user'],
+        ], [
+            'nama_laboratorium.unique' => 'Nama laboratorium sudah terdaftar.',
+            'kode_laboratorium.unique' => 'Kode laboratorium sudah digunakan.',
         ]);
 
         $oldKoordinatorId = $laboratorium->id_koordinator;

@@ -226,7 +226,6 @@
                 <button type="button" onclick="printAllQrs()" class="btn-cetak-qr">
                     <i class="fa-solid fa-print"></i>Cetak Semua QR
                 </button>
-                <a href="{{ route('laboratorium.index') }}" class="btn-outline-blue">Kelola Laboratorium</a>
             </div>
         </div>
 

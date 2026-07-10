@@ -65,11 +65,6 @@
             <div class="lab-body">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
                     <h2 class="text-lg font-extrabold text-[#2C3E50] m-0">Data Laboratorium</h2>
-                    @if(!$isKoordinator)
-                    <a href="{{ route('fasilitas.index') }}" class="btn-mini btn-outline-mini">
-                        <i class="fa-solid fa-qrcode"></i>Fasilitas
-                    </a>
-                    @endif
                 </div>
 
                 {{-- Form Tambah Lab: hanya untuk laboran --}}
@@ -133,7 +128,7 @@
                                 </div>
                                 @if($isLaboran)
                                 <div class="flex items-center gap-2">
-                                    <form action="{{ route('laboratorium.destroy', $lab) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laboratorium ini?')" style="display: inline;">
+                                    <form action="{{ route('laboratorium.destroy', $lab) }}" method="POST" onsubmit="confirmDelete(event, this)" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn-mini btn-danger-mini">
@@ -232,6 +227,25 @@
         if (!sidebar || !overlay) return;
         sidebar.classList.toggle('-translate-x-full');
         overlay.classList.toggle('hidden');
+    }
+
+    function confirmDelete(event, form) {
+        event.preventDefault();
+        Swal.fire({
+            title: 'Hapus Laboratorium?',
+            text: 'Apakah Anda yakin ingin menghapus laboratorium ini? Seluruh data fasilitas di dalamnya akan di-unlink.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#DC2626',
+            cancelButtonColor: '#64748B',
+            confirmButtonText: 'Ya, Hapus',
+            cancelButtonText: 'Batal',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
     }
 </script>
 @endsection
