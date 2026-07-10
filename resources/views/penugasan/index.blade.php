@@ -406,19 +406,33 @@
                         <td>
                             <form method="POST" action="{{ route('tindak-lanjut.assign', $laporan) }}" class="assign-form" data-assign-form>
                                 @csrf
-                                <span class="teknisi-select-wrap">
-                                    <select name="id_asisten" class="teknisi-select" data-assign-select data-original="{{ $selectedAsisten }}" {{ $allowedTeknisi->isEmpty() ? 'disabled' : '' }}>
-                                        @if($allowedTeknisi->isEmpty())
-                                            <option value="">Belum ada asisten</option>
-                                        @else
-                                            <option value="">Pilih Teknisi</option>
-                                            @foreach($allowedTeknisi as $teknisi)
-                                                <option value="{{ $teknisi->id_user }}" @selected((string) $selectedAsisten === (string) $teknisi->id_user)>
-                                                    {{ $teknisi->nama }}
-                                                </option>
-                                            @endforeach
+                                <span class="teknisi-select-wrap w-full block">
+                                    <div class="relative custom-searchable-select w-full">
+                                        <input type="text" readonly placeholder="{{ $allowedTeknisi->isEmpty() ? 'Belum ada asisten' : 'Pilih Teknisi' }}" 
+                                               class="form-control searchable-select-trigger cursor-pointer bg-white text-xs font-semibold px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0090F5]" 
+                                               style="padding-right: 2rem; height: 34px;"
+                                               {{ $allowedTeknisi->isEmpty() ? 'disabled' : '' }}>
+                                        <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                            <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                                        </div>
+                                        @if(!$allowedTeknisi->isEmpty())
+                                        <div class="absolute left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl hidden searchable-select-dropdown p-2" style="min-width: 180px;">
+                                            <input type="text" placeholder="Cari..." 
+                                                   class="w-full p-2 mb-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-[#0090F5] searchable-select-search">
+                                            <ul class="max-h-40 overflow-y-auto searchable-select-options custom-scrollbar space-y-0.5 text-left">
+                                                <li data-value="" class="px-2.5 py-1.5 hover:bg-[#EEF8FF] hover:text-[#0090F5] rounded-md cursor-pointer text-xs transition-colors">
+                                                    Pilih Teknisi
+                                                </li>
+                                                @foreach($allowedTeknisi as $teknisi)
+                                                    <li data-value="{{ $teknisi->id_user }}" class="px-2.5 py-1.5 hover:bg-[#EEF8FF] hover:text-[#0090F5] rounded-md cursor-pointer text-xs transition-colors">
+                                                        {{ $teknisi->nama }}
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
                                         @endif
-                                    </select>
+                                        <input type="hidden" name="id_asisten" value="{{ $selectedAsisten }}" data-assign-select data-original="{{ $selectedAsisten }}">
+                                    </div>
                                 </span>
                             </form>
                         </td>

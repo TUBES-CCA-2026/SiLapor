@@ -218,17 +218,9 @@
                             </div>
                         </div>
                         @endif
-                        @if($laboratoriumPendamping->isNotEmpty())
-                        <div class="sm:col-span-1">
-                            <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Pendamping</label>
-                            <div class="w-full mt-1.5 p-3.5 bg-gray-100 border border-gray-200 rounded-2xl font-medium text-sm text-gray-600">
-                                {{ $pendampingLabel }}
-                            </div>
-                        </div>
-                        @endif
-                        @if($laboratoriumPj->isNotEmpty() || $laboratoriumPendamping->isNotEmpty())
+                        @if($laboratoriumPj->isNotEmpty())
                         <div class="col-span-2">
-                            <p class="text-[11px] text-gray-400 mt-1 ml-1">Relasi penanggung jawab & pendamping laboratorium diatur dari menu Laboratorium pada role Laboran atau Koordinator.</p>
+                            <p class="text-[11px] text-gray-400 mt-1 ml-1">Relasi koordinator laboratorium diatur dari menu Laboratorium pada role Laboran.</p>
                         </div>
                         @endif
                     @endif

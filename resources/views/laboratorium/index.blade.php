@@ -74,10 +74,39 @@
 
                 {{-- Form Tambah Lab: hanya untuk laboran --}}
                 @if($isLaboran)
-                <form method="POST" action="{{ route('laboratorium.store') }}" class="lab-form">
+                <form method="POST" action="{{ route('laboratorium.store') }}" class="lab-form" style="grid-template-columns: 1fr 1fr 1fr auto;">
                     @csrf
-                    <input name="nama_laboratorium" placeholder="Nama lab" required class="form-control">
-                    <input name="kode_laboratorium" placeholder="Kode" class="form-control">
+                    <div>
+                        <label class="field-label">Nama Laboratorium</label>
+                        <input name="nama_laboratorium" placeholder="Nama lab" required class="form-control">
+                    </div>
+                    <div>
+                        <label class="field-label">Kode Laboratorium</label>
+                        <input name="kode_laboratorium" placeholder="Kode" class="form-control">
+                    </div>
+                    <div>
+                        <label class="field-label">Koordinator Lab</label>
+                        <div class="relative custom-searchable-select w-full">
+                            <input type="text" readonly placeholder="— Pilih Koordinator —" class="form-control searchable-select-trigger cursor-pointer bg-white" style="padding-right: 2rem;">
+                            <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </div>
+                            <div class="absolute left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg hidden searchable-select-dropdown p-2" style="min-width: 200px;">
+                                <input type="text" placeholder="Cari Koordinator..." class="w-full p-2 mb-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-[#0090F5] searchable-select-search">
+                                <ul class="max-h-40 overflow-y-auto searchable-select-options custom-scrollbar space-y-0.5 text-left">
+                                    <li data-value="" class="px-2.5 py-1.5 hover:bg-[#EEF8FF] hover:text-[#0090F5] rounded-md cursor-pointer text-xs transition-colors">
+                                        — Pilih Koordinator —
+                                    </li>
+                                    @foreach($asistenList as $asisten)
+                                        <li data-value="{{ $asisten->id_user }}" class="px-2.5 py-1.5 hover:bg-[#EEF8FF] hover:text-[#0090F5] rounded-md cursor-pointer text-xs transition-colors">
+                                            {{ $asisten->nama }}
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            <input type="hidden" name="id_koordinator" value="">
+                        </div>
+                    </div>
                     <button class="btn-mini btn-primary-mini" type="submit">
                         Submit
                     </button>
@@ -90,7 +119,7 @@
                             <div class="lab-row">
                                 <div>
                                     <p class="lab-title">
-                                        <span @if($isKoordinator) onclick="togglePjForm('{{ $lab->id_laboratorium }}')" style="cursor: pointer;" class="hover:underline hover:text-[#0090F5] transition-colors" @endif>
+                                        <span @if($isLaboran) onclick="toggleEditForm('{{ $lab->id_laboratorium }}')" style="cursor: pointer;" class="hover:underline hover:text-[#0090F5] transition-colors" @endif>
                                             {{ $lab->nama_laboratorium }}
                                         </span>
                                         @if($lab->kode_laboratorium)
@@ -104,9 +133,6 @@
                                 </div>
                                 @if($isLaboran)
                                 <div class="flex items-center gap-2">
-                                    <button onclick="toggleEditForm('{{ $lab->id_laboratorium }}')" class="btn-mini btn-outline-mini">
-                                        <i class="fa-solid fa-pen"></i>Edit
-                                    </button>
                                     <form action="{{ route('laboratorium.destroy', $lab) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laboratorium ini?')" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
@@ -134,14 +160,26 @@
                                     </div>
                                     <div>
                                         <label class="field-label">Koordinator Lab</label>
-                                        <select name="id_koordinator" class="form-control">
-                                            <option value="">— Pilih Koordinator —</option>
-                                            @foreach($asistenList as $asisten)
-                                                <option value="{{ $asisten->id_user }}" @selected((string) $lab->id_koordinator === (string) $asisten->id_user)>
-                                                    {{ $asisten->nama }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <div class="relative custom-searchable-select w-full">
+                                            <input type="text" readonly placeholder="— Pilih Koordinator —" class="form-control searchable-select-trigger cursor-pointer bg-white" style="padding-right: 2rem;">
+                                            <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                                            </div>
+                                            <div class="absolute left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg hidden searchable-select-dropdown p-2" style="min-width: 200px;">
+                                                <input type="text" placeholder="Cari Koordinator..." class="w-full p-2 mb-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-[#0090F5] searchable-select-search">
+                                                <ul class="max-h-40 overflow-y-auto searchable-select-options custom-scrollbar space-y-0.5 text-left">
+                                                    <li data-value="" class="px-2.5 py-1.5 hover:bg-[#EEF8FF] hover:text-[#0090F5] rounded-md cursor-pointer text-xs transition-colors">
+                                                        — Pilih Koordinator —
+                                                    </li>
+                                                    @foreach($asistenList as $asisten)
+                                                        <li data-value="{{ $asisten->id_user }}" class="px-2.5 py-1.5 hover:bg-[#EEF8FF] hover:text-[#0090F5] rounded-md cursor-pointer text-xs transition-colors">
+                                                            {{ $asisten->nama }}
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                            <input type="hidden" name="id_koordinator" value="{{ $lab->id_koordinator }}">
+                                        </div>
                                     </div>
                                     <button type="submit" class="btn-mini btn-primary-mini">
                                         <i class="fa-solid fa-floppy-disk"></i>Simpan
@@ -195,134 +233,5 @@
         sidebar.classList.toggle('-translate-x-full');
         overlay.classList.toggle('hidden');
     }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        // Searchable Select Component Logic
-        document.querySelectorAll('.custom-searchable-select').forEach(function (wrapper) {
-            const trigger = wrapper.querySelector('.searchable-select-trigger');
-            const dropdown = wrapper.querySelector('.searchable-select-dropdown');
-            const searchInput = wrapper.querySelector('.searchable-select-search');
-            const optionsList = wrapper.querySelector('.searchable-select-options');
-            const hiddenInput = wrapper.querySelector('input[type="hidden"]');
-            const options = optionsList.querySelectorAll('li');
-
-            // Set initial trigger text
-            const initialValue = hiddenInput.value;
-            const initialOption = Array.from(options).find(opt => opt.getAttribute('data-value') === initialValue);
-            if (initialOption) {
-                trigger.value = initialOption.textContent.trim();
-            }
-
-            // Click trigger to open dropdown
-            trigger.addEventListener('click', function (e) {
-                e.stopPropagation();
-                document.querySelectorAll('.searchable-select-dropdown, .searchable-multiselect-dropdown').forEach(d => {
-                    if (d !== dropdown) d.classList.add('hidden');
-                });
-                dropdown.classList.toggle('hidden');
-                if (!dropdown.classList.contains('hidden')) {
-                    searchInput.value = '';
-                    options.forEach(opt => opt.style.display = '');
-                    searchInput.focus();
-                }
-            });
-
-            dropdown.addEventListener('click', function (e) {
-                e.stopPropagation();
-            });
-
-            // Filtering search inputs
-            searchInput.addEventListener('input', function () {
-                const query = searchInput.value.toLowerCase();
-                options.forEach(function (option) {
-                    const text = option.textContent.toLowerCase();
-                    option.style.display = text.includes(query) ? '' : 'none';
-                });
-            });
-
-            // Select an option
-            options.forEach(function (option) {
-                option.addEventListener('click', function () {
-                    const val = option.getAttribute('data-value');
-                    const text = option.textContent.trim();
-                    hiddenInput.value = val;
-                    trigger.value = val ? text : '';
-                    dropdown.classList.add('hidden');
-                });
-            });
-        });
-
-        // Searchable Multiselect Component Logic
-        document.querySelectorAll('.custom-searchable-multiselect').forEach(function (wrapper) {
-            const trigger = wrapper.querySelector('.searchable-multiselect-trigger');
-            const dropdown = wrapper.querySelector('.searchable-multiselect-dropdown');
-            const searchInput = wrapper.querySelector('.searchable-multiselect-search');
-            const optionsList = wrapper.querySelector('.searchable-multiselect-options');
-            const checkboxes = optionsList.querySelectorAll('.searchable-multiselect-checkbox');
-            const items = optionsList.querySelectorAll('li');
-
-            function updateTriggerText() {
-                const selectedNames = [];
-                checkboxes.forEach(function (cb) {
-                    if (cb.checked) {
-                        selectedNames.push(cb.getAttribute('data-name'));
-                    }
-                });
-                trigger.value = selectedNames.length > 0 ? selectedNames.join(', ') : '';
-            }
-
-            updateTriggerText();
-
-            // Toggle dropdown
-            trigger.addEventListener('click', function (e) {
-                e.stopPropagation();
-                document.querySelectorAll('.searchable-select-dropdown, .searchable-multiselect-dropdown').forEach(d => {
-                    if (d !== dropdown) d.classList.add('hidden');
-                });
-                dropdown.classList.toggle('hidden');
-                if (!dropdown.classList.contains('hidden')) {
-                    searchInput.value = '';
-                    items.forEach(li => li.style.display = '');
-                    searchInput.focus();
-                }
-            });
-
-            dropdown.addEventListener('click', function (e) {
-                e.stopPropagation();
-            });
-
-            // Filtering search
-            searchInput.addEventListener('input', function () {
-                const query = searchInput.value.toLowerCase();
-                items.forEach(function (li) {
-                    const text = li.textContent.toLowerCase();
-                    li.style.display = text.includes(query) ? '' : 'none';
-                });
-            });
-
-            // Clicking list item toggles checkbox
-            items.forEach(function (li) {
-                li.addEventListener('click', function (e) {
-                    if (e.target.tagName !== 'INPUT') {
-                        const cb = li.querySelector('.searchable-multiselect-checkbox');
-                        if (cb) {
-                            cb.checked = !cb.checked;
-                            updateTriggerText();
-                        }
-                    }
-                });
-            });
-
-            // Checking checkbox directly updates trigger text
-            checkboxes.forEach(cb => {
-                cb.addEventListener('change', updateTriggerText);
-            });
-        });
-
-        // Click outside closes dropdowns
-        document.addEventListener('click', function () {
-            document.querySelectorAll('.searchable-select-dropdown, .searchable-multiselect-dropdown').forEach(d => d.classList.add('hidden'));
-        });
-    });
 </script>
 @endsection

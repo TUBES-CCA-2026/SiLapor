@@ -10,7 +10,6 @@ use App\Http\Controllers\PengaduanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\ScanController;
-use App\Http\Controllers\TeknisiController;
 use App\Http\Controllers\TindakLanjutController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -166,7 +165,7 @@ Route::middleware('auth')->group(function () {
         });
     });
 
-    Route::middleware('role:laboran,koordinator_lab')->group(function () {
+    Route::middleware('role:laboran')->group(function () {
         Route::get('/laboratorium', [LaboratoriumController::class, 'index'])->name('laboratorium.index');
         Route::post('/laboratorium', [LaboratoriumController::class, 'store'])->name('laboratorium.store');
         Route::patch('/laboratorium/{laboratorium}', [LaboratoriumController::class, 'update'])->name('laboratorium.update');

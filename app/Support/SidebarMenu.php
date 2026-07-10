@@ -41,7 +41,6 @@ final class SidebarMenu
                 ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $url('dashboard')],
                 ['penugasan', 'Penugasan', 'fa-solid fa-user-check', $url('penugasan.index')],
                 ['detail-laporan', 'Detail Laporan', 'fa-regular fa-rectangle-list', $url('detail-laporan.index')],
-                ['laboratorium', 'Laboratorium', 'fa-regular fa-building', $url('laboratorium.index')],
                 ['profil', 'Profil', 'fa-regular fa-user', $url('profile.index')],
             ],
             'asisten' => [
