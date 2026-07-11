@@ -23,7 +23,7 @@ class TugasPerbaikanMail extends Mailable
         $pengaduan = $this->tindakLanjut->pengaduan;
         $fasilitas = $pengaduan->fasilitas;
 
-        return $this->subject('Tugas Perbaikan Baru — ' . $fasilitas->nama_fasilitas)
+        return $this->subject('Tugas Perbaikan Baru — ' . ($fasilitas->kategori?->nama_kategori ?? '-') . ' (' . ($fasilitas->no_fasilitas ?? '-') . ')')
             ->view('emails.tugas-perbaikan', [
                 'asisten' => $this->tindakLanjut->asisten,
                 'fasilitas' => $fasilitas,

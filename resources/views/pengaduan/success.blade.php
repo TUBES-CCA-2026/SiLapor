@@ -41,7 +41,7 @@
 
             <p class="text-gray-500 text-sm mb-2">
                 Laporan kerusakan
-                <strong>{{ $pengaduan->fasilitas?->nama_fasilitas ?? '-' }}</strong>
+                <strong>{{ $pengaduan->fasilitas?->kategori?->nama_kategori ?? '-' }} ({{ $pengaduan->fasilitas?->no_fasilitas ?? '-' }})</strong>
                 di
                 <strong>{{ $pengaduan->fasilitas?->laboratorium?->nama_laboratorium ?? '-' }}</strong>
                 sudah masuk ke sistem dan akan ditindaklanjuti oleh tim laboratorium.

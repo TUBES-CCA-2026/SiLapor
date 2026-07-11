@@ -17,7 +17,7 @@
         ? $fasilitas
         : ($facilities->firstWhere('id_fasilitas', old('id_fasilitas')) ?? null);
 
-    $selectedNamaFasilitas = $selectedFacility?->nama_fasilitas ?? '-';
+
 
     $backUrl = null;
     $backLabel = 'Kembali';
@@ -226,10 +226,6 @@
                             <label class="pgd-field-label">Kode Barang</label>
                             <input type="text" value="{{ $selectedFacility?->no_fasilitas ?? '-' }}" readonly class="pgd-readonly-input">
                         </div>
-                        <div>
-                            <label class="pgd-field-label">Nama Barang / Fasilitas</label>
-                            <input type="text" value="{{ $selectedNamaFasilitas }}" readonly class="pgd-readonly-input">
-                        </div>
                     </div>
                 @else
                     {{-- Manual Mode: cascading dropdowns --}}
@@ -302,11 +298,7 @@
                             </div>
                         </div>
 
-                        {{-- 4. Nama Barang / Fasilitas (readonly auto-fill) --}}
-                        <div>
-                            <label class="pgd-field-label">Nama Barang / Fasilitas</label>
-                            <input id="nama_fasilitas" type="text" value="{{ $selectedNamaFasilitas }}" readonly class="pgd-readonly-input">
-                        </div>
+
                     </div>
                 @endif
             </div>
@@ -554,7 +546,6 @@
             onChange: async function (value) {
                 kategoriSelect.reset('Pilih kategori barang');
                 kodeBarangSelect.reset('Pilih atau cari kode barang');
-                document.getElementById('nama_fasilitas').value = '-';
                 document.getElementById('id_fasilitas').value = '';
 
                 const params = {};
@@ -585,7 +576,6 @@
             emptyMessage: 'Pilih lokasi lab terlebih dahulu',
             onChange: function (value) {
                 kodeBarangSelect.reset('Pilih atau cari kode barang');
-                document.getElementById('nama_fasilitas').value = '-';
                 document.getElementById('id_fasilitas').value = '';
 
                 let filtered = cachedFasilitas;
@@ -602,8 +592,7 @@
             placeholder: 'Pilih atau cari kode barang',
             emptyMessage: 'Pilih lokasi lab terlebih dahulu',
             onChange: function (value) {
-                const found = cachedFasilitas.find(function (f) { return String(f.id) === String(value); });
-                document.getElementById('nama_fasilitas').value = found ? found.nama_fasilitas : '-';
+                // No action needed for nama_fasilitas
             }
         });
 
@@ -616,7 +605,7 @@
                 return {
                     value: f.id,
                     label: f.no_fasilitas || '-',
-                    sublabel: f.nama_fasilitas + ' (' + f.nama_laboratorium + ')',
+                    sublabel: (f.nama_kategori || '-') + ' (' + f.nama_laboratorium + ')',
                 };
             }));
         }

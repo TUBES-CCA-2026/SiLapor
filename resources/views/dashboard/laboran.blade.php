@@ -158,7 +158,7 @@
                                 <td class="py-5 px-6 text-sm font-semibold text-[#64748B]">PGD-{{ str_pad((string) $item->id_pengaduan, 3, '0', STR_PAD_LEFT) }}</td>
                                 <td class="py-5 px-6 text-sm text-gray-700 font-medium">{{ $item->pelapor?->nama ?? '-' }}</td>
                                 <td class="py-5 px-6 text-sm text-gray-500">{{ $item->fasilitas?->laboratorium?->nama_laboratorium ?? '-' }}</td>
-                                <td class="py-5 px-6 text-sm text-gray-800 font-semibold">{{ $item->fasilitas?->nama_fasilitas ?? '-' }}</td>
+                                <td class="py-5 px-6 text-sm text-gray-800 font-semibold">{{ $item->fasilitas?->kategori?->nama_kategori ?? '-' }} ({{ $item->fasilitas?->no_fasilitas ?? '-' }})</td>
                                 <td class="py-5 px-6"><span class="inline-block text-xs font-bold px-4 py-1.5 rounded-md text-center {{ $statusStyle }}">{{ $statusLabel }}</span></td>
                                 <td class="py-5 px-6 text-sm text-gray-700">{{ $item->tindakLanjut?->asisten?->nama ?? 'Belum ditugaskan' }}</td>
                             </tr>

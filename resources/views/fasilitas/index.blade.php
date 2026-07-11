@@ -255,7 +255,7 @@
             @csrf
             <div>
                 <p class="import-fasilitas-title">Import Spreadsheet Fasilitas</p>
-                <p class="import-fasilitas-help">Gunakan file .xlsx atau .csv. Header yang didukung: nama_fasilitas, kode_laboratorium, no_fasilitas.</p>
+                 <p class="import-fasilitas-help">Gunakan file .xlsx atau .csv. Header yang didukung: kode_laboratorium, no_fasilitas, nama_fasilitas (opsional).</p>
             </div>
             <input type="file" name="spreadsheet" accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required class="form-control">
             <button type="submit" class="btn-primary">
@@ -266,10 +266,7 @@
             <!-- Form Tambah Fasilitas -->
             <form method="POST" action="{{ route('fasilitas.store') }}" class="inline-form-grid">
                 @csrf
-                <div>
-                    <label class="field-label">Nama Fasilitas</label>
-                    <input name="nama_fasilitas" placeholder="Nama fasilitas" required class="form-control" style="height: 42px; padding: 0.5rem 0.75rem; font-size: 0.85rem;">
-                </div>
+
                 <div>
                     <label class="field-label">Laboratorium</label>
                     <select name="id_laboratorium" required class="form-control" style="height: 42px; padding: 0.5rem 0.75rem; font-size: 0.85rem;">
@@ -359,10 +356,9 @@
                                         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
                                             @foreach($catItems as $f)
                                                 <div id="fasilitas-card-{{ $f->id_fasilitas }}" style="background: #fff; border: {{ session('new_fasilitas_id') == $f->id_fasilitas ? '2px solid #0090F5' : '1px solid #E5E7EB' }}; border-radius: 1.25rem; padding: 1.25rem; text-align: center;">
-                                                    <p style="margin: 0; font-weight: 800; color: #2C3E50;">{{ $f->nama_fasilitas }}</p>
-                                                    <p style="margin: .25rem 0 1rem; color: #64748B; font-size: .82rem;">{{ $f->no_fasilitas ?: 'Tanpa Kode Aset' }}</p>
-                                                    
-                                                    <div class="qr-print-area" data-fasilitas-name="{{ $f->nama_fasilitas }}" data-fasilitas-lab="{{ $f->laboratorium->nama_laboratorium ?? '-' }}" data-fasilitas-url="{{ $f->scanUrl() }}" style="display: flex; justify-content: center; margin-bottom: 1rem; min-height: 140px; align-items: center;" id="qr-{{ $f->id_fasilitas }}"></div>
+                                                     <p style="margin: 0; font-weight: 800; color: #2C3E50;">{{ $f->no_fasilitas ?: 'Tanpa Kode Aset' }}</p>
+                                                     
+                                                     <div class="qr-print-area" data-fasilitas-category="{{ $f->kategori->nama_kategori ?? 'Tanpa Kategori' }}" data-fasilitas-code="{{ $f->no_fasilitas ?: '-' }}" data-fasilitas-lab="{{ $f->laboratorium->nama_laboratorium ?? '-' }}" data-fasilitas-url="{{ $f->scanUrl() }}" style="display: flex; justify-content: center; margin-bottom: 1rem; min-height: 140px; align-items: center;" id="qr-{{ $f->id_fasilitas }}"></div>
                                                     
                                                     <script>
                                                         document.addEventListener('DOMContentLoaded', function () {
@@ -424,7 +420,8 @@
 
         let cardsHtml = '';
         qrAreas.forEach(area => {
-            const name = area.dataset.fasilitasName || 'Fasilitas';
+            const category = area.dataset.fasilitasCategory || 'Tanpa Kategori';
+            const code = area.dataset.fasilitasCode || '-';
             const lab = area.dataset.fasilitasLab || '-';
             const url = area.dataset.fasilitasUrl || '';
             const qrHtml = area.innerHTML;
@@ -433,8 +430,9 @@
                 <div class="card">
                     <div class="brand">SiLapor</div>
                     <div class="qr">${qrHtml}</div>
-                    <div class="name">${name}</div>
-                    <div class="lab">${lab}</div>
+                    <div class="code" style="font-weight:800; color:#111827; margin: 8px 0 2px; font-size: 14px;">${code}</div>
+                    <div class="category" style="color:#4B5563; font-weight:600; font-size: 12px; margin-bottom: 4px;">${category}</div>
+                    <div class="lab" style="color:#64748B; font-size: 11px; margin-bottom: 8px;">${lab}</div>
                     <div class="url">${url}</div>
                 </div>
             `;
@@ -468,7 +466,8 @@
         const target = document.getElementById(id);
         if (!target) return;
 
-        const name = target.dataset.fasilitasName || 'Fasilitas';
+        const category = target.dataset.fasilitasCategory || 'Tanpa Kategori';
+        const code = target.dataset.fasilitasCode || '-';
         const lab = target.dataset.fasilitasLab || '-';
         const url = target.dataset.fasilitasUrl || '';
         const qrHtml = target.innerHTML;
@@ -476,12 +475,13 @@
         if (!printWindow) return;
 
         printWindow.document.write(`
-            <html><head><title>Cetak QR ${name}</title>
+            <html><head><title>Cetak QR ${code}</title>
             <style>
                 body { font-family: Arial, sans-serif; display: grid; place-items: center; min-height: 100vh; margin: 0; }
                 .card { width: 320px; border: 1px solid #E5E7EB; border-radius: 18px; padding: 24px; text-align: center; }
                 .brand { color:#0090F5; font-weight:800; font-size:22px; margin-bottom: 12px; }
-                .name { font-weight:800; color:#111827; margin: 12px 0 4px; }
+                .code { font-weight:800; color:#111827; margin: 12px 0 2px; font-size: 18px; }
+                .category { color:#4B5563; font-weight:600; font-size: 14px; margin-bottom: 6px; }
                 .lab { color:#64748B; font-size: 13px; margin-bottom: 12px; }
                 .qr { display:flex; justify-content:center; margin: 16px 0; }
                 .url { word-break: break-all; color:#64748B; font-size: 11px; }
@@ -489,7 +489,8 @@
                 <div class="card">
                     <div class="brand">SiLapor</div>
                     <div class="qr">${qrHtml}</div>
-                    <div class="name">${name}</div>
+                    <div class="code">${code}</div>
+                    <div class="category">${category}</div>
                     <div class="lab">${lab}</div>
                     <div class="url">${url}</div>
                 </div>

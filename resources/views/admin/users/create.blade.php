@@ -184,6 +184,17 @@
                     @endforeach
                 </select>
             </div>
+            <div id="koordinator-lab-only" style="display: none;">
+                <label class="field-label">Laboratorium yang Dikoordinasi</label>
+                <select name="id_laboratorium" class="form-control">
+                    <option value="">Pilih Laboratorium</option>
+                    @foreach (($laboratoriums ?? collect()) as $lab)
+                        <option value="{{ $lab->id_laboratorium }}" {{ old('id_laboratorium') == $lab->id_laboratorium ? 'selected' : '' }}>
+                            {{ $lab->nama_laboratorium }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
             <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem;">
                 <div><label class="field-label">No. HP</label><input name="phone" value="{{ old('phone') }}" class="form-control"></div>
                 <div data-asisten-only><label class="field-label">NIM</label><input type="text" inputmode="numeric" pattern="[0-9]*" name="nim" value="{{ old('nim') }}" class="form-control" placeholder="11 digit angka" maxlength="11"></div>
@@ -387,6 +398,16 @@
                 if (!showProfileFields) input.value = '';
             });
         });
+
+        const showLabFields = role === 'koordinator_lab';
+        const labField = document.getElementById('koordinator-lab-only');
+        if (labField) {
+            labField.style.display = showLabFields ? '' : 'none';
+            if (!showLabFields) {
+                const select = labField.querySelector('select');
+                if (select) select.value = '';
+            }
+        }
     }
 
     function showRoleLimit(role) {

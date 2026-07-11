@@ -15,7 +15,7 @@
             <table style="width:100%;font-size:14px;color:#374151;margin:16px 0;">
                 <tr>
                     <td style="padding:4px 0;color:#6B7280;">Fasilitas</td>
-                    <td style="padding:4px 0;font-weight:600;">{{ $fasilitas->nama_fasilitas }}</td>
+                    <td style="padding:4px 0;font-weight:600;">{{ $fasilitas->kategori?->nama_kategori ?? '-' }} ({{ $fasilitas->no_fasilitas ?? '-' }})</td>
                 </tr>
                 <tr>
                     <td style="padding:4px 0;color:#6B7280;">Laboratorium</td>

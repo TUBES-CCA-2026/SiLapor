@@ -160,7 +160,11 @@ class DashboardController extends Controller
                             $u->where('nama', 'like', "%{$keyword}%");
                         })
                         ->orWhereHas('fasilitas', function ($f) use ($keyword) {
-                            $f->where('nama_fasilitas', 'like', "%{$keyword}%");
+                            $f->where('nama_fasilitas', 'like', "%{$keyword}%")
+                                ->orWhere('no_fasilitas', 'like', "%{$keyword}%")
+                                ->orWhereHas('kategori', function ($cat) use ($keyword) {
+                                    $cat->where('nama_kategori', 'like', "%{$keyword}%");
+                                });
                         });
                 });
             }
@@ -237,7 +241,11 @@ class DashboardController extends Controller
                         $u->where('nama', 'like', "%{$keyword}%");
                     })
                     ->orWhereHas('fasilitas', function ($f) use ($keyword) {
-                        $f->where('nama_fasilitas', 'like', "%{$keyword}%");
+                        $f->where('nama_fasilitas', 'like', "%{$keyword}%")
+                            ->orWhere('no_fasilitas', 'like', "%{$keyword}%")
+                            ->orWhereHas('kategori', function ($cat) use ($keyword) {
+                                $cat->where('nama_kategori', 'like', "%{$keyword}%");
+                            });
                     });
             });
         }
@@ -316,7 +324,7 @@ class DashboardController extends Controller
             'statusClass' => $statusClass,
             'pelapor' => $pengaduan->pelapor?->nama ?? $pengaduan->user?->nama ?? 'Guest',
             'lokasi' => $pengaduan->fasilitas?->laboratorium?->nama_laboratorium ?? '-',
-            'fasilitas' => $pengaduan->fasilitas?->nama_fasilitas ?? '-',
+            'fasilitas' => ($pengaduan->fasilitas?->kategori?->nama_kategori ?? '-') . ' (' . ($pengaduan->fasilitas?->no_fasilitas ?? '-') . ')',
             'tanggal' => $tanggalLapor,
             'tanggalLapor' => $tanggalLapor,
             'tanggalSelesai' => $tanggalSelesai,

@@ -197,7 +197,7 @@ $menuItems = [
                                             <div class="flex items-center gap-3"><i class="fa-solid fa-location-dot text-[#EF4444]"></i><span>{{ $row->fasilitas?->laboratorium?->nama_laboratorium ?? 'Lab Tidak Diketahui' }}</span></div>
                                         </td>
                                         <td class="py-3.5 px-6 text-sm text-gray-500">{{ $row->tanggal_lapor ? \Carbon\Carbon::parse($row->tanggal_lapor)->format('d-m-Y') : ($row->created_at ? $row->created_at->format('d-m-Y') : '-') }}</td>
-                                        <td class="py-3.5 px-6 text-sm text-gray-600">{{ $row->fasilitas?->nama_fasilitas ?? '-' }}</td>
+                                        <td class="py-3.5 px-6 text-sm text-gray-600">{{ $row->fasilitas?->kategori?->nama_kategori ?? '-' }} ({{ $row->fasilitas?->no_fasilitas ?? '-' }})</td>
                                         <td class="py-3.5 px-6 text-center"><span class="laporan-status {{ $status['class'] }}">{{ $status['label'] }}</span></td>
                                         <td class="py-3.5 px-6 text-center">
                                             <button type="button" class="inline-block text-xs font-bold text-[#0090F5] bg-white border border-[#0090F5] hover:bg-sky-50 px-5 py-1 rounded-md transition-all shadow-sm detail-btn" data-detail-url="{{ $detailUrl }}">Detail</button>

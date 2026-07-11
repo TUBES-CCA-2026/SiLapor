@@ -103,7 +103,7 @@
                                 $tanggal = $laporan->tanggal_lapor ? \Carbon\Carbon::parse($laporan->tanggal_lapor)->format('d/m/Y') : '-';
                                 $tanggalSelesai = $laporan->updated_at ? $laporan->updated_at->format('d/m/Y') : '-';
                                 $pelapor = data_get($laporan, 'pelapor.nama', data_get($laporan, 'user.nama', 'Guest'));
-                                $fasilitas = data_get($laporan, 'fasilitas.nama_fasilitas', '-');
+                                $fasilitas = data_get($laporan, 'fasilitas.kategori.nama_kategori', '-') . ' (' . data_get($laporan, 'fasilitas.no_fasilitas', '-') . ')';
                                 $lokasi = data_get($laporan, 'fasilitas.laboratorium.nama_laboratorium', '-');
                                 $deskripsi = $laporan->deskripsi_kerusakan ?? '-';
                                 $status = $statusMeta($laporan->status_pengaduan ?? null);

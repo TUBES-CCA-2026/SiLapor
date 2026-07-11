@@ -141,7 +141,7 @@
                                 </td>
                                 <!-- Fasilitas -->
                                 <td class="py-5 px-6 text-gray-800 font-medium">
-                                    {{ $t->pengaduan?->fasilitas?->nama_fasilitas ?? 'Komputer 01' }}
+                                    {{ $t->pengaduan?->fasilitas?->kategori?->nama_kategori ?? '-' }} ({{ $t->pengaduan?->fasilitas?->no_fasilitas ?? '-' }})
                                 </td>
                                 <!-- Status Badge dengan Dropdown Interaktif -->
                                 <td class="py-5 px-6 text-center" onclick="event.stopPropagation()">

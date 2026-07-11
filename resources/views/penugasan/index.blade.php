@@ -388,7 +388,7 @@
                             ? \Carbon\Carbon::parse($laporan->tanggal_lapor)->format('d/m/Y')
                             : '-';
                         $pelapor = data_get($laporan, 'pelapor.nama', 'Guest');
-                        $fasilitas = data_get($laporan, 'fasilitas.nama_fasilitas', '-');
+                        $fasilitas = data_get($laporan, 'fasilitas.kategori.nama_kategori', '-') . ' (' . data_get($laporan, 'fasilitas.no_fasilitas', '-') . ')';
                         $lokasi = data_get($laporan, 'fasilitas.laboratorium.nama_laboratorium', '-');
                         $deskripsi = $laporan->deskripsi_kerusakan ?? '-';
                         $selectedAsisten = data_get($laporan, 'tindakLanjut.id_teknisi');

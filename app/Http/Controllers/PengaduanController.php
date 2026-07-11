@@ -125,7 +125,7 @@ class PengaduanController extends Controller
      */
     private function formData(string $mode, ?FasilitasLab $fasilitas = null): array
     {
-        $facilities = FasilitasLab::with('laboratorium')
+        $facilities = FasilitasLab::with(['laboratorium', 'kategori'])
             ->whereNull('qr_deleted_at')
             ->orderBy('nama_fasilitas')
             ->get();
@@ -150,6 +150,7 @@ class PengaduanController extends Controller
                 'lokasi_lab' => $this->formatLokasiLab($item),
                 'id_laboratorium' => (string) $item->id_laboratorium,
                 'id_kategori' => (string) $item->id_kategori,
+                'nama_kategori' => $item->kategori?->nama_kategori ?? '-',
             ])->values(),
             'isGuest' => !Auth::check(),
             'users' => User::role('asisten')->with('roleData')->orderBy('nama')->get(['id_user', 'id_role', 'nama']),

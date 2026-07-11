@@ -160,7 +160,7 @@
                                     ?? 'Tidak diketahui';
 
                                 $lokasi = data_get($pengaduan, 'fasilitas.laboratorium.nama_laboratorium', '-');
-                                $fasilitas = data_get($pengaduan, 'fasilitas.nama_fasilitas', '-');
+                                $fasilitas = data_get($pengaduan, 'fasilitas.kategori.nama_kategori', '-') . ' (' . data_get($pengaduan, 'fasilitas.no_fasilitas', '-') . ')';
 
                                 $tanggalLapor = data_get($pengaduan, 'tanggal_lapor')
                                     ? \Carbon\Carbon::parse(data_get($pengaduan, 'tanggal_lapor'))->format('d/m/Y')

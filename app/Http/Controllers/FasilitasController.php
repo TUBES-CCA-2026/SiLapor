@@ -22,15 +22,16 @@ class FasilitasController extends Controller
 
         return view('fasilitas.index', compact('fasilitas', 'laboratoriums', 'categories'));
     }
-
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama_fasilitas' => ['required', 'string', 'max:120'],
             'id_laboratorium' => ['required', 'exists:laboratorium,id_laboratorium'],
             'id_kategori' => ['nullable', 'exists:kategori_fasilitas,id_kategori'],
             'no_fasilitas' => ['nullable', 'string', 'max:120'],
         ]);
+
+        $cat = \App\Models\KategoriFasilitas::find($request->id_kategori);
+        $validated['nama_fasilitas'] = $cat ? $cat->nama_kategori : ($request->no_fasilitas ?: 'Fasilitas');
 
         $validated['qr_code'] = Str::uuid()->toString(); // token unik untuk QR
         $validated['qr_generated_date'] = now();
@@ -141,8 +142,7 @@ class FasilitasController extends Controller
             $labIdent = $this->firstImportValue($data, ['kode_laboratorium', 'nama_laboratorium', 'id_laboratorium', 'laboratorium', 'lab']);
 
             if (empty($namaFasilitas)) {
-                $skipped[] = 'Baris ' . $rowNumber . ': nama_fasilitas wajib diisi.';
-                continue;
+                $namaFasilitas = $noFasilitas ?: 'Fasilitas';
             }
 
             if (empty($labIdent)) {

@@ -156,10 +156,12 @@ class UserController extends Controller
 
     public function create()
     {
+        $laboratoriums = \App\Models\Laboratorium::orderBy('nama_laboratorium')->get();
         return view('admin.users.create', [
             'roles' => $this->roles,
             'roleCounts' => $this->roleCounts(),
             'roleLimits' => $this->roleLimits,
+            'laboratoriums' => $laboratoriums,
         ]);
     }
 
@@ -168,28 +170,53 @@ class UserController extends Controller
         $validated = $this->validateUser($request);
         $this->enforceRoleLimit($validated['role']);
 
-        $user = User::create([
-            'nama' => $validated['nama'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'id_role' => Role::idByName($validated['role']),
-            'phone' => $validated['phone'] ?? null,
-        ]);
+        DB::transaction(function () use ($validated, $request) {
+            $user = User::create([
+                'nama' => $validated['nama'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'id_role' => Role::idByName($validated['role']),
+                'phone' => $validated['phone'] ?? null,
+            ]);
 
-        $this->syncProfile($user, $validated);
+            $this->syncProfile($user, $validated);
+
+            if ($validated['role'] === 'koordinator_lab' && $request->filled('id_laboratorium')) {
+                $labId = $request->input('id_laboratorium');
+                $lab = \App\Models\Laboratorium::find($labId);
+                if ($lab) {
+                    $oldKoordinatorId = $lab->id_koordinator;
+
+                    $lab->update(['id_koordinator' => $user->id_user]);
+
+                    if ($oldKoordinatorId && $oldKoordinatorId != $user->id_user) {
+                        $stillCoordinates = \App\Models\Laboratorium::where('id_koordinator', $oldKoordinatorId)->exists();
+                        if (!$stillCoordinates) {
+                            $oldKoordinator = User::find($oldKoordinatorId);
+                            if ($oldKoordinator) {
+                                $oldKoordinator->role = 'asisten';
+                                $oldKoordinator->save();
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
         return redirect()->route('admin.users.index')->with('success', 'User baru berhasil dibuat.');
     }
 
     public function edit(User $user)
     {
-        $user->load(['roleData', 'profile']);
+        $user->load(['roleData', 'profile', 'laboratoriumDikoordinatori']);
+        $laboratoriums = \App\Models\Laboratorium::orderBy('nama_laboratorium')->get();
 
         return view('admin.users.edit', [
             'user' => $user,
             'roles' => $this->roles,
             'roleCounts' => $this->roleCounts($user),
             'roleLimits' => $this->roleLimits,
+            'laboratoriums' => $laboratoriums,
         ]);
     }
 
@@ -198,14 +225,51 @@ class UserController extends Controller
         $validated = $this->validateUser($request, $user);
         $this->enforceRoleLimit($validated['role'], $user);
 
-        $user->update([
-            'nama' => $validated['nama'],
-            'email' => $validated['email'],
-            'id_role' => Role::idByName($validated['role']),
-            'phone' => $validated['phone'] ?? null,
-        ]);
+        DB::transaction(function () use ($user, $validated, $request) {
+            $oldRole = $user->role;
 
-        $this->syncProfile($user, $validated);
+            $user->update([
+                'nama' => $validated['nama'],
+                'email' => $validated['email'],
+                'id_role' => Role::idByName($validated['role']),
+                'phone' => $validated['phone'] ?? null,
+            ]);
+
+            $this->syncProfile($user, $validated);
+
+            if ($validated['role'] === 'koordinator_lab') {
+                $labId = $request->input('id_laboratorium');
+
+                \App\Models\Laboratorium::where('id_koordinator', $user->id_user)
+                    ->where('id_laboratorium', '!=', $labId)
+                    ->update(['id_koordinator' => null]);
+
+                if ($labId) {
+                    $lab = \App\Models\Laboratorium::find($labId);
+                    if ($lab) {
+                        $oldKoordinatorId = $lab->id_koordinator;
+
+                        $lab->update(['id_koordinator' => $user->id_user]);
+
+                        if ($oldKoordinatorId && $oldKoordinatorId != $user->id_user) {
+                            $stillCoordinates = \App\Models\Laboratorium::where('id_koordinator', $oldKoordinatorId)->exists();
+                            if (!$stillCoordinates) {
+                                $oldKoordinator = User::find($oldKoordinatorId);
+                                if ($oldKoordinator) {
+                                    $oldKoordinator->role = 'asisten';
+                                    $oldKoordinator->save();
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                if ($oldRole === 'koordinator_lab') {
+                    \App\Models\Laboratorium::where('id_koordinator', $user->id_user)
+                        ->update(['id_koordinator' => null]);
+                }
+            }
+        });
 
         return back()->with('success', 'Profil ' . $user->nama . ' berhasil diperbarui.');
     }
@@ -540,6 +604,7 @@ class UserController extends Controller
             'phone' => ['nullable', 'string', 'max:15'],
             'nim' => ['nullable', 'numeric', 'digits:11'],
             'jurusan' => ['nullable', 'string', 'max:20'],
+            'id_laboratorium' => ['nullable', 'exists:laboratorium,id_laboratorium'],
         ]);
     }
 

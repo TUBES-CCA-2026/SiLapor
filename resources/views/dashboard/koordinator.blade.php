@@ -245,7 +245,7 @@
                                     <td class="py-5 px-6 text-sm text-gray-500">
                                         {{ $item->fasilitas?->laboratorium?->nama_laboratorium ?? '-' }}</td>
                                     <td class="py-5 px-6 text-sm text-gray-800 font-semibold">
-                                        {{ $item->fasilitas?->nama_fasilitas ?? '-' }}</td>
+                                        {{ $item->fasilitas?->kategori?->nama_kategori ?? '-' }} ({{ $item->fasilitas?->no_fasilitas ?? '-' }})</td>
                                     <td class="py-5 px-6 text-sm text-gray-500">
                                         {{ $item->tanggal_lapor ? \Carbon\Carbon::parse($item->tanggal_lapor)->format('d/m/Y') : '-' }}
                                     </td>

@@ -110,7 +110,7 @@
                 <select name="id_fasilitas" class="form-control">
                     <option value="">Semua Fasilitas</option>
                     @foreach(($fasilitasList ?? collect()) as $fasilitas)
-                        <option value="{{ $fasilitas->id_fasilitas }}" @selected((string) request('id_fasilitas') === (string) $fasilitas->id_fasilitas)>{{ $fasilitas->nama_fasilitas }}</option>
+                        <option value="{{ $fasilitas->id_fasilitas }}" @selected((string) request('id_fasilitas') === (string) $fasilitas->id_fasilitas)>{{ $fasilitas->kategori?->nama_kategori ?? 'Tanpa Kategori' }} ({{ $fasilitas->no_fasilitas ?? '-' }})</option>
                     @endforeach
                 </select>
                 <div class="flex gap-2">
@@ -170,7 +170,7 @@
                                 <td>{{ $item->tanggal_lapor ? \Carbon\Carbon::parse($item->tanggal_lapor)->format('d/m/Y') : '-' }}</td>
                                 <td>{{ data_get($item, 'pelapor.nama', 'Guest') }}</td>
                                 <td>{{ data_get($item, 'fasilitas.laboratorium.nama_laboratorium', '-') }}</td>
-                                <td>{{ data_get($item, 'fasilitas.nama_fasilitas', '-') }}</td>
+                                <td>{{ data_get($item, 'fasilitas.kategori.nama_kategori', '-') }} ({{ data_get($item, 'fasilitas.no_fasilitas', '-') }})</td>
                                 <td><span class="laporan-status {{ $status['class'] }}">{{ $status['label'] }}</span></td>
                                 <td class="text-center"><button type="button" class="detail-btn" data-detail-url="{{ $detailUrl }}">Detail</button></td>
                             </tr>

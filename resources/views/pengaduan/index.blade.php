@@ -393,21 +393,7 @@
                             </div>
                         </div>
 
-                        {{-- 4. Nama Barang / Fasilitas (readonly auto-fill) --}}
-                        <div>
-                            <label class="pgd-field-label">
-                                Nama Barang / Fasilitas
-                            </label>
 
-                            <input
-                                id="nama_fasilitas"
-                                type="text"
-                                value="-"
-                                readonly
-                                class="pgd-readonly-input"
-                                placeholder="Terisi otomatis dari kode barang"
-                            >
-                        </div>
                     </div>
                 </div>
 
@@ -693,7 +679,6 @@
             // Reset downstream
             kategoriSelect.reset('Pilih kategori barang');
             kodeBarangSelect.reset('Pilih atau cari kode barang');
-            document.getElementById('nama_fasilitas').value = '-';
             document.getElementById('id_fasilitas').value = '';
 
             // Fetch fasilitas for this lab
@@ -728,7 +713,6 @@
         onChange: function (value) {
             // Reset downstream
             kodeBarangSelect.reset('Pilih atau cari kode barang');
-            document.getElementById('nama_fasilitas').value = '-';
             document.getElementById('id_fasilitas').value = '';
 
             // Filter kode barang by category
@@ -747,11 +731,7 @@
         placeholder: 'Pilih atau cari kode barang',
         emptyMessage: 'Pilih lokasi lab terlebih dahulu',
         onChange: function (value) {
-            // Auto-fill nama fasilitas
-            const found = cachedFasilitas.find(function (f) {
-                return String(f.id) === String(value);
-            });
-            document.getElementById('nama_fasilitas').value = found ? found.nama_fasilitas : '-';
+            // No action needed for nama_fasilitas
         }
     });
 
@@ -766,7 +746,7 @@
                 return {
                     value: f.id,
                     label: f.no_fasilitas || '-',
-                    sublabel: f.nama_fasilitas + ' (' + f.nama_laboratorium + ')',
+                    sublabel: (f.nama_kategori || '-') + ' (' + f.nama_laboratorium + ')',
                 };
             })
         );
