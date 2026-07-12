@@ -219,7 +219,7 @@
                                 <th class="py-5 px-6">Fasilitas</th>
                                 <th class="py-5 px-6">Tanggal Lapor</th>
                                 <th class="py-5 px-6">Status</th>
-                                <th class="py-5 px-6">PJ</th>
+                                <th class="py-5 px-6">Teknisi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">

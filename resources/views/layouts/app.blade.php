@@ -224,9 +224,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const optionsList = wrapper.querySelector('.searchable-select-options');
         const hiddenInput = wrapper.querySelector('input[type="hidden"]');
         const options = optionsList ? optionsList.querySelectorAll('li') : [];
-
+ 
         if (!trigger || !dropdown) return;
-
+ 
         // Setup setter wrapper to automatically sync visible trigger input with hidden input changes
         if (hiddenInput && options.length > 0) {
             const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     trigger.value = option ? option.textContent.trim() : '';
                 }
             });
-
+ 
             // Set initial trigger text
             const initialValue = hiddenInput.value;
             const initialOption = Array.from(options).find(opt => opt.getAttribute('data-value') === String(initialValue));
@@ -248,27 +248,45 @@ document.addEventListener('DOMContentLoaded', function () {
                 trigger.value = initialOption.textContent.trim();
             }
         }
-
+ 
         // Click trigger to open dropdown
         trigger.addEventListener('click', function (e) {
             e.stopPropagation();
             document.querySelectorAll('.searchable-select-dropdown, .searchable-multiselect-dropdown').forEach(d => {
                 if (d !== dropdown) d.classList.add('hidden');
             });
-            dropdown.classList.toggle('hidden');
-            if (!dropdown.classList.contains('hidden')) {
+            
+            const isHidden = dropdown.classList.contains('hidden');
+            if (isHidden) {
+                dropdown.classList.remove('hidden');
+                
+                // Teleport to body to prevent clipping
+                if (dropdown.parentElement !== document.body) {
+                    document.body.appendChild(dropdown);
+                }
+                
+                // Reposition absolutely
+                const rect = trigger.getBoundingClientRect();
+                dropdown.style.position = 'absolute';
+                dropdown.style.top = (rect.bottom + window.scrollY) + 'px';
+                dropdown.style.left = (rect.left + window.scrollX) + 'px';
+                dropdown.style.width = Math.max(rect.width, 180) + 'px';
+                dropdown.style.zIndex = '9999';
+                
                 if (searchInput) {
                     searchInput.value = '';
                     searchInput.focus();
                 }
                 options.forEach(opt => opt.style.display = '');
+            } else {
+                dropdown.classList.add('hidden');
             }
         });
-
+ 
         dropdown.addEventListener('click', function (e) {
             e.stopPropagation();
         });
-
+ 
         // Filtering search inputs
         if (searchInput) {
             searchInput.addEventListener('input', function () {
@@ -279,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             });
         }
-
+ 
         // Select an option
         options.forEach(function (option) {
             option.addEventListener('click', function () {
@@ -295,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
-
+ 
     // Searchable Multiselect Component Logic
     document.querySelectorAll('.custom-searchable-multiselect').forEach(function (wrapper) {
         const trigger = wrapper.querySelector('.searchable-multiselect-trigger');
@@ -304,9 +322,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const optionsList = wrapper.querySelector('.searchable-multiselect-options');
         const checkboxes = optionsList ? optionsList.querySelectorAll('.searchable-multiselect-checkbox') : [];
         const items = optionsList ? optionsList.querySelectorAll('li') : [];
-
+ 
         if (!trigger || !dropdown) return;
-
+ 
         function updateTriggerText() {
             const selectedNames = [];
             checkboxes.forEach(function (cb) {
@@ -316,29 +334,47 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             trigger.value = selectedNames.length > 0 ? selectedNames.join(', ') : '';
         }
-
+ 
         updateTriggerText();
-
+ 
         // Toggle dropdown
         trigger.addEventListener('click', function (e) {
             e.stopPropagation();
             document.querySelectorAll('.searchable-select-dropdown, .searchable-multiselect-dropdown').forEach(d => {
                 if (d !== dropdown) d.classList.add('hidden');
             });
-            dropdown.classList.toggle('hidden');
-            if (!dropdown.classList.contains('hidden')) {
+            
+            const isHidden = dropdown.classList.contains('hidden');
+            if (isHidden) {
+                dropdown.classList.remove('hidden');
+                
+                // Teleport to body to prevent clipping
+                if (dropdown.parentElement !== document.body) {
+                    document.body.appendChild(dropdown);
+                }
+                
+                // Reposition absolutely
+                const rect = trigger.getBoundingClientRect();
+                dropdown.style.position = 'absolute';
+                dropdown.style.top = (rect.bottom + window.scrollY) + 'px';
+                dropdown.style.left = (rect.left + window.scrollX) + 'px';
+                dropdown.style.width = Math.max(rect.width, 180) + 'px';
+                dropdown.style.zIndex = '9999';
+                
                 if (searchInput) {
                     searchInput.value = '';
                     searchInput.focus();
                 }
                 items.forEach(li => li.style.display = '');
+            } else {
+                dropdown.classList.add('hidden');
             }
         });
-
+ 
         dropdown.addEventListener('click', function (e) {
             e.stopPropagation();
         });
-
+ 
         // Filtering search
         if (searchInput) {
             searchInput.addEventListener('input', function () {
@@ -349,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             });
         }
-
+ 
         // Clicking list item toggles checkbox
         items.forEach(function (li) {
             li.addEventListener('click', function (e) {
@@ -362,13 +398,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         });
-
+ 
         // Checking checkbox directly updates trigger text
         checkboxes.forEach(cb => {
             cb.addEventListener('change', updateTriggerText);
         });
     });
-
+ 
     // Click outside closes dropdowns
     document.addEventListener('click', function () {
         document.querySelectorAll('.searchable-select-dropdown, .searchable-multiselect-dropdown').forEach(d => d.classList.add('hidden'));

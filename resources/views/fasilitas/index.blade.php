@@ -188,6 +188,162 @@
         .import-fasilitas-card .btn-primary { width: 100%; }
     }
 
+    /* Custom Searchable Dropdown styles */
+    .custom-select-wrapper {
+        position: relative;
+        width: 100%;
+    }
+    .custom-select-trigger {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        background: #fff;
+        height: 42px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        user-select: none;
+        border: 1px solid #D1D5DB;
+        border-radius: 0.875rem;
+        transition: all 0.2s;
+    }
+    .custom-select-trigger:hover {
+        border-color: #CBD5E1;
+    }
+    .custom-select-trigger.active {
+        border-color: #0090F5;
+        box-shadow: 0 0 0 3px rgba(0, 144, 245, 0.14);
+    }
+    .custom-select-options-container {
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 0;
+        right: 0;
+        z-index: 99;
+        background: #fff;
+        border: 1px solid #E5E7EB;
+        border-radius: 1rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        transform: translateY(-10px);
+        pointer-events: none;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .custom-select-options-container.show {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+    .custom-select-search-box {
+        padding: 10px;
+        border-bottom: 1px solid #F1F5F9;
+        background: #F8FAFC;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .custom-select-search-box input {
+        width: 100%;
+        border: 1px solid #E2E8F0;
+        border-radius: 0.6rem;
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+    .custom-select-search-box input:focus {
+        border-color: #0090F5;
+    }
+    .custom-select-options {
+        max-height: 180px;
+        overflow-y: auto;
+    }
+    .custom-select-option {
+        padding: 10px 14px;
+        font-size: 0.82rem;
+        color: #374151;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    .custom-select-option:hover {
+        background: #F0F9FF;
+        color: #0090F5;
+        padding-left: 18px;
+    }
+    .custom-select-option.selected {
+        background: #EEF8FF;
+        color: #0090F5;
+        font-weight: 700;
+    }
+    .custom-select-option.placeholder-opt {
+        color: #9CA3AF;
+        font-style: italic;
+    }
+
+    /* Tabs Layout style */
+    .tab-btn {
+        padding: 0.75rem 1.25rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #64748B;
+        border-bottom: 2px solid transparent;
+        transition: all 0.25s;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .tab-btn:hover {
+        color: #0090F5;
+    }
+    .tab-btn.active {
+        color: #0090F5;
+        border-bottom-color: #0090F5;
+    }
+    .tab-content {
+        display: none;
+    }
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Facility card premium upgrades */
+    .facility-card {
+        background: #fff;
+        border: 1px solid #E5E7EB;
+        border-radius: 1.25rem;
+        padding: 1.25rem;
+        text-align: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .facility-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.05);
+        border-color: #CBD5E1;
+    }
+    .facility-card.highlight {
+        border-color: #0090F5 !important;
+        box-shadow: 0 0 0 3px rgba(0, 144, 245, 0.1) !important;
+    }
+
+    /* Reorganizing forms in grid */
+    .panel-kontrol-card {
+        background: #fff;
+        border: 1px solid #E5E7EB;
+        border-radius: 1.5rem;
+        box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+    }
+
     @media (min-width: 850px) {
         .sidebar-desktop { transform: translateX(0) !important; }
         .hide-on-desktop { display: none !important; }
@@ -214,10 +370,10 @@
 
 <section class="page-card">
     <div class="page-card-body">
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; border-bottom: 1px solid #F1F5F9; padding-bottom: 1rem;">
             <div>
                 <h2 class="section-title" style="margin-bottom: .35rem;">Fasilitas Lab & QR Code</h2>
-                <p style="margin: 0; color: #64748B; font-size: .9rem;">Setiap fasilitas punya QR unik untuk pelaporan kerusakan.</p>
+                <p style="margin: 0; color: #64748B; font-size: .9rem;">Setiap fasilitas memiliki QR Code unik untuk pelaporan kerusakan.</p>
             </div>
             <div style="display: flex; gap: 0.5rem; align-items: center;">
                 <a href="{{ route('fasilitas.import-template') }}" class="btn-secondary-light">
@@ -251,73 +407,149 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('fasilitas.import') }}" enctype="multipart/form-data" class="import-fasilitas-card">
-            @csrf
-            <div>
-                <p class="import-fasilitas-title">Import Spreadsheet Fasilitas</p>
-                 <p class="import-fasilitas-help">Gunakan file .xlsx atau .csv. Header yang didukung: kode_laboratorium, no_fasilitas, nama_fasilitas (opsional).</p>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Control Panel (Tabs) -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="panel-kontrol-card border border-gray-200 rounded-[24px] bg-white shadow-sm">
+                    <!-- Tab Headers -->
+                    <div class="flex border-b border-gray-150 bg-gray-50/50">
+                        <div class="tab-btn active" onclick="switchControlTab('add-facility-tab')" style="flex: 1; justify-content: center;">
+                            <i class="fa-solid fa-plus-minus text-sm text-[#0090F5]"></i>Fasilitas
+                        </div>
+                        <div class="tab-btn" onclick="switchControlTab('add-category-tab')" style="flex: 1; justify-content: center;">
+                            <i class="fa-solid fa-tags text-sm text-[#F59E0B]"></i>Kategori
+                        </div>
+                        <div class="tab-btn" onclick="switchControlTab('import-tab')" style="flex: 1; justify-content: center;">
+                            <i class="fa-solid fa-file-excel text-sm text-[#10B981]"></i>Import
+                        </div>
+                    </div>
+
+                    <!-- Tab Contents -->
+                    <div class="p-6">
+                        <!-- Tab 1: Tambah Fasilitas -->
+                        <div id="add-facility-tab" class="tab-content active space-y-4">
+                            <h4 class="font-extrabold text-[#2C3E50] text-sm mb-2 uppercase tracking-wide">Tambah Fasilitas Baru</h4>
+                            <form method="POST" action="{{ route('fasilitas.store') }}" class="space-y-4">
+                                @csrf
+                                
+                                <div>
+                                    <label class="field-label">Laboratorium</label>
+                                    <!-- Custom Searchable Select for Lab -->
+                                    <div class="custom-select-wrapper" id="custom-select-lab">
+                                        <input type="hidden" name="id_laboratorium" required id="selected-lab-val">
+                                        <div class="custom-select-trigger" onclick="toggleCustomSelect('custom-select-lab')">
+                                            <span class="selected-text text-gray-400">Pilih Laboratorium</span>
+                                            <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
+                                        </div>
+                                        <div class="custom-select-options-container">
+                                            <div class="custom-select-search-box">
+                                                <i class="fa-solid fa-magnifying-glass text-xs text-gray-400"></i>
+                                                <input type="text" placeholder="Cari Lab..." oninput="filterCustomSelectOptions(this, 'custom-select-lab')">
+                                            </div>
+                                            <div class="custom-select-options custom-scrollbar">
+                                                <div class="custom-select-option placeholder-opt" data-value="" onclick="selectCustomOption(this, 'custom-select-lab')">Pilih Laboratorium</div>
+                                                @foreach ($laboratoriums as $lab)
+                                                    <div class="custom-select-option" data-value="{{ $lab->id_laboratorium }}" onclick="selectCustomOption(this, 'custom-select-lab')">
+                                                        {{ $lab->nama_laboratorium }}
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="field-label">Kategori</label>
+                                    <!-- Custom Searchable Select for Category -->
+                                    <div class="custom-select-wrapper" id="custom-select-category">
+                                        <input type="hidden" name="id_kategori" id="selected-category-val">
+                                        <div class="custom-select-trigger" onclick="toggleCustomSelect('custom-select-category')">
+                                            <span class="selected-text text-gray-400">Pilih Kategori</span>
+                                            <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
+                                        </div>
+                                        <div class="custom-select-options-container">
+                                            <div class="custom-select-search-box">
+                                                <i class="fa-solid fa-magnifying-glass text-xs text-gray-400"></i>
+                                                <input type="text" placeholder="Cari Kategori..." oninput="filterCustomSelectOptions(this, 'custom-select-category')">
+                                            </div>
+                                            <div class="custom-select-options custom-scrollbar">
+                                                <div class="custom-select-option placeholder-opt" data-value="" onclick="selectCustomOption(this, 'custom-select-category')">Pilih Kategori</div>
+                                                @foreach ($categories as $cat)
+                                                    <div class="custom-select-option" data-value="{{ $cat->id_kategori }}" onclick="selectCustomOption(this, 'custom-select-category')">
+                                                        {{ $cat->nama_kategori }}
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="field-label">Kode Aset</label>
+                                    <input name="no_fasilitas" placeholder="Kode aset" class="form-control" style="height: 42px; padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+                                </div>
+
+                                <button class="btn-primary w-full" style="height: 42px; font-size: 0.85rem; font-weight: 800; border-radius: 0.75rem;">
+                                    ADD
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Tab 2: Tambah Kategori -->
+                        <div id="add-category-tab" class="tab-content space-y-4">
+                            <h4 class="font-extrabold text-[#2C3E50] text-sm mb-2 uppercase tracking-wide">Tambah Kategori Baru</h4>
+                            <form method="POST" action="{{ route('fasilitas.kategori.store') }}" class="space-y-4">
+                                @csrf
+                                <div>
+                                    <label class="field-label">Nama Kategori Baru</label>
+                                    <input name="nama_kategori" placeholder="Nama kategori (misal: Komputer, Kursi)" required class="form-control" style="height: 42px; padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+                                </div>
+                                <button class="btn-primary w-full" style="height: 42px; font-size: 0.85rem; font-weight: 800; background: #F59E0B; border: none; border-radius: 0.75rem;">
+                                   ADD
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Tab 3: Import Spreadsheet -->
+                        <div id="import-tab" class="tab-content space-y-4">
+                            <h4 class="font-extrabold text-[#2C3E50] text-sm mb-2 uppercase tracking-wide">Import Spreadsheet</h4>
+                            <form method="POST" action="{{ route('fasilitas.import') }}" enctype="multipart/form-data" class="space-y-4">
+                                @csrf
+                                <div>
+                                    <p class="import-fasilitas-help" style="margin: 0 0 10px; font-size: 0.78rem; color: #64748B; line-height: 1.45;">
+                                        Gunakan file .xlsx atau .csv. Header yang didukung: <strong>kode_laboratorium, no_fasilitas, nama_fasilitas</strong> (opsional).
+                                    </p>
+                                    <input type="file" name="spreadsheet" accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required class="form-control">
+                                </div>
+                                <button type="submit" class="btn-primary w-full" style="height: 42px; font-size: 0.85rem; font-weight: 800; border-radius: 0.75rem;">
+                                    <i class="fa-solid fa-file-import mr-2"></i>IMPORT
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <input type="file" name="spreadsheet" accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required class="form-control">
-            <button type="submit" class="btn-primary">
-                <i class="fa-solid fa-file-import" style="margin-right: .45rem;"></i>Import
-            </button>
-        </form>
-        <div style="display: grid; gap: 1rem; margin-bottom: 2rem;">
-            <!-- Form Tambah Fasilitas -->
-            <form method="POST" action="{{ route('fasilitas.store') }}" class="inline-form-grid">
-                @csrf
 
-                <div>
-                    <label class="field-label">Laboratorium</label>
-                    <select name="id_laboratorium" required class="form-control" style="height: 42px; padding: 0.5rem 0.75rem; font-size: 0.85rem;">
-                        <option value="" disabled selected>Pilih Laboratorium</option>
-                        @foreach ($laboratoriums as $lab)
-                            <option value="{{ $lab->id_laboratorium }}">{{ $lab->nama_laboratorium }}</option>
-                        @endforeach
-                    </select>
+            <!-- Right Column: List of Facilities -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Filter Search Fasilitas & Kategori -->
+                <div class="flex justify-between items-center bg-white border border-gray-200 rounded-[24px] p-5 shadow-sm">
+                    <div class="laporan-search" style="width: 100%; max-width: 100%;">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="facility-search-input" placeholder="Cari Laboratorium, Kategori, atau Nomor Aset...">
+                    </div>
                 </div>
-                <div>
-                    <label class="field-label">Kategori</label>
-                    <select name="id_kategori" class="form-control" style="height: 42px; padding: 0.5rem 0.75rem; font-size: 0.85rem;">
-                        <option value="" selected>Pilih Kategori</option>
-                        @foreach ($categories as $cat)
-                            <option value="{{ $cat->id_kategori }}">{{ $cat->nama_kategori }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="field-label">Kode Aset</label>
-                    <input name="no_fasilitas" placeholder="Kode aset" class="form-control" style="height: 42px; padding: 0.5rem 0.75rem; font-size: 0.85rem;">
-                </div>
-                <div>
-                    <button class="btn-primary" style="height: 42px; padding: 0 1.25rem; font-size: 0.85rem; font-weight: 800; white-space: nowrap;">
-                        ADD
-                    </button>
-                </div>
-            </form>
 
-            <!-- Form Tambah Kategori -->
-            <form method="POST" action="{{ route('fasilitas.kategori.store') }}" class="category-form-grid">
-                @csrf
-                <div>
-                    <label class="field-label">Nama Kategori Baru</label>
-                    <input name="nama_kategori" placeholder="Nama kategori (misal: Komputer, Kursi)" required class="form-control" style="height: 42px; padding: 0.5rem 0.75rem; font-size: 0.85rem;">
-                </div>
-                <div>
-                    <button class="btn-primary" style="height: 42px; padding: 0 1.25rem; font-size: 0.85rem; font-weight: 800; background: #F59E0B; border: none; white-space: nowrap;">
-                        ADD
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <div class="space-y-4">
+                <div class="space-y-4" id="labs-list-container">
             @foreach ($laboratoriums as $lab)
                 @php
                     $labFasilitas = $groupedFasilitas->get($lab->id_laboratorium) ?? collect();
                     $activeFasilitas = $labFasilitas->filter(fn($f) => !$f->qr_deleted_at && !blank($f->qr_code));
                 @endphp
-                <div class="border border-gray-200 rounded-[24px] bg-white overflow-hidden shadow-sm">
+                <div class="border border-gray-200 rounded-[24px] bg-white overflow-hidden shadow-sm lab-container" data-lab-id="{{ $lab->id_laboratorium }}" data-lab-name="{{ strtolower($lab->nama_laboratorium) }}" data-lab-code="{{ strtolower($lab->kode_laboratorium ?? '') }}">
                     <!-- Lab Header -->
                     <div onclick="toggleLabFacilities('{{ $lab->id_laboratorium }}')" class="flex items-center justify-between px-6 py-4 bg-gray-50/50 hover:bg-gray-50 cursor-pointer transition-all">
                         <div>
@@ -349,13 +581,13 @@
                             @endphp
                             <div class="space-y-6">
                                 @foreach($facilitiesByCategory as $categoryName => $catItems)
-                                    <div>
+                                    <div class="category-block" data-category-name="{{ strtolower($categoryName) }}">
                                         <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-1">
                                             {{ $categoryName }} ({{ $catItems->count() }})
                                         </h4>
                                         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
                                             @foreach($catItems as $f)
-                                                <div id="fasilitas-card-{{ $f->id_fasilitas }}" style="background: #fff; border: {{ session('new_fasilitas_id') == $f->id_fasilitas ? '2px solid #0090F5' : '1px solid #E5E7EB' }}; border-radius: 1.25rem; padding: 1.25rem; text-align: center;">
+                                                <div id="fasilitas-card-{{ $f->id_fasilitas }}" class="facility-card" data-facility-code="{{ strtolower($f->no_fasilitas ?? '') }}" data-facility-name="{{ strtolower($f->nama_fasilitas ?? '') }}" style="background: #fff; border: {{ session('new_fasilitas_id') == $f->id_fasilitas ? '2px solid #0090F5' : '1px solid #E5E7EB' }}; border-radius: 1.25rem; padding: 1.25rem; text-align: center;">
                                                      <p style="margin: 0; font-weight: 800; color: #2C3E50;">{{ $f->no_fasilitas ?: 'Tanpa Kode Aset' }}</p>
                                                      
                                                      <div class="qr-print-area" data-fasilitas-category="{{ $f->kategori->nama_kategori ?? 'Tanpa Kategori' }}" data-fasilitas-code="{{ $f->no_fasilitas ?: '-' }}" data-fasilitas-lab="{{ $f->laboratorium->nama_laboratorium ?? '-' }}" data-fasilitas-url="{{ $f->scanUrl() }}" style="display: flex; justify-content: center; margin-bottom: 1rem; min-height: 140px; align-items: center;" id="qr-{{ $f->id_fasilitas }}"></div>
@@ -399,6 +631,7 @@
                     </div>
                 </div>
             @endforeach
+            <p id="search-empty-state" class="text-sm text-gray-400 text-center py-8 hidden"><i class="fa-solid fa-magnifying-glass-minus text-lg mb-2 block"></i>Fasilitas, laboratorium, atau kategori yang Anda cari tidak ditemukan.</p>
         </div>
     </div>
 </section>
@@ -669,6 +902,224 @@
             }
         }
     }
+
+    (function () {
+        const searchInput = document.getElementById('facility-search-input');
+        const emptyState = document.getElementById('search-empty-state');
+        if (!searchInput) return;
+
+        const labContainers = document.querySelectorAll('.lab-container');
+
+        searchInput.addEventListener('input', function () {
+            const query = this.value.trim().toLowerCase();
+            let totalVisibleLabs = 0;
+
+            labContainers.forEach(container => {
+                const labId = container.dataset.labId;
+                const labName = container.dataset.labName || '';
+                const labCode = container.dataset.labCode || '';
+                const isLabMatch = labName.includes(query) || labCode.includes(query);
+
+                const categoryBlocks = container.querySelectorAll('.category-block');
+                let hasVisibleCategory = false;
+
+                categoryBlocks.forEach(block => {
+                    const categoryName = block.dataset.categoryName || '';
+                    const isCategoryMatch = categoryName.includes(query);
+
+                    const facilityCards = block.querySelectorAll('.facility-card');
+                    let hasVisibleFacility = false;
+
+                    facilityCards.forEach(card => {
+                        const facilityCode = card.dataset.facilityCode || '';
+                        const facilityName = card.dataset.facilityName || '';
+                        const isFacilityMatch = facilityCode.includes(query) || facilityName.includes(query);
+
+                        if (query === '') {
+                            card.style.display = '';
+                            hasVisibleFacility = true;
+                        } else if (isLabMatch || isCategoryMatch || isFacilityMatch) {
+                            card.style.display = '';
+                            hasVisibleFacility = true;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+
+                    if (query === '') {
+                        block.style.display = '';
+                        hasVisibleCategory = true;
+                    } else if (isLabMatch || isCategoryMatch || hasVisibleFacility) {
+                        block.style.display = '';
+                        hasVisibleCategory = true;
+                    } else {
+                        block.style.display = 'none';
+                    }
+                });
+
+                // Show/hide laboratory container based on matches
+                if (query === '') {
+                    container.style.display = '';
+                    
+                    // Collapse accordions that might have been expanded during search
+                    const facilitiesEl = document.getElementById('lab-facilities-' + labId);
+                    const chevron = document.getElementById('chevron-' + labId);
+                    if (facilitiesEl) {
+                        facilitiesEl.classList.add('hidden');
+                    }
+                    if (chevron) {
+                        chevron.style.transform = '';
+                    }
+                } else if (isLabMatch || hasVisibleCategory) {
+                    container.style.display = '';
+                    totalVisibleLabs++;
+                    
+                    // Automatically expand matching accordion
+                    const facilitiesEl = document.getElementById('lab-facilities-' + labId);
+                    const chevron = document.getElementById('chevron-' + labId);
+                    if (facilitiesEl) {
+                        facilitiesEl.classList.remove('hidden');
+                    }
+                    if (chevron) {
+                        chevron.style.transform = 'rotate(180deg)';
+                    }
+                } else {
+                    container.style.display = 'none';
+                }
+            });
+
+            if (emptyState) {
+                if (query !== '' && totalVisibleLabs === 0) {
+                    emptyState.classList.remove('hidden');
+                } else {
+                    emptyState.classList.add('hidden');
+                }
+            }
+        });
+    })();
+
+    // Tab Switching Function
+    function switchControlTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        }
+
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        const activeContent = document.getElementById(tabId);
+        if (activeContent) {
+            activeContent.classList.add('active');
+        }
+    }
+
+    // Custom Select Dropdown Toggle
+    function toggleCustomSelect(wrapperId) {
+        // Close all other custom selects first
+        document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
+            if (wrapper.id !== wrapperId) {
+                const container = wrapper.querySelector('.custom-select-options-container');
+                const trigger = wrapper.querySelector('.custom-select-trigger');
+                if (container) container.classList.remove('show');
+                if (trigger) trigger.classList.remove('active');
+            }
+        });
+
+        const wrapper = document.getElementById(wrapperId);
+        if (!wrapper) return;
+
+        const container = wrapper.querySelector('.custom-select-options-container');
+        const trigger = wrapper.querySelector('.custom-select-trigger');
+        
+        if (container) {
+            container.classList.toggle('show');
+            if (container.classList.contains('show')) {
+                // Focus the search input automatically
+                const searchInput = container.querySelector('.custom-select-search-box input');
+                if (searchInput) {
+                    searchInput.value = '';
+                    searchInput.focus();
+                    filterCustomSelectOptions(searchInput, wrapperId);
+                }
+            }
+        }
+        if (trigger) {
+            trigger.classList.toggle('active');
+        }
+    }
+
+    // Filter select options based on search input
+    function filterCustomSelectOptions(input, wrapperId) {
+        const query = input.value.trim().toLowerCase();
+        const wrapper = document.getElementById(wrapperId);
+        if (!wrapper) return;
+
+        const options = wrapper.querySelectorAll('.custom-select-option');
+        options.forEach(opt => {
+            const isPlaceholder = opt.classList.contains('placeholder-opt');
+            if (isPlaceholder) return;
+
+            const text = opt.textContent.trim().toLowerCase();
+            if (text.includes(query)) {
+                opt.style.display = '';
+            } else {
+                opt.style.display = 'none';
+            }
+        });
+    }
+
+    // Select custom option
+    function selectCustomOption(optionEl, wrapperId) {
+        const wrapper = document.getElementById(wrapperId);
+        if (!wrapper) return;
+
+        const value = optionEl.dataset.value;
+        const text = optionEl.textContent.trim();
+        const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+        const selectedTextSpan = wrapper.querySelector('.selected-text');
+
+        if (hiddenInput) {
+            hiddenInput.value = value;
+        }
+
+        if (selectedTextSpan) {
+            selectedTextSpan.textContent = text;
+            if (value === '') {
+                selectedTextSpan.classList.add('text-gray-400');
+                selectedTextSpan.classList.remove('text-gray-700');
+            } else {
+                selectedTextSpan.classList.remove('text-gray-400');
+                selectedTextSpan.classList.add('text-gray-700');
+            }
+        }
+
+        // Highlight selected option
+        wrapper.querySelectorAll('.custom-select-option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+        optionEl.classList.add('selected');
+
+        // Close dropdown
+        const container = wrapper.querySelector('.custom-select-options-container');
+        const trigger = wrapper.querySelector('.custom-select-trigger');
+        if (container) container.classList.remove('show');
+        if (trigger) trigger.classList.remove('active');
+    }
+
+    // Close select dropdowns when clicking outside
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.custom-select-wrapper')) {
+            document.querySelectorAll('.custom-select-options-container').forEach(container => {
+                container.classList.remove('show');
+            });
+            document.querySelectorAll('.custom-select-trigger').forEach(trigger => {
+                trigger.classList.remove('active');
+            });
+        }
+    });
 </script>
 
 @endsection

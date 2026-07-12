@@ -87,10 +87,10 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/riwayat', [RiwayatController::class, 'index'])
-        ->middleware('role:asisten,laboran,kepala_lab')
+        ->middleware('role:asisten,laboran')
         ->name('riwayat.index');
 
-    Route::middleware('role:koordinator_lab,laboran,kepala_lab')->group(function () {
+    Route::middleware('role:koordinator_lab,laboran')->group(function () {
         Route::get('/laporan', [DashboardController::class, 'laporan'])->name('laporan.index');
     });
 

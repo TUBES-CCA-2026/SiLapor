@@ -163,7 +163,7 @@ $menuItems = [
                         <div><p class="text-xs font-bold text-gray-400">Proses</p><p class="text-2xl font-extrabold text-[#2C3E50] leading-tight">{{ $proses ?? 0 }}</p><p class="text-[10px] text-gray-400 font-medium">Sedang diproses</p></div>
                     </div>
                     <div class="bg-white border border-gray-200 rounded-[20px] p-4 flex items-center gap-4 shadow-figma-card">
-                        <div class="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-[#EF4444] shrink-0"><i class="fa-regular fa-circle-xmark text-xl"></i></div>
+                        <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center text-[#6366F1] shrink-0"><i class="fa-regular fa-hourglass-half text-xl"></i></div>
                         <div><p class="text-xs font-bold text-gray-400">Tertunda</p><p class="text-2xl font-extrabold text-[#2C3E50] leading-tight">{{ $tertunda ?? 0 }}</p><p class="text-[10px] text-gray-400 font-medium">Perlu diproses</p></div>
                     </div>
                 </div>

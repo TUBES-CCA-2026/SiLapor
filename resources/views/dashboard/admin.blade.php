@@ -108,7 +108,6 @@
             <div class="bg-white border rounded-[32px] overflow-hidden shadow-figma-container">
                 <div class="px-8 py-6 border-b flex flex-col sm:flex-row justify-between items-center gap-4">
                     <h2 class="font-bold text-xl text-gray-800">Akses Cepat Admin</h2>
-                    <span class="text-sm text-gray-400">Pilih menu di bawah untuk mengelola sistem</span>
                 </div>
                 <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                     <a href="{{ route('admin.users.index') }}" class="rounded-3xl border border-gray-200 p-6 hover:border-[#0090F5] hover:bg-sky-50/40 transition-all flex flex-col justify-between">

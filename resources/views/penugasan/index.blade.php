@@ -644,7 +644,9 @@
             return;
         }
 
-        const selectedText = select.options[select.selectedIndex]?.text?.trim() || 'teknisi';
+        const wrapper = select.closest('.custom-searchable-select');
+        const trigger = wrapper ? wrapper.querySelector('.searchable-select-trigger') : null;
+        const selectedText = trigger ? trigger.value.trim() : 'teknisi';
         const form = select.closest('[data-assign-form]');
         if (!form) return;
 

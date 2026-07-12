@@ -52,8 +52,6 @@ final class SidebarMenu
             ],
             'kepala_lab' => [
                 ['dashboard', 'Dashboard', 'fa-solid fa-table-columns', $url('dashboard')],
-                ['laporan', 'Laporan', 'fa-regular fa-file-lines', $url('laporan.index')],
-                ['riwayat', 'Riwayat', 'fa-solid fa-clock-rotate-left', $url('riwayat.index')],
                 ['rekapsulasi', 'Rekapitulasi', 'fa-regular fa-rectangle-list', $url('rekapsulasi.index')],
                 ['profil', 'Profil', 'fa-regular fa-user', $url('profile.index')],
             ],

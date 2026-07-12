@@ -31,7 +31,7 @@ class TindakLanjut extends Model
 
     public function asisten()
     {
-        return $this->belongsTo(User::class, 'id_petugas', 'id_user');
+        return $this->belongsTo(User::class, 'id_teknisi', 'id_user');
     }
 
     public function penugas()
