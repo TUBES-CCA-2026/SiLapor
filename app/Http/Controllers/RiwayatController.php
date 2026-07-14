@@ -28,22 +28,5 @@ class RiwayatController extends Controller
     }
 
 
-    public function update(Request $request, Pengaduan $pengaduan): RedirectResponse
-    {
-        $validated = $request->validate([
-            'deskripsi_kerusakan' => ['required', 'string', 'max:2000'],
-            'status_pengaduan' => ['required', 'in:NEW,HANDLED,DONE,CANCEL,NO_SPAREPART'],
-        ]);
 
-        $pengaduan->update($validated);
-
-        return back()->with('success', 'Riwayat laporan berhasil diperbarui.');
-    }
-
-    public function destroy(Pengaduan $pengaduan): RedirectResponse
-    {
-        $pengaduan->delete();
-
-        return back()->with('success', 'Riwayat laporan berhasil dihapus.');
-    }
 }

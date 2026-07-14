@@ -341,7 +341,7 @@
         border: 1px solid #E5E7EB;
         border-radius: 1.5rem;
         box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.02);
-        overflow: hidden;
+        overflow: visible;
     }
 
     @media (min-width: 850px) {
@@ -517,7 +517,7 @@
                                 @csrf
                                 <div>
                                     <p class="import-fasilitas-help" style="margin: 0 0 10px; font-size: 0.78rem; color: #64748B; line-height: 1.45;">
-                                        Gunakan file .xlsx atau .csv. Header yang didukung: <strong>kode_laboratorium, no_fasilitas, nama_fasilitas</strong> (opsional).
+                                        Gunakan file .xlsx atau .csv. Header wajib: <strong>kode_laboratorium, kategori, kode_barang</strong>. Pastikan kategori sudah ditambahkan terlebih dahulu.
                                     </p>
                                     <input type="file" name="spreadsheet" accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required class="form-control">
                                 </div>

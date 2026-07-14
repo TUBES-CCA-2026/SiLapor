@@ -90,10 +90,10 @@ class FasilitasController extends Controller
     public function importTemplate()
     {
         $content = implode("\n", [
-            'nama_fasilitas,kode_laboratorium,no_fasilitas',
-            'Komputer Client A,LAB-COMP-1,PC-001',
-            'Switch Cisco 24 Port,LAB-COMP-2,SW-002',
-            'Proyektor Epson,LAB-COMP-1,PR-003',
+            'kode_laboratorium,kategori,kode_barang',
+            'LAB-COMP-1,Komputer,PC-001',
+            'LAB-COMP-2,Switch,SW-002',
+            'LAB-COMP-1,Proyektor,PR-003',
         ]);
 
         return response($content, 200, [
@@ -137,16 +137,22 @@ class FasilitasController extends Controller
                 $data[$header] = trim((string) ($row[$columnIndex] ?? ''));
             }
 
-            $namaFasilitas = $this->firstImportValue($data, ['nama_fasilitas', 'nama', 'fasilitas', 'name']);
-            $noFasilitas = $this->firstImportValue($data, ['no_fasilitas', 'nomor_fasilitas', 'kode_barang', 'kode', 'no']);
             $labIdent = $this->firstImportValue($data, ['kode_laboratorium', 'nama_laboratorium', 'id_laboratorium', 'laboratorium', 'lab']);
-
-            if (empty($namaFasilitas)) {
-                $namaFasilitas = $noFasilitas ?: 'Fasilitas';
-            }
+            $kategoriIdent = $this->firstImportValue($data, ['kategori', 'nama_kategori', 'category']);
+            $kodeBarang = $this->firstImportValue($data, ['kode_barang', 'kode', 'no_fasilitas', 'nomor_fasilitas', 'no']);
 
             if (empty($labIdent)) {
-                $skipped[] = 'Baris ' . $rowNumber . ': kolom laboratorium (kode_laboratorium / nama_laboratorium) wajib diisi.';
+                $skipped[] = 'Baris ' . $rowNumber . ': kolom kode_laboratorium wajib diisi.';
+                continue;
+            }
+
+            if (empty($kategoriIdent)) {
+                $skipped[] = 'Baris ' . $rowNumber . ': kolom kategori wajib diisi.';
+                continue;
+            }
+
+            if (empty($kodeBarang)) {
+                $skipped[] = 'Baris ' . $rowNumber . ': kolom kode_barang wajib diisi.';
                 continue;
             }
 
@@ -170,11 +176,25 @@ class FasilitasController extends Controller
                 continue;
             }
 
+            // Look up kategori
+            $kategori = \App\Models\KategoriFasilitas::where('nama_kategori', $kategoriIdent)->first();
+
+            if (!$kategori) {
+                // Try case-insensitive match
+                $kategori = \App\Models\KategoriFasilitas::whereRaw('LOWER(nama_kategori) = ?', [strtolower($kategoriIdent)])->first();
+            }
+
+            if (!$kategori) {
+                $skipped[] = 'Baris ' . $rowNumber . ': Kategori "' . $kategoriIdent . '" tidak ditemukan. Pastikan kategori sudah ditambahkan terlebih dahulu.';
+                continue;
+            }
+
             try {
                 FasilitasLab::create([
-                    'nama_fasilitas' => $namaFasilitas,
+                    'nama_fasilitas' => $kategori->nama_kategori,
                     'id_laboratorium' => $lab->id_laboratorium,
-                    'no_fasilitas' => $noFasilitas ?: null,
+                    'id_kategori' => $kategori->id_kategori,
+                    'no_fasilitas' => $kodeBarang,
                     'qr_code' => Str::uuid()->toString(),
                     'qr_generated_date' => now(),
                 ]);

@@ -19,12 +19,7 @@ class ProfileController extends Controller
         return view('profile.index', compact('user'));
     }
 
-    public function edit(): View
-    {
-        $user = Auth::user()->load('profile', 'roleData', 'laboratoriumDikoordinatori');
 
-        return view('profile.index', compact('user'));
-    }
 
     public function update(Request $request): RedirectResponse
     {

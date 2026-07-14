@@ -62,17 +62,9 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
-        Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
         Route::put('/', [ProfileController::class, 'update'])->name('update');
         Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
     });
-
-    Route::get('/profil', function () {
-        return redirect()->route('profile.index');
-    })->name('profil.index');
-
-    Route::put('/profil/update', [ProfileController::class, 'update'])->name('profil.update');
-    Route::put('/profil/password', [ProfileController::class, 'updatePassword'])->name('profil.password');
 
     Route::middleware('role:asisten')->group(function () {
         Route::prefix('pengaduan')->name('pengaduan.')->group(function () {

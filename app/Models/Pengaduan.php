@@ -147,8 +147,5 @@ class Pengaduan extends Model
         return $query->whereHas('statusData', fn ($q) => $q->whereIn('kode_status', $kodeStatus));
     }
 
-    public function isGuestReport(): bool
-    {
-        return false;
-    }
+
 }
