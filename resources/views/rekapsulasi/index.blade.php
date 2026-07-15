@@ -5,6 +5,8 @@
 @section('content')
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 @include('partials.page-styles')
 
 @php
@@ -81,7 +83,7 @@
                 <h2 class="text-lg font-extrabold text-[#2C3E50]">Filter Laporan</h2>
             </div>
             <form action="{{ $routeSafe('rekapsulasi.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-                <input type="date" name="tanggal" value="{{ request('tanggal') }}" class="form-control">
+                <input type="text" id="filter-tanggal" name="tanggal" value="{{ request('tanggal') }}" class="form-control" placeholder="dd/mm/yyyy">
                 <select name="id_penanggung_jawab" class="form-control">
                     <option value="">Semua Koordinator</option>
                     @foreach(($penanggungJawabs ?? collect()) as $pj)
@@ -198,5 +200,14 @@
         sidebar.classList.toggle('-translate-x-full');
         overlay.classList.toggle('hidden');
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr("#filter-tanggal", {
+            altInput: true,
+            altFormat: "d/m/Y", // Format dd/mm/yyyy (misal: 15/07/2026)
+            dateFormat: "Y-m-d", // Format Y-m-d untuk backend query
+            allowInput: true
+        });
+    });
 </script>
 @endsection

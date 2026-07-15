@@ -319,6 +319,7 @@ class DashboardController extends Controller
 
         return response()->json([
             'id' => 'PGD-' . str_pad((string) $pengaduan->id_pengaduan, 3, '0', STR_PAD_LEFT),
+            'raw_id' => $pengaduan->id_pengaduan,
             'status' => $statusKode,
             'statusLabel' => $statusLabel,
             'statusClass' => $statusClass,
@@ -546,7 +547,8 @@ class DashboardController extends Controller
             ];
         }
 
-        $csv = "\xEF\xBB\xBF";
+        // Prepend sep=; agar Microsoft Excel memecah kolom secara otomatis
+        $csv = "\xEF\xBB\xBF" . "sep=;\n";
         foreach ($lines as $line) {
             $escaped = array_map(function ($value) {
                 $value = str_replace('"', '""', (string) $value);
@@ -587,12 +589,21 @@ class DashboardController extends Controller
 
     public function importRekapsulasiTemplate()
     {
+        // Ambil sampel data real agar template relevan dengan database saat ini
+        $sampleFasilitas = FasilitasLab::activeQr()->with('laboratorium', 'kategori')->first();
+        
+        $tanggalSample = now()->format('Y-m-d');
+        $pelaporSample = User::role('asisten')->value('nama') ?: (User::value('nama') ?: 'Budi');
+        $lokasiSample = $sampleFasilitas?->laboratorium?->nama_laboratorium ?: 'Laboratorium Komputer 1';
+        $fasilitasSample = $sampleFasilitas?->no_fasilitas ?: ($sampleFasilitas?->nama_fasilitas ?: 'PC-01');
+
         $lines = [
             ['Tanggal', 'Pelapor', 'Lokasi Masalah', 'Fasilitas', 'Status', 'Deskripsi'],
-            ['2026-06-25', 'Budi', 'Lab Startup', 'PC-01', 'NEW', 'Contoh deskripsi kerusakan'],
+            [$tanggalSample, $pelaporSample, $lokasiSample, $fasilitasSample, 'NEW', 'Contoh deskripsi kerusakan'],
         ];
 
-        $csv = "\xEF\xBB\xBF";
+        // Prepend sep=; agar Microsoft Excel memecah kolom secara otomatis
+        $csv = "\xEF\xBB\xBF" . "sep=;\n";
         foreach ($lines as $line) {
             $escaped = array_map(function ($value) {
                 $value = str_replace('"', '""', (string) $value);
@@ -628,6 +639,11 @@ class DashboardController extends Controller
                 $row = str_getcsv(implode(';', $row), ',');
             }
 
+            // Lewati baris pendefinisi pemisah sep= jika ada
+            if (isset($row[0]) && str_starts_with(strtolower(trim((string) $row[0])), 'sep=')) {
+                continue;
+            }
+
             if (!$headerSkipped) {
                 $headerSkipped = true;
                 if (isset($row[0]) && stripos((string) $row[0], 'tanggal') !== false) {
@@ -638,7 +654,23 @@ class DashboardController extends Controller
             [$tanggal, $pelaporNama, $lokasi, $fasilitasNama, $status, $deskripsi] = array_pad($row, 6, null);
 
             $pelapor = User::where('nama', trim((string) $pelaporNama))->first() ?: User::role('laboran')->first() ?: User::first();
-            $fasilitas = FasilitasLab::activeQr()->where('nama_fasilitas', trim((string) $fasilitasNama))->first() ?: FasilitasLab::activeQr()->first();
+            
+            // Cari lab yang sesuai
+            $lab = Laboratorium::where('nama_laboratorium', trim((string) $lokasi))
+                ->orWhere('kode_laboratorium', trim((string) $lokasi))
+                ->first();
+
+            // Bangun query pencarian fasilitas
+            $fasilitasQuery = FasilitasLab::activeQr();
+            if ($lab) {
+                $fasilitasQuery->where('id_laboratorium', $lab->id_laboratorium);
+            }
+
+            // Cari berdasarkan no_fasilitas (kode aset) dahulu, kemudian nama_fasilitas
+            $fasilitas = (clone $fasilitasQuery)->where('no_fasilitas', trim((string) $fasilitasNama))->first()
+                ?: (clone $fasilitasQuery)->where('nama_fasilitas', trim((string) $fasilitasNama))->first()
+                ?: $fasilitasQuery->first()
+                ?: FasilitasLab::activeQr()->first();
 
             if (!$pelapor || !$fasilitas) {
                 continue;

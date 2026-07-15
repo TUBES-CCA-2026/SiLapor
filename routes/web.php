@@ -140,6 +140,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/fasilitas/import', [FasilitasController::class, 'import'])->name('fasilitas.import');
         Route::post('/fasilitas/{fasilitas}/regenerate-qr', [FasilitasController::class, 'regenerateQr'])->name('fasilitas.regenerate-qr');
         Route::delete('/fasilitas/{fasilitas}/qr', [FasilitasController::class, 'deleteQr'])->name('fasilitas.delete-qr');
+        Route::get('/fasilitas/{laboratorium}/items', [FasilitasController::class, 'fasilitasByLab'])->name('fasilitas.lab.items');
 
     });
 

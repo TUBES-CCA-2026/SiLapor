@@ -17,7 +17,7 @@ class UserController extends Controller
 
     protected array $roleLimits = [
         'laboran' => 1,
-        'koordinator_lab' => 1,
+        'koordinator_lab' => 7,
         'kepala_lab' => 2,
     ];
 
@@ -93,7 +93,7 @@ class UserController extends Controller
                 'email' => ['required', 'email', 'max:120', 'unique:users,email'],
                 'password' => ['required', 'string', 'min:8'],
                 'role' => ['required', 'in:' . implode(',', $this->roles)],
-                'phone' => ['nullable', 'string', 'max:15'],
+                'phone' => ['nullable', 'string', 'max:13'],
                 'nim' => ['nullable', 'numeric', 'digits:11'],
                 'jurusan' => ['nullable', 'string', 'max:20'],
                 'penanggung_jawab' => ['nullable', 'string', 'max:20'],
@@ -601,7 +601,7 @@ class UserController extends Controller
             'email' => ['required', 'email', 'max:120', $emailRule],
             'password' => $user ? ['sometimes', 'nullable', 'string', 'min:8'] : ['required', 'string', 'min:8'],
             'role' => ['required', 'in:' . implode(',', $this->roles)],
-            'phone' => ['nullable', 'string', 'max:15'],
+            'phone' => ['nullable', 'string', 'max:13'],
             'nim' => ['nullable', 'numeric', 'digits:11'],
             'jurusan' => ['nullable', 'string', 'max:20'],
             'id_laboratorium' => ['nullable', 'exists:laboratorium,id_laboratorium'],

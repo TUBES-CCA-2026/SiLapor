@@ -174,7 +174,7 @@
                                     @if($t->status_penanganan === 'DONE')
                                         {{ $t->updated_at ? $t->updated_at->format('d-m-Y') : '18-10-2026' }}
                                     @else
-                                        <span class="text-gray-300 italic">mm/dd/yyyy</span>
+                                        <span class="text-gray-300 italic">dd/mm/yyyy</span>
                                     @endif
                                 </td>
                                 <!-- Tombol Aksi Detail -->

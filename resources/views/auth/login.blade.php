@@ -34,9 +34,9 @@
                 @csrf
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">User</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                     <input type="text" name="email" value="{{ old('email', $rememberEmail ?? '') }}" autofocus
-                           placeholder="Nama Pengguna"
+                           placeholder="Email"
                            class="w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-silapor-500">
                 </div>
 

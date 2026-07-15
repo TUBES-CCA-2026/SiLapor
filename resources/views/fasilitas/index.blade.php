@@ -57,7 +57,6 @@
         ];
     }
 
-    $groupedFasilitas = $fasilitas->groupBy('id_laboratorium');
 @endphp
 
 @once
@@ -344,6 +343,38 @@
         overflow: visible;
     }
 
+    /* Loading skeleton for lazy-loaded content */
+    .skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+    .skeleton-card {
+        background: #fff;
+        border: 1px solid #E5E7EB;
+        border-radius: 1.25rem;
+        padding: 1.25rem;
+        text-align: center;
+    }
+    .skeleton-line {
+        height: 14px;
+        margin: 8px auto;
+        border-radius: 30px;
+        background: linear-gradient(90deg, #edf2f7 25%, #f8fbff 50%, #edf2f7 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+    }
+    .skeleton-line.w60 { width: 60%; }
+    .skeleton-line.w80 { width: 80%; }
+    .skeleton-qr {
+        width: 140px; height: 140px;
+        margin: 12px auto;
+        border-radius: 12px;
+        background: linear-gradient(90deg, #edf2f7 25%, #f8fbff 50%, #edf2f7 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
     @media (min-width: 850px) {
         .sidebar-desktop { transform: translateX(0) !important; }
         .hide-on-desktop { display: none !important; }
@@ -545,11 +576,7 @@
 
                 <div class="space-y-4" id="labs-list-container">
             @foreach ($laboratoriums as $lab)
-                @php
-                    $labFasilitas = $groupedFasilitas->get($lab->id_laboratorium) ?? collect();
-                    $activeFasilitas = $labFasilitas->filter(fn($f) => !$f->qr_deleted_at && !blank($f->qr_code));
-                @endphp
-                <div class="border border-gray-200 rounded-[24px] bg-white overflow-hidden shadow-sm lab-container" data-lab-id="{{ $lab->id_laboratorium }}" data-lab-name="{{ strtolower($lab->nama_laboratorium) }}" data-lab-code="{{ strtolower($lab->kode_laboratorium ?? '') }}">
+                <div class="border border-gray-200 rounded-[24px] bg-white overflow-hidden shadow-sm lab-container" data-lab-id="{{ $lab->id_laboratorium }}" data-lab-name="{{ strtolower($lab->nama_laboratorium) }}" data-lab-code="{{ strtolower($lab->kode_laboratorium ?? '') }}" data-ajax-url="{{ route('fasilitas.lab.items', $lab->id_laboratorium) }}">
                     <!-- Lab Header -->
                     <div onclick="toggleLabFacilities('{{ $lab->id_laboratorium }}')" class="flex items-center justify-between px-6 py-4 bg-gray-50/50 hover:bg-gray-50 cursor-pointer transition-all">
                         <div>
@@ -560,8 +587,8 @@
                                     <span class="text-xs font-semibold text-gray-400">({{ $lab->kode_laboratorium }})</span>
                                 @endif
                             </h3>
-                            <p class="text-xs text-gray-500 mt-1 font-semibold">
-                                {{ $activeFasilitas->count() }} Fasilitas Aktif
+                            <p class="text-xs text-gray-500 mt-1 font-semibold" id="lab-count-{{ $lab->id_laboratorium }}">
+                                {{ $lab->active_fasilitas_count ?? 0 }} Fasilitas Aktif
                             </p>
                         </div>
                         <span id="chevron-{{ $lab->id_laboratorium }}" class="text-gray-400 transition-transform duration-200">
@@ -569,65 +596,18 @@
                         </span>
                     </div>
 
-                    <!-- Lab Facilities (Collapsible) -->
-                    <div id="lab-facilities-{{ $lab->id_laboratorium }}" class="hidden p-6 border-t border-gray-100 bg-white">
-                        @if($activeFasilitas->isEmpty())
-                            <p class="text-sm text-gray-400 text-center py-4">Belum ada fasilitas di laboratorium ini.</p>
-                        @else
-                            @php
-                                $facilitiesByCategory = $activeFasilitas->groupBy(function($item) {
-                                    return $item->kategori?->nama_kategori ?? 'Tanpa Kategori';
-                                });
-                            @endphp
-                            <div class="space-y-6">
-                                @foreach($facilitiesByCategory as $categoryName => $catItems)
-                                    <div class="category-block" data-category-name="{{ strtolower($categoryName) }}">
-                                        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-1">
-                                            {{ $categoryName }} ({{ $catItems->count() }})
-                                        </h4>
-                                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
-                                            @foreach($catItems as $f)
-                                                <div id="fasilitas-card-{{ $f->id_fasilitas }}" class="facility-card" data-facility-code="{{ strtolower($f->no_fasilitas ?? '') }}" data-facility-name="{{ strtolower($f->nama_fasilitas ?? '') }}" style="background: #fff; border: {{ session('new_fasilitas_id') == $f->id_fasilitas ? '2px solid #0090F5' : '1px solid #E5E7EB' }}; border-radius: 1.25rem; padding: 1.25rem; text-align: center;">
-                                                     <p style="margin: 0; font-weight: 800; color: #2C3E50;">{{ $f->no_fasilitas ?: 'Tanpa Kode Aset' }}</p>
-                                                     
-                                                     <div class="qr-print-area" data-fasilitas-category="{{ $f->kategori->nama_kategori ?? 'Tanpa Kategori' }}" data-fasilitas-code="{{ $f->no_fasilitas ?: '-' }}" data-fasilitas-lab="{{ $f->laboratorium->nama_laboratorium ?? '-' }}" data-fasilitas-url="{{ $f->scanUrl() }}" style="display: flex; justify-content: center; margin-bottom: 1rem; min-height: 140px; align-items: center;" id="qr-{{ $f->id_fasilitas }}"></div>
-                                                    
-                                                    <script>
-                                                        document.addEventListener('DOMContentLoaded', function () {
-                                                            const target = document.getElementById('qr-{{ $f->id_fasilitas }}');
-                                                            if (!target) return;
-                                                            target.innerHTML = '';
-                                                            if (window.QRCode) {
-                                                                new QRCode(target, {
-                                                                    text: @json($f->scanUrl()),
-                                                                    width: 168,
-                                                                    height: 168,
-                                                                    correctLevel: QRCode.CorrectLevel.H
-                                                                });
-                                                            } else {
-                                                                target.innerHTML = '<p style="font-size:.75rem;color:#64748B;word-break:break-all;">' + @json($f->scanUrl()) + '</p>';
-                                                            }
-                                                        });
-                                                    </script>
-                                                    <div class="qr-actions">
-                                                        <form method="POST" action="{{ route('fasilitas.regenerate-qr', $f->id_fasilitas) }}">
-                                                            @csrf
-                                                            <button class="qr-action-btn" type="submit" title="Regenerasi QR"><i class="fa-solid fa-rotate"></i><span>QR Baru</span></button>
-                                                        </form>
-                                                        <button type="button" class="qr-action-btn" onclick="printQr('qr-{{ $f->id_fasilitas }}')" title="Cetak QR"><i class="fa-solid fa-print"></i><span>Cetak</span></button>
-                                                        <form method="POST" action="{{ route('fasilitas.delete-qr', $f->id_fasilitas) }}" data-confirm-delete data-confirm-title="Hapus/nonaktifkan QR code fasilitas ini?" data-confirm-text="QR fasilitas ini akan dinonaktifkan dan tidak bisa digunakan untuk pelaporan.">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button class="qr-action-btn danger" type="submit" title="Hapus QR"><i class="fa-solid fa-trash"></i><span>Hapus</span></button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @endforeach
+                    <!-- Lab Facilities (Collapsible — loaded via AJAX) -->
+                    <div id="lab-facilities-{{ $lab->id_laboratorium }}" class="hidden p-6 border-t border-gray-100 bg-white" data-loaded="false">
+                        <!-- Skeleton placeholder -->
+                        <div class="skeleton-grid">
+                            @for ($i = 0; $i < 3; $i++)
+                            <div class="skeleton-card">
+                                <div class="skeleton-line w60"></div>
+                                <div class="skeleton-qr"></div>
+                                <div class="skeleton-line w80"></div>
                             </div>
-                        @endif
+                            @endfor
+                        </div>
                     </div>
                 </div>
             @endforeach
@@ -641,7 +621,38 @@
 
 <script>
 
-    function printAllQrs() {
+    /**
+     * Print all QRs — first loads ALL labs via AJAX, then prints.
+     */
+    async function printAllQrs() {
+        const labContainers = document.querySelectorAll('.lab-container');
+        if (!labContainers.length) {
+            alert('Belum ada laboratorium.');
+            return;
+        }
+
+        // Load all labs that haven't been loaded yet
+        const loadPromises = [];
+        labContainers.forEach(container => {
+            const labId = container.dataset.labId;
+            const facilitiesEl = document.getElementById('lab-facilities-' + labId);
+            if (facilitiesEl && facilitiesEl.dataset.loaded !== 'true') {
+                loadPromises.push(loadLabFacilities(labId));
+            }
+        });
+
+        if (loadPromises.length > 0) {
+            // Show loading indicator
+            const btn = event?.target?.closest?.('.btn-cetak-qr');
+            const origHtml = btn ? btn.innerHTML : '';
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memuat semua data...';
+
+            await Promise.all(loadPromises);
+
+            if (btn) btn.innerHTML = origHtml;
+        }
+
+        // Now collect all QR areas
         const qrAreas = document.querySelectorAll('.qr-print-area');
         if (!qrAreas.length) {
             alert('Belum ada QR Code untuk dicetak.');
@@ -658,7 +669,7 @@
             const lab = area.dataset.fasilitasLab || '-';
             const url = area.dataset.fasilitasUrl || '';
             const qrHtml = area.innerHTML;
-            
+
             cardsHtml += `
                 <div class="card">
                     <div class="brand">SiLapor</div>
@@ -734,13 +745,102 @@
         setTimeout(() => printWindow.print(), 350);
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const newId = @json(session('new_fasilitas_id'));
-        if (newId) {
-            const card = document.getElementById('fasilitas-card-' + newId);
-            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    });
+    /**
+     * AJAX loader: fetch fasilitas for a single lab and render cards + QR.
+     * Returns a Promise that resolves when done.
+     */
+    function loadLabFacilities(labId) {
+        const container = document.querySelector('.lab-container[data-lab-id="' + labId + '"]');
+        const facilitiesEl = document.getElementById('lab-facilities-' + labId);
+        if (!container || !facilitiesEl) return Promise.resolve();
+
+        const url = container.dataset.ajaxUrl;
+        if (!url) return Promise.resolve();
+
+        return fetch(url, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(r => r.json())
+        .then(json => {
+            const groups = json.data || {};
+            const csrf = json.csrf || '';
+            const labName = json.lab || '-';
+
+            if (Object.keys(groups).length === 0) {
+                facilitiesEl.innerHTML = '<p class="text-sm text-gray-400 text-center py-4">Belum ada fasilitas di laboratorium ini.</p>';
+                facilitiesEl.dataset.loaded = 'true';
+                return;
+            }
+
+            let html = '<div class="space-y-6">';
+
+            for (const [categoryName, items] of Object.entries(groups)) {
+                html += `<div class="category-block" data-category-name="${esc(categoryName.toLowerCase())}">`;
+                html += `<h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-1">${esc(categoryName)} (${items.length})</h4>`;
+                html += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">';
+
+                items.forEach(f => {
+                    const borderStyle = f.is_new ? '2px solid #0090F5' : '1px solid #E5E7EB';
+                    const kodeAset = f.kode_aset || 'Tanpa Kode Aset';
+                    const kodeDisplay = f.kode_aset || '-';
+
+                    html += `<div id="fasilitas-card-${f.id}" class="facility-card${f.is_new ? ' highlight' : ''}" data-facility-code="${esc((f.kode_aset||'').toLowerCase())}" data-facility-name="${esc((f.nama||'').toLowerCase())}" style="background:#fff; border:${borderStyle}; border-radius:1.25rem; padding:1.25rem; text-align:center;">`;
+                    html += `<p style="margin:0; font-weight:800; color:#2C3E50;">${esc(kodeAset)}</p>`;
+                    html += `<div class="qr-print-area" data-fasilitas-category="${esc(categoryName)}" data-fasilitas-code="${esc(kodeDisplay)}" data-fasilitas-lab="${esc(labName)}" data-fasilitas-url="${esc(f.scan_url)}" style="display:flex; justify-content:center; margin-bottom:1rem; min-height:140px; align-items:center;" id="qr-${f.id}"></div>`;
+                    html += '<div class="qr-actions">';
+                    html += `<form method="POST" action="${esc(f.regen_url)}"><input type="hidden" name="_token" value="${csrf}"><button class="qr-action-btn" type="submit" title="Regenerasi QR"><i class="fa-solid fa-rotate"></i><span>QR Baru</span></button></form>`;
+                    html += `<button type="button" class="qr-action-btn" onclick="printQr('qr-${f.id}')" title="Cetak QR"><i class="fa-solid fa-print"></i><span>Cetak</span></button>`;
+                    html += `<form method="POST" action="${esc(f.delete_url)}" data-confirm-delete data-confirm-title="Hapus/nonaktifkan QR code fasilitas ini?" data-confirm-text="QR fasilitas ini akan dinonaktifkan dan tidak bisa digunakan untuk pelaporan."><input type="hidden" name="_token" value="${csrf}"><input type="hidden" name="_method" value="DELETE"><button class="qr-action-btn danger" type="submit" title="Hapus QR"><i class="fa-solid fa-trash"></i><span>Hapus</span></button></form>`;
+                    html += '</div></div>';
+                });
+
+                html += '</div></div>';
+            }
+
+            html += '</div>';
+            facilitiesEl.innerHTML = html;
+            facilitiesEl.dataset.loaded = 'true';
+
+            // Generate QR codes for just this lab (lazy)
+            for (const items of Object.values(groups)) {
+                items.forEach(f => {
+                    const target = document.getElementById('qr-' + f.id);
+                    if (!target) return;
+                    if (window.QRCode) {
+                        new QRCode(target, {
+                            text: f.scan_url,
+                            width: 168,
+                            height: 168,
+                            correctLevel: QRCode.CorrectLevel.H
+                        });
+                    } else {
+                        target.innerHTML = '<p style="font-size:.75rem;color:#64748B;word-break:break-all;">' + esc(f.scan_url) + '</p>';
+                    }
+                });
+            }
+
+            // Scroll to newly created facility if any
+            const newId = @json(session('new_fasilitas_id'));
+            if (newId) {
+                const card = document.getElementById('fasilitas-card-' + newId);
+                if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        })
+        .catch(() => {
+            facilitiesEl.innerHTML = '<p class="text-sm text-red-500 text-center py-4"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Gagal memuat data fasilitas. Coba klik lagi.</p>';
+        });
+    }
+
+    /** HTML-escape helper */
+    function esc(str) {
+        if (!str) return '';
+        const d = document.createElement('div');
+        d.textContent = String(str);
+        return d.innerHTML;
+    }
 
     function handleResponsiveSidebar() {
         const sidebar = document.getElementById('sidebar-menu');
@@ -891,15 +991,20 @@
     function toggleLabFacilities(labId) {
         const el = document.getElementById('lab-facilities-' + labId);
         const chevron = document.getElementById('chevron-' + labId);
-        if (el) {
-            const isHidden = el.classList.contains('hidden');
-            if (isHidden) {
-                el.classList.remove('hidden');
-                if (chevron) chevron.style.transform = 'rotate(180deg)';
-            } else {
-                el.classList.add('hidden');
-                if (chevron) chevron.style.transform = '';
+        if (!el) return;
+
+        const isHidden = el.classList.contains('hidden');
+        if (isHidden) {
+            el.classList.remove('hidden');
+            if (chevron) chevron.style.transform = 'rotate(180deg)';
+
+            // AJAX load on first open
+            if (el.dataset.loaded !== 'true') {
+                loadLabFacilities(labId);
             }
+        } else {
+            el.classList.add('hidden');
+            if (chevron) chevron.style.transform = '';
         }
     }
 
@@ -908,11 +1013,31 @@
         const emptyState = document.getElementById('search-empty-state');
         if (!searchInput) return;
 
-        const labContainers = document.querySelectorAll('.lab-container');
-
+        let debounceTimer;
         searchInput.addEventListener('input', function () {
-            const query = this.value.trim().toLowerCase();
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => runSearch(this.value), 200);
+        });
+
+        async function runSearch(rawQuery) {
+            const query = rawQuery.trim().toLowerCase();
+            const labContainers = document.querySelectorAll('.lab-container');
             let totalVisibleLabs = 0;
+
+            // If there's a search query, load all unloaded labs first so we can search inside them
+            if (query !== '') {
+                const loadPromises = [];
+                labContainers.forEach(container => {
+                    const labId = container.dataset.labId;
+                    const facilitiesEl = document.getElementById('lab-facilities-' + labId);
+                    if (facilitiesEl && facilitiesEl.dataset.loaded !== 'true') {
+                        loadPromises.push(loadLabFacilities(labId));
+                    }
+                });
+                if (loadPromises.length > 0) {
+                    await Promise.all(loadPromises);
+                }
+            }
 
             labContainers.forEach(container => {
                 const labId = container.dataset.labId;
@@ -957,46 +1082,50 @@
                     }
                 });
 
-                // Show/hide laboratory container based on matches
                 if (query === '') {
                     container.style.display = '';
-                    
-                    // Collapse accordions that might have been expanded during search
                     const facilitiesEl = document.getElementById('lab-facilities-' + labId);
                     const chevron = document.getElementById('chevron-' + labId);
-                    if (facilitiesEl) {
-                        facilitiesEl.classList.add('hidden');
-                    }
-                    if (chevron) {
-                        chevron.style.transform = '';
-                    }
+                    if (facilitiesEl) facilitiesEl.classList.add('hidden');
+                    if (chevron) chevron.style.transform = '';
                 } else if (isLabMatch || hasVisibleCategory) {
                     container.style.display = '';
                     totalVisibleLabs++;
-                    
-                    // Automatically expand matching accordion
                     const facilitiesEl = document.getElementById('lab-facilities-' + labId);
                     const chevron = document.getElementById('chevron-' + labId);
-                    if (facilitiesEl) {
-                        facilitiesEl.classList.remove('hidden');
-                    }
-                    if (chevron) {
-                        chevron.style.transform = 'rotate(180deg)';
-                    }
+                    if (facilitiesEl) facilitiesEl.classList.remove('hidden');
+                    if (chevron) chevron.style.transform = 'rotate(180deg)';
                 } else {
                     container.style.display = 'none';
                 }
             });
 
             if (emptyState) {
-                if (query !== '' && totalVisibleLabs === 0) {
-                    emptyState.classList.remove('hidden');
-                } else {
-                    emptyState.classList.add('hidden');
-                }
+                emptyState.classList.toggle('hidden', query === '' || totalVisibleLabs > 0);
             }
-        });
+        }
     })();
+
+    // Auto-open lab accordion if a new facility was just created
+    document.addEventListener('DOMContentLoaded', function () {
+        const newId = @json(session('new_fasilitas_id'));
+        if (newId) {
+            // Find which lab container has this new facility — open all and the AJAX handler will scroll
+            const labContainers = document.querySelectorAll('.lab-container');
+            labContainers.forEach(container => {
+                const labId = container.dataset.labId;
+                const facilitiesEl = document.getElementById('lab-facilities-' + labId);
+                // We don't know which lab it's in yet, so load all
+                // The AJAX response includes is_new flag which will handle scrolling
+                if (facilitiesEl && facilitiesEl.dataset.loaded !== 'true') {
+                    facilitiesEl.classList.remove('hidden');
+                    const chevron = document.getElementById('chevron-' + labId);
+                    if (chevron) chevron.style.transform = 'rotate(180deg)';
+                    loadLabFacilities(labId);
+                }
+            });
+        }
+    });
 
     // Tab Switching Function
     function switchControlTab(tabId) {

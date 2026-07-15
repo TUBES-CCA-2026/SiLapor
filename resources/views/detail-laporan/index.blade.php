@@ -655,6 +655,7 @@
 (function () {
     const modal = document.getElementById('detailLaporanModal');
     const modalContent = document.getElementById('detailLaporanModalContent');
+    const csrfToken = "{{ csrf_token() }}";
 
     if (!modal || !modalContent) return;
 
@@ -728,10 +729,17 @@
                     <span>:</span>
                     <span>${esc(data.tanggal)}</span>
                 </div>
-                <div class="detail-modal-row detail-modal-description-row">
+                <div class="detail-modal-row detail-modal-description-row" style="min-height: 120px; align-items: start; padding-top: 14px; padding-bottom: 14px;">
                     <span class="detail-modal-label">Deskripsi</span>
                     <span>:</span>
-                    <div class="detail-modal-description">${esc(data.deskripsi)}</div>
+                    <form method="POST" action="/laporan/${data.raw_id}" style="width: 100%; display: flex; flex-direction: column; gap: 8px;">
+                        <input type="hidden" name="_token" value="${csrfToken}">
+                        <input type="hidden" name="_method" value="PATCH">
+                        <textarea name="deskripsi_kerusakan" class="form-control" style="min-height: 80px; resize: vertical; font-family: inherit; font-size: 13px; border: 1px solid #DCE6F1; border-radius: 12px; padding: 10px; outline: none; background: #fff;" required>${esc(data.deskripsi)}</textarea>
+                        <button type="submit" class="btn-primary" style="align-self: flex-start; font-size: 12px; padding: 6px 14px; border-radius: 8px; font-weight: 700; height: auto; cursor: pointer; border: 0; background: #0090F5; color: #fff;">
+                            <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Deskripsi
+                        </button>
+                    </form>
                 </div>
                 </div>
             </div>

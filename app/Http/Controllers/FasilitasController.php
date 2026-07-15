@@ -11,16 +11,45 @@ class FasilitasController extends Controller
 {
     public function index()
     {
-        $fasilitas = FasilitasLab::with(['laboratorium', 'kategori'])
-            ->activeQr()
-            ->orderBy('id_laboratorium')
-            ->orderBy('nama_fasilitas')
+        // Hanya ambil daftar lab + jumlah fasilitas aktif (ringan)
+        $laboratoriums = Laboratorium::withCount(['fasilitas as active_fasilitas_count'])
+            ->orderBy('nama_laboratorium')
             ->get();
 
-        $laboratoriums = Laboratorium::orderBy('nama_laboratorium')->get();
         $categories = \App\Models\KategoriFasilitas::orderBy('nama_kategori')->get();
 
-        return view('fasilitas.index', compact('fasilitas', 'laboratoriums', 'categories'));
+        return view('fasilitas.index', compact('laboratoriums', 'categories'));
+    }
+
+    /**
+     * AJAX endpoint: kembalikan fasilitas aktif milik satu lab,
+     * dikelompokkan per kategori.
+     */
+    public function fasilitasByLab(Laboratorium $laboratorium)
+    {
+        $items = $laboratorium->fasilitas()
+            ->with('kategori')
+            ->orderBy('nama_fasilitas')
+            ->get()
+            ->map(function (FasilitasLab $f) {
+                return [
+                    'id'        => $f->id_fasilitas,
+                    'nama'      => $f->nama_fasilitas,
+                    'kode_aset' => $f->no_fasilitas ?: null,
+                    'kategori'  => $f->kategori?->nama_kategori ?? 'Tanpa Kategori',
+                    'scan_url'  => $f->scanUrl(),
+                    'regen_url' => route('fasilitas.regenerate-qr', $f->id_fasilitas),
+                    'delete_url'=> route('fasilitas.delete-qr', $f->id_fasilitas),
+                    'is_new'    => session('new_fasilitas_id') == $f->id_fasilitas,
+                ];
+            })
+            ->groupBy('kategori');
+
+        return response()->json([
+            'lab'  => $laboratorium->nama_laboratorium,
+            'data' => $items,
+            'csrf' => csrf_token(),
+        ]);
     }
     public function store(Request $request)
     {

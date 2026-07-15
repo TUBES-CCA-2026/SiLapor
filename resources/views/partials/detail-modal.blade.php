@@ -169,6 +169,9 @@
     if (!modal || !modalContent || modal.dataset.bound === '1') return;
     modal.dataset.bound = '1';
 
+    const isKoordinatorLab = {{ auth()->user() && auth()->user()->role === 'koordinator_lab' ? 'true' : 'false' }};
+    const csrfToken = "{{ csrf_token() }}";
+
     function closeModal() {
         modal.hidden = true;
         modalContent.innerHTML = '';
@@ -196,6 +199,21 @@
         const statusClass = esc(data.statusClass || 'new');
         const statusLabel = esc(data.statusLabel || data.status || '-');
 
+        let descriptionHTML = `<div class="description-box">${esc(data.deskripsi)}</div>`;
+        if (isKoordinatorLab && data.raw_id) {
+            const updateUrl = `/laporan/${data.raw_id}`;
+            descriptionHTML = `
+                <form method="POST" action="${updateUrl}" style="width: 100%; display: flex; flex-direction: column; gap: 8px; margin: 4px 0;">
+                    <input type="hidden" name="_token" value="${csrfToken}">
+                    <input type="hidden" name="_method" value="PATCH">
+                    <textarea name="deskripsi_kerusakan" class="form-control" style="min-height: 80px; resize: vertical; font-family: inherit; font-size: 13px; border: 1px solid #DCE6F1; border-radius: 12px; padding: 10px; outline: none; background: #fff;" required>${esc(data.deskripsi)}</textarea>
+                    <button type="submit" class="btn-primary" style="align-self: flex-start; font-size: 12px; padding: 6px 14px; border-radius: 8px; font-weight: 700; height: auto; cursor: pointer; border: 0; background: #0090F5; color: #fff;">
+                        <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Deskripsi
+                    </button>
+                </form>
+            `;
+        }
+
         return `
             <div class="detail-grid">
                 <div class="detail-photo-wrap">${foto}</div>
@@ -208,7 +226,7 @@
                     <div class="modal-row"><span class="modal-label">Tgl Lapor</span><span>:</span><span>${esc(data.tanggal || data.tanggalLapor)}</span></div>
                     <div class="modal-row"><span class="modal-label">Tgl Selesai</span><span>:</span><span>${esc(data.tanggalSelesai)}</span></div>
                     <div class="modal-row"><span class="modal-label">PJ</span><span>:</span><span>${esc(data.penanggungJawab)}</span></div>
-                    <div class="modal-row modal-row-description"><span class="modal-label">Deskripsi</span><span>:</span><div class="description-box">${esc(data.deskripsi)}</div></div>
+                    <div class="modal-row modal-row-description"><span class="modal-label">Deskripsi</span><span>:</span>${descriptionHTML}</div>
                     <div class="modal-row modal-row-description"><span class="modal-label">Catatan</span><span>:</span><div class="description-box">${esc(data.catatanPerbaikan)}</div></div>
                 </div>
             </div>`;

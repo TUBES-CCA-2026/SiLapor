@@ -82,8 +82,10 @@
     .btn-primary { background: #0090F5; color: #fff; border: 0; border-radius: .875rem; padding: .75rem 1rem; font-weight: 800; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
     .btn-primary:hover { background: #007CD5; }
     .btn-danger-soft { background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; border-radius: .875rem; padding: .65rem 1rem; font-weight: 700; text-decoration: none; cursor: pointer; }
-    .form-control { width: 100%; border: 1px solid #D1D5DB; border-radius: .875rem; padding: .75rem 1rem; background: #fff; outline: none; }
+    .form-control { width: 100%; border: 1px solid #D1D5DB; border-radius: .875rem; padding: .75rem 1rem; background: #fff; outline: none; font-size: .875rem; color: #374151; }
     .form-control:focus { border-color: #0090F5; box-shadow: 0 0 0 3px rgba(0, 144, 245, .14); }
+    select.form-control { appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M6 8.825a.7.7 0 0 1-.5-.206L1.205 4.324a.71.71 0 0 1 0-1.001.71.71 0 0 1 1.001 0L6 7.118l3.794-3.795a.71.71 0 0 1 1.001 0 .71.71 0 0 1 0 1.001L6.5 8.619a.7.7 0 0 1-.5.206Z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; cursor: pointer; }
+    select.form-control:focus { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%230090F5' d='M6 8.825a.7.7 0 0 1-.5-.206L1.205 4.324a.71.71 0 0 1 0-1.001.71.71 0 0 1 1.001 0L6 7.118l3.794-3.795a.71.71 0 0 1 1.001 0 .71.71 0 0 1 0 1.001L6.5 8.619a.7.7 0 0 1-.5.206Z'/%3E%3C/svg%3E"); }
     .field-label { display: block; margin-bottom: .45rem; font-size: .75rem; color: #6B7280; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
     .info-box { padding: 1rem; background: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 1rem; font-weight: 700; color: #374151; }
     .status-chip { display: inline-flex; align-items: center; gap: .35rem; padding: .35rem .7rem; border-radius: .5rem; font-size: .75rem; font-weight: 800; }
@@ -137,6 +139,102 @@
         }
         .hide-on-desktop { display: none !important; }
     }
+
+    /* Custom Searchable Dropdown styles */
+    .custom-select-wrapper {
+        position: relative;
+        width: 100%;
+    }
+    .custom-select-trigger {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        background: #fff;
+        height: 42px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        user-select: none;
+        border: 1px solid #D1D5DB;
+        border-radius: 0.875rem;
+        transition: all 0.2s;
+    }
+    .custom-select-trigger:hover {
+        border-color: #CBD5E1;
+    }
+    .custom-select-trigger.active {
+        border-color: #0090F5;
+        box-shadow: 0 0 0 3px rgba(0, 144, 245, 0.14);
+    }
+    .custom-select-options-container {
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 0;
+        right: 0;
+        z-index: 99;
+        background: #fff;
+        border: 1px solid #E5E7EB;
+        border-radius: 1rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        transform: translateY(-10px);
+        pointer-events: none;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .custom-select-options-container.show {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+    .custom-select-search-box {
+        padding: 10px;
+        border-bottom: 1px solid #F1F5F9;
+        background: #F8FAFC;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .custom-select-search-box input {
+        width: 100%;
+        border: 1px solid #E2E8F0;
+        border-radius: 0.6rem;
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+    .custom-select-search-box input:focus {
+        border-color: #0090F5;
+    }
+    .custom-select-options {
+        max-height: 180px;
+        overflow-y: auto;
+    }
+    .custom-select-option {
+        padding: 10px 14px;
+        font-size: 0.82rem;
+        color: #374151;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: left;
+    }
+    .custom-select-option:hover {
+        background: #F0F9FF;
+        color: #0090F5;
+        padding-left: 18px;
+    }
+    .custom-select-option.selected {
+        background: #EEF8FF;
+        color: #0090F5;
+        font-weight: 700;
+    }
+    .custom-select-option.placeholder-opt {
+        color: #9CA3AF;
+        font-style: italic;
+    }
 </style>
 @endonce
 
@@ -177,28 +275,76 @@
             </div>
             <div>
                 <label class="field-label">Role</label>
-                <select name="role" id="role-select" required class="form-control">
-                    <option value="" disabled selected>Pilih role</option>
-                    @foreach ($roles as $r)
-                        <option value="{{ $r }}" {{ old('role') === $r ? 'selected' : '' }}>{{ $r }}</option>
-                    @endforeach
-                </select>
+                <div class="custom-select-wrapper" id="custom-select-role">
+                    <input type="hidden" name="role" required id="role-select" value="{{ old('role') }}">
+                    <div class="custom-select-trigger" onclick="toggleCustomSelect('custom-select-role')">
+                        <span class="selected-text text-gray-400">Pilih role</span>
+                        <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
+                    </div>
+                    <div class="custom-select-options-container">
+                        <div class="custom-select-search-box">
+                            <i class="fa-solid fa-magnifying-glass text-xs text-gray-400"></i>
+                            <input type="text" placeholder="Cari..." oninput="filterCustomSelectOptions(this, 'custom-select-role')">
+                        </div>
+                        <div class="custom-select-options custom-scrollbar">
+                            <div class="custom-select-option placeholder-opt" data-value="" onclick="selectCustomOption(this, 'custom-select-role')">Pilih role</div>
+                            @foreach ($roles as $r)
+                                <div class="custom-select-option" data-value="{{ $r }}" onclick="selectCustomOption(this, 'custom-select-role')">
+                                    {{ str_replace('_', ' ', ucwords($r, '_')) }}
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
             </div>
             <div id="koordinator-lab-only" style="display: none;">
                 <label class="field-label">Laboratorium yang Dikoordinasi</label>
-                <select name="id_laboratorium" class="form-control">
-                    <option value="">Pilih Laboratorium</option>
-                    @foreach (($laboratoriums ?? collect()) as $lab)
-                        <option value="{{ $lab->id_laboratorium }}" {{ old('id_laboratorium') == $lab->id_laboratorium ? 'selected' : '' }}>
-                            {{ $lab->nama_laboratorium }}
-                        </option>
-                    @endforeach
-                </select>
+                <div class="custom-select-wrapper" id="custom-select-lab">
+                    <input type="hidden" name="id_laboratorium" id="lab-select" value="{{ old('id_laboratorium') }}">
+                    <div class="custom-select-trigger" onclick="toggleCustomSelect('custom-select-lab')">
+                        <span class="selected-text text-gray-400">Pilih Laboratorium</span>
+                        <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
+                    </div>
+                    <div class="custom-select-options-container">
+                        <div class="custom-select-search-box">
+                            <i class="fa-solid fa-magnifying-glass text-xs text-gray-400"></i>
+                            <input type="text" placeholder="Cari..." oninput="filterCustomSelectOptions(this, 'custom-select-lab')">
+                        </div>
+                        <div class="custom-select-options custom-scrollbar">
+                            <div class="custom-select-option placeholder-opt" data-value="" onclick="selectCustomOption(this, 'custom-select-lab')">Pilih Laboratorium</div>
+                            @foreach (($laboratoriums ?? collect()) as $lab)
+                                <div class="custom-select-option" data-value="{{ $lab->id_laboratorium }}" onclick="selectCustomOption(this, 'custom-select-lab')">
+                                    {{ $lab->nama_laboratorium }}
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
             </div>
             <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem;">
-                <div><label class="field-label">No. HP</label><input name="phone" value="{{ old('phone') }}" class="form-control"></div>
-                <div data-asisten-only><label class="field-label">NIM</label><input type="text" inputmode="numeric" pattern="[0-9]*" name="nim" value="{{ old('nim') }}" class="form-control" placeholder="11 digit angka" maxlength="11"></div>
-                <div data-asisten-only><label class="field-label">Jurusan</label><input name="jurusan" value="{{ old('jurusan') }}" class="form-control"></div>
+                <div><label class="field-label">No. HP</label><input type="text" inputmode="numeric" pattern="[0-9]*" name="phone" value="{{ old('phone') }}" class="form-control" maxlength="13" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div>
+                <div data-asisten-only><label class="field-label">NIM</label><input type="text" inputmode="numeric" pattern="[0-9]*" name="nim" value="{{ old('nim') }}" class="form-control" placeholder="11 digit angka" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div>
+                <div data-asisten-only>
+                    <label class="field-label">Jurusan</label>
+                    <div class="custom-select-wrapper" id="custom-select-jurusan">
+                        <input type="hidden" name="jurusan" id="jurusan-select" value="{{ old('jurusan') }}">
+                        <div class="custom-select-trigger" onclick="toggleCustomSelect('custom-select-jurusan')">
+                            <span class="selected-text text-gray-400">Pilih Jurusan</span>
+                            <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
+                        </div>
+                        <div class="custom-select-options-container">
+                            <div class="custom-select-search-box">
+                                <i class="fa-solid fa-magnifying-glass text-xs text-gray-400"></i>
+                                <input type="text" placeholder="Cari..." oninput="filterCustomSelectOptions(this, 'custom-select-jurusan')">
+                            </div>
+                            <div class="custom-select-options custom-scrollbar">
+                                <div class="custom-select-option placeholder-opt" data-value="" onclick="selectCustomOption(this, 'custom-select-jurusan')">Pilih Jurusan</div>
+                                <div class="custom-select-option" data-value="Sistem Informasi" onclick="selectCustomOption(this, 'custom-select-jurusan')">Sistem Informasi</div>
+                                <div class="custom-select-option" data-value="Teknik Informatika" onclick="selectCustomOption(this, 'custom-select-jurusan')">Teknik Informatika</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <button type="submit" class="btn-primary" style="width: 100%;">Simpan User</button>
             <a href="{{ route('admin.users.index') }}" class="btn-outline-blue" style="justify-self: center;">← Kembali ke daftar user</a>
@@ -395,7 +541,16 @@
         asistenOnlyFields.forEach((field) => {
             field.style.display = showProfileFields ? '' : 'none';
             field.querySelectorAll('input').forEach((input) => {
-                if (!showProfileFields) input.value = '';
+                if (!showProfileFields) {
+                    input.value = '';
+                    const textSpan = field.querySelector('.selected-text');
+                    if (textSpan) {
+                        textSpan.textContent = 'Pilih Jurusan';
+                        textSpan.classList.add('text-gray-400');
+                        textSpan.classList.remove('text-gray-700');
+                    }
+                    field.querySelectorAll('.custom-select-option').forEach(opt => opt.classList.remove('selected'));
+                }
             });
         });
 
@@ -404,8 +559,15 @@
         if (labField) {
             labField.style.display = showLabFields ? '' : 'none';
             if (!showLabFields) {
-                const select = labField.querySelector('select');
-                if (select) select.value = '';
+                const hiddenInput = labField.querySelector('input[type="hidden"]');
+                if (hiddenInput) hiddenInput.value = '';
+                const textSpan = labField.querySelector('.selected-text');
+                if (textSpan) {
+                    textSpan.textContent = 'Pilih Laboratorium';
+                    textSpan.classList.add('text-gray-400');
+                    textSpan.classList.remove('text-gray-700');
+                }
+                labField.querySelectorAll('.custom-select-option').forEach(opt => opt.classList.remove('selected'));
             }
         }
     }
@@ -430,6 +592,118 @@
             }
         });
     }
+
+    // Custom Select Dropdown logic
+    window.toggleCustomSelect = function(wrapperId) {
+        document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
+            if (wrapper.id !== wrapperId) {
+                const container = wrapper.querySelector('.custom-select-options-container');
+                const trigger = wrapper.querySelector('.custom-select-trigger');
+                if (container) container.classList.remove('show');
+                if (trigger) trigger.classList.remove('active');
+            }
+        });
+
+        const wrapper = document.getElementById(wrapperId);
+        if (!wrapper) return;
+
+        const container = wrapper.querySelector('.custom-select-options-container');
+        const trigger = wrapper.querySelector('.custom-select-trigger');
+        
+        if (container) {
+            container.classList.toggle('show');
+            if (container.classList.contains('show')) {
+                const searchInput = container.querySelector('.custom-select-search-box input');
+                if (searchInput) {
+                    searchInput.value = '';
+                    searchInput.focus();
+                    filterCustomSelectOptions(searchInput, wrapperId);
+                }
+            }
+        }
+        if (trigger) {
+            trigger.classList.toggle('active');
+        }
+    }
+
+    window.filterCustomSelectOptions = function(input, wrapperId) {
+        const query = input.value.trim().toLowerCase();
+        const wrapper = document.getElementById(wrapperId);
+        if (!wrapper) return;
+
+        const options = wrapper.querySelectorAll('.custom-select-option');
+        options.forEach(opt => {
+            const isPlaceholder = opt.classList.contains('placeholder-opt');
+            if (isPlaceholder) return;
+
+            const text = opt.textContent.trim().toLowerCase();
+            if (text.includes(query)) {
+                opt.style.display = '';
+            } else {
+                opt.style.display = 'none';
+            }
+        });
+    }
+
+    window.selectCustomOption = function(optionEl, wrapperId) {
+        const wrapper = document.getElementById(wrapperId);
+        if (!wrapper) return;
+
+        const value = optionEl.dataset.value;
+        const text = optionEl.textContent.trim();
+        const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+        const selectedTextSpan = wrapper.querySelector('.selected-text');
+
+        if (hiddenInput) {
+            hiddenInput.value = value;
+            hiddenInput.dispatchEvent(new Event('change'));
+        }
+
+        if (selectedTextSpan) {
+            selectedTextSpan.textContent = text;
+            if (value === '') {
+                selectedTextSpan.classList.add('text-gray-400');
+                selectedTextSpan.classList.remove('text-gray-700');
+            } else {
+                selectedTextSpan.classList.remove('text-gray-400');
+                selectedTextSpan.classList.add('text-gray-700');
+            }
+        }
+
+        wrapper.querySelectorAll('.custom-select-option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+        optionEl.classList.add('selected');
+
+        const container = wrapper.querySelector('.custom-select-options-container');
+        const trigger = wrapper.querySelector('.custom-select-trigger');
+        if (container) container.classList.remove('show');
+        if (trigger) trigger.classList.remove('active');
+    }
+
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.custom-select-wrapper')) {
+            document.querySelectorAll('.custom-select-options-container').forEach(container => {
+                container.classList.remove('show');
+            });
+            document.querySelectorAll('.custom-select-trigger').forEach(trigger => {
+                trigger.classList.remove('active');
+            });
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
+            const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+            if (hiddenInput && hiddenInput.value) {
+                const val = hiddenInput.value;
+                const optionEl = wrapper.querySelector(`.custom-select-option[data-value="${val}"]`);
+                if (optionEl) {
+                    selectCustomOption(optionEl, wrapper.id);
+                }
+            }
+        });
+    });
 })();
 </script>
 
