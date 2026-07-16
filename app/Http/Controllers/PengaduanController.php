@@ -51,7 +51,7 @@ class PengaduanController extends Controller
      */
     public function createQr(string $qr_code): View
     {
-        $fasilitas = FasilitasLab::with('laboratorium')
+        $fasilitas = FasilitasLab::with(['laboratorium', 'kategori'])
             ->where('qr_code', $qr_code)
             ->whereNull('qr_deleted_at')
             ->firstOrFail();
@@ -102,7 +102,7 @@ class PengaduanController extends Controller
         $fasilitas = FasilitasLab::with('laboratorium')
             ->findOrFail($validated['id_fasilitas']);
 
-        return $this->persistReport($request, $validated, $fasilitas);
+        return $this->persistReport($request, $validated, $fasilitas, Auth::check());
     }
 
     /**

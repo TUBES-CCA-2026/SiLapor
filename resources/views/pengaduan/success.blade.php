@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Pengaduan Terkirim - SiLapor')
+@section('suppress_global_notification', 'true')
 
 @section('content')
 @php

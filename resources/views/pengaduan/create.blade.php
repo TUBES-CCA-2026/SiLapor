@@ -2,6 +2,10 @@
 
 @section('title', 'Pengaduan Manual - SiLapor')
 
+@if(!auth()->check())
+    @section('suppress_global_notification', 'true')
+@endif
+
 @section('content')
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -222,6 +226,19 @@
                 @if ($isQr)
                     {{-- QR Mode: locked fields --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {{-- 1. Lokasi Lab --}}
+                        <div>
+                            <label class="pgd-field-label">Lokasi Lab</label>
+                            <input type="text" value="{{ $selectedFacility?->laboratorium ? ($selectedFacility->laboratorium->nama_laboratorium . ($selectedFacility->laboratorium->lokasi ? ' - ' . $selectedFacility->laboratorium->lokasi : '')) : '-' }}" readonly class="pgd-readonly-input">
+                        </div>
+
+                        {{-- 2. Kategori Barang --}}
+                        <div>
+                            <label class="pgd-field-label">Kategori Barang</label>
+                            <input type="text" value="{{ $selectedFacility?->kategori?->nama_kategori ?? '-' }}" readonly class="pgd-readonly-input">
+                        </div>
+
+                        {{-- 3. Kode Barang --}}
                         <div>
                             <label class="pgd-field-label">Kode Barang</label>
                             <input type="text" value="{{ $selectedFacility?->no_fasilitas ?? '-' }}" readonly class="pgd-readonly-input">
