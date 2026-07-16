@@ -530,6 +530,18 @@ class DashboardController extends Controller
         return back()->with('success', 'Laporan berhasil dihapus dan tidak akan muncul di laporan, riwayat, atau rekapitulasi.');
     }
 
+    public function bulkDestroyPengaduan(Request $request)
+    {
+        $validated = $request->validate([
+            'ids'   => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:pengaduan,id_pengaduan'],
+        ]);
+
+        $count = Pengaduan::whereIn('id_pengaduan', $validated['ids'])->delete();
+
+        return back()->with('success', $count . ' laporan berhasil dihapus.');
+    }
+
     public function exportRekapsulasiExcel(Request $request)
     {
         $rows = $this->rekapsulasiQuery($request)->get();

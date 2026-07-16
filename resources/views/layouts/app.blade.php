@@ -215,6 +215,48 @@
 </script>
 
 <script>
+(function () {
+    document.addEventListener('submit', function (event) {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement)) return;
+        if (!form.hasAttribute('data-confirm-delete')) return;
+        if (form.dataset.confirmed === '1') return;
+
+        event.preventDefault();
+
+        const title = form.dataset.confirmTitle || 'Hapus data ini?';
+        const text = form.dataset.confirmText || 'Data yang dihapus tidak dapat dikembalikan.';
+        const confirmYes = form.dataset.confirmYes || 'Ya, Hapus';
+        const confirmNo = form.dataset.confirmNo || 'Batal';
+
+        if (window.Swal) {
+            Swal.fire({
+                title: title,
+                text: text,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#DC2626',
+                cancelButtonColor: '#64748B',
+                confirmButtonText: confirmYes,
+                cancelButtonText: confirmNo,
+                reverseButtons: true
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    form.dataset.confirmed = '1';
+                    form.submit();
+                }
+            });
+        } else {
+            if (confirm(title + '\n' + text)) {
+                form.dataset.confirmed = '1';
+                form.submit();
+            }
+        }
+    }, true);
+})();
+</script>
+
+<script>
 document.addEventListener('DOMContentLoaded', function () {
     // Searchable Select Component Logic
     document.querySelectorAll('.custom-searchable-select').forEach(function (wrapper) {

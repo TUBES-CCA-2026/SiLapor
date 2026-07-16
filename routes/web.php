@@ -126,6 +126,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/detail-laporan', [DashboardController::class, 'detailLaporan'])->name('detail-laporan.index');
         Route::get('/penugasan', [DashboardController::class, 'penugasan'])->name('penugasan.index');
         Route::post('/pengaduan/{pengaduan}/assign', [TindakLanjutController::class, 'assign'])->name('tindak-lanjut.assign');
+        Route::delete('/penugasan/bulk-delete', [DashboardController::class, 'bulkDestroyPengaduan'])->name('penugasan.bulk-delete');
     });
 
     Route::middleware('role:laboran,kepala_lab')->group(function () {

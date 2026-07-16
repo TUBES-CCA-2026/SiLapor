@@ -61,6 +61,47 @@
     .laporan-status.no-sparepart { color:#374151; background:#E5E7EB; }
     .detail-btn { border:1px solid #0090F5; color:#0090F5; background:#EEF8FF; border-radius:.5rem; padding:.45rem 1rem; font-size:.8rem; font-weight:800; cursor:pointer; text-decoration:none; }
     .detail-btn:hover { background:#0090F5; color:#fff; }
+
+    /* Custom Searchable Dropdown styles */
+    .custom-select-wrapper { position: relative; width: 100%; }
+    .custom-select-trigger {
+        display: flex; justify-content: space-between; align-items: center;
+        cursor: pointer; background: #fff; height: 46px;
+        padding: 0 1rem; font-size: 0.875rem; user-select: none;
+        border: 1px solid #D1D5DB; border-radius: 0.875rem;
+        transition: all 0.2s; color: #374151;
+    }
+    .custom-select-trigger:hover { border-color: #94A3B8; }
+    .custom-select-trigger.active { border-color: #0090F5; box-shadow: 0 0 0 3px rgba(0, 144, 245, 0.14); }
+    .custom-select-trigger .selected-text.placeholder { color: #9CA3AF; }
+    .custom-select-trigger .cs-chevron { transition: transform 0.25s ease; font-size: 0.7rem; color: #9CA3AF; }
+    .custom-select-trigger.active .cs-chevron { transform: rotate(180deg); color: #0090F5; }
+    .custom-select-options-container {
+        position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 99;
+        background: #fff; border: 1px solid #E5E7EB; border-radius: 1rem;
+        box-shadow: 0 12px 36px rgba(0,0,0,0.10); overflow: hidden;
+        display: flex; flex-direction: column;
+        opacity: 0; transform: translateY(-8px); pointer-events: none;
+        transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .custom-select-options-container.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .custom-select-search-box {
+        padding: 10px; border-bottom: 1px solid #F1F5F9; background: #F8FAFC;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .custom-select-search-box input {
+        width: 100%; border: 1px solid #E2E8F0; border-radius: 0.6rem;
+        padding: 7px 10px; font-size: 0.82rem; outline: none; transition: border-color 0.2s;
+    }
+    .custom-select-search-box input:focus { border-color: #0090F5; }
+    .custom-select-options { max-height: 200px; overflow-y: auto; }
+    .custom-select-option {
+        padding: 10px 14px; font-size: 0.84rem; color: #374151;
+        cursor: pointer; transition: all 0.15s;
+    }
+    .custom-select-option:hover { background: #F0F9FF; color: #0090F5; padding-left: 18px; }
+    .custom-select-option.selected { background: #EEF8FF; color: #0090F5; font-weight: 700; }
+    .custom-select-option.placeholder-opt { color: #9CA3AF; font-style: italic; }
 </style>
 @endonce
 
@@ -84,37 +125,116 @@
             </div>
             <form action="{{ $routeSafe('rekapsulasi.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                 <input type="text" id="filter-tanggal" name="tanggal" value="{{ request('tanggal') }}" class="form-control" placeholder="dd/mm/yyyy">
-                <select name="id_penanggung_jawab" class="form-control">
-                    <option value="">Semua Koordinator</option>
-                    @foreach(($penanggungJawabs ?? collect()) as $pj)
-                        <option value="{{ $pj->id_user }}" @selected((string) request('id_penanggung_jawab') === (string) $pj->id_user)>{{ $pj->nama }}</option>
-                    @endforeach
-                </select>
-                <select name="id_laboratorium" class="form-control">
-                    <option value="">Semua Lokasi</option>
-                    @foreach(($laboratoriums ?? collect()) as $lab)
-                        <option value="{{ $lab->id_laboratorium }}" @selected((string) request('id_laboratorium') === (string) $lab->id_laboratorium)>{{ $lab->nama_laboratorium }}</option>
-                    @endforeach
-                </select>
+                {{-- Dropdown Koordinator (searchable) --}}
+                @php
+                    $selPj = ($penanggungJawabs ?? collect())->firstWhere('id_user', request('id_penanggung_jawab'));
+                @endphp
+                <div class="custom-select-wrapper" id="cs-koordinator">
+                    <input type="hidden" name="id_penanggung_jawab" value="{{ request('id_penanggung_jawab') }}">
+                    <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-koordinator')">
+                        <span class="selected-text {{ $selPj ? '' : 'placeholder' }}">{{ $selPj ? $selPj->nama : 'Semua Koordinator' }}</span>
+                        <i class="fa-solid fa-chevron-down cs-chevron"></i>
+                    </div>
+                    <div class="custom-select-options-container">
+                        <div class="custom-select-search-box">
+                            <i class="fa-solid fa-magnifying-glass text-xs text-gray-400"></i>
+                            <input type="text" placeholder="Cari koordinator..." oninput="filterCustomSelectOptions(this, 'cs-koordinator')">
+                        </div>
+                        <div class="custom-select-options custom-scrollbar">
+                            <div class="custom-select-option placeholder-opt {{ !request('id_penanggung_jawab') ? 'selected' : '' }}" data-value="" onclick="selectCustomOption(this, 'cs-koordinator')">Semua Koordinator</div>
+                            @foreach(($penanggungJawabs ?? collect()) as $pj)
+                                <div class="custom-select-option {{ (string) request('id_penanggung_jawab') === (string) $pj->id_user ? 'selected' : '' }}" data-value="{{ $pj->id_user }}" onclick="selectCustomOption(this, 'cs-koordinator')">{{ $pj->nama }}</div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Dropdown Lokasi (searchable) --}}
+                @php
+                    $selLab = ($laboratoriums ?? collect())->firstWhere('id_laboratorium', request('id_laboratorium'));
+                @endphp
+                <div class="custom-select-wrapper" id="cs-lokasi">
+                    <input type="hidden" name="id_laboratorium" value="{{ request('id_laboratorium') }}">
+                    <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-lokasi')">
+                        <span class="selected-text {{ $selLab ? '' : 'placeholder' }}">{{ $selLab ? $selLab->nama_laboratorium : 'Semua Lokasi' }}</span>
+                        <i class="fa-solid fa-chevron-down cs-chevron"></i>
+                    </div>
+                    <div class="custom-select-options-container">
+                        <div class="custom-select-search-box">
+                            <i class="fa-solid fa-magnifying-glass text-xs text-gray-400"></i>
+                            <input type="text" placeholder="Cari lokasi..." oninput="filterCustomSelectOptions(this, 'cs-lokasi')">
+                        </div>
+                        <div class="custom-select-options custom-scrollbar">
+                            <div class="custom-select-option placeholder-opt {{ !request('id_laboratorium') ? 'selected' : '' }}" data-value="" onclick="selectCustomOption(this, 'cs-lokasi')">Semua Lokasi</div>
+                            @foreach(($laboratoriums ?? collect()) as $lab)
+                                <div class="custom-select-option {{ (string) request('id_laboratorium') === (string) $lab->id_laboratorium ? 'selected' : '' }}" data-value="{{ $lab->id_laboratorium }}" onclick="selectCustomOption(this, 'cs-lokasi')">{{ $lab->nama_laboratorium }}</div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari laporan..." class="form-control">
-                <select name="sort" class="form-control">
-                    <option value="terbaru" @selected(request('sort', 'terbaru') === 'terbaru')>Terbaru</option>
-                    <option value="terlama" @selected(request('sort') === 'terlama')>Terlama</option>
-                </select>
-                <select name="status" class="form-control">
-                    <option value="">Semua Status</option>
-                    <option value="NEW" @selected(request('status') === 'NEW')>New</option>
-                    <option value="HANDLED" @selected(request('status') === 'HANDLED')>On Progress</option>
-                    <option value="DONE" @selected(request('status') === 'DONE')>Done</option>
-                    <option value="CANCEL" @selected(request('status') === 'CANCEL')>Cancel</option>
-                    <option value="NO_SPAREPART" @selected(request('status') === 'NO_SPAREPART')>No Sparepart</option>
-                </select>
-                <select name="id_fasilitas" class="form-control">
-                    <option value="">Semua Fasilitas</option>
-                    @foreach(($fasilitasList ?? collect()) as $fasilitas)
-                        <option value="{{ $fasilitas->id_fasilitas }}" @selected((string) request('id_fasilitas') === (string) $fasilitas->id_fasilitas)>{{ $fasilitas->kategori?->nama_kategori ?? 'Tanpa Kategori' }} ({{ $fasilitas->no_fasilitas ?? '-' }})</option>
-                    @endforeach
-                </select>
+
+                {{-- Dropdown Urutan --}}
+                @php $selSort = request('sort', 'terbaru'); @endphp
+                <div class="custom-select-wrapper" id="cs-sort">
+                    <input type="hidden" name="sort" value="{{ $selSort }}">
+                    <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-sort')">
+                        <span class="selected-text">{{ $selSort === 'terlama' ? 'Terlama' : 'Terbaru' }}</span>
+                        <i class="fa-solid fa-chevron-down cs-chevron"></i>
+                    </div>
+                    <div class="custom-select-options-container">
+                        <div class="custom-select-options custom-scrollbar">
+                            <div class="custom-select-option {{ $selSort === 'terbaru' ? 'selected' : '' }}" data-value="terbaru" onclick="selectCustomOption(this, 'cs-sort')">Terbaru</div>
+                            <div class="custom-select-option {{ $selSort === 'terlama' ? 'selected' : '' }}" data-value="terlama" onclick="selectCustomOption(this, 'cs-sort')">Terlama</div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Dropdown Status --}}
+                @php
+                    $selStatus = request('status');
+                    $statusLabels = ['NEW' => 'New', 'HANDLED' => 'On Progress', 'DONE' => 'Done', 'CANCEL' => 'Cancel', 'NO_SPAREPART' => 'No Sparepart'];
+                @endphp
+                <div class="custom-select-wrapper" id="cs-status">
+                    <input type="hidden" name="status" value="{{ $selStatus }}">
+                    <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-status')">
+                        <span class="selected-text {{ $selStatus ? '' : 'placeholder' }}">{{ $selStatus ? ($statusLabels[$selStatus] ?? $selStatus) : 'Semua Status' }}</span>
+                        <i class="fa-solid fa-chevron-down cs-chevron"></i>
+                    </div>
+                    <div class="custom-select-options-container">
+                        <div class="custom-select-options custom-scrollbar">
+                            <div class="custom-select-option placeholder-opt {{ !$selStatus ? 'selected' : '' }}" data-value="" onclick="selectCustomOption(this, 'cs-status')">Semua Status</div>
+                            @foreach($statusLabels as $val => $lbl)
+                                <div class="custom-select-option {{ $selStatus === $val ? 'selected' : '' }}" data-value="{{ $val }}" onclick="selectCustomOption(this, 'cs-status')">{{ $lbl }}</div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Dropdown Fasilitas (searchable) --}}
+                @php
+                    $selFas = ($fasilitasList ?? collect())->firstWhere('id_fasilitas', request('id_fasilitas'));
+                @endphp
+                <div class="custom-select-wrapper" id="cs-fasilitas">
+                    <input type="hidden" name="id_fasilitas" value="{{ request('id_fasilitas') }}">
+                    <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-fasilitas')">
+                        <span class="selected-text {{ $selFas ? '' : 'placeholder' }}">{{ $selFas ? ($selFas->kategori?->nama_kategori ?? 'Tanpa Kategori') . ' (' . ($selFas->no_fasilitas ?? '-') . ')' : 'Semua Fasilitas' }}</span>
+                        <i class="fa-solid fa-chevron-down cs-chevron"></i>
+                    </div>
+                    <div class="custom-select-options-container">
+                        <div class="custom-select-search-box">
+                            <i class="fa-solid fa-magnifying-glass text-xs text-gray-400"></i>
+                            <input type="text" placeholder="Cari fasilitas..." oninput="filterCustomSelectOptions(this, 'cs-fasilitas')">
+                        </div>
+                        <div class="custom-select-options custom-scrollbar">
+                            <div class="custom-select-option placeholder-opt {{ !request('id_fasilitas') ? 'selected' : '' }}" data-value="" onclick="selectCustomOption(this, 'cs-fasilitas')">Semua Fasilitas</div>
+                            @foreach(($fasilitasList ?? collect()) as $fasilitas)
+                                <div class="custom-select-option {{ (string) request('id_fasilitas') === (string) $fasilitas->id_fasilitas ? 'selected' : '' }}" data-value="{{ $fasilitas->id_fasilitas }}" onclick="selectCustomOption(this, 'cs-fasilitas')">{{ $fasilitas->kategori?->nama_kategori ?? 'Tanpa Kategori' }} ({{ $fasilitas->no_fasilitas ?? '-' }})</div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
                 <div class="flex gap-2">
                     <button type="submit" class="btn-primary flex-1"><i class="fa-solid fa-filter mr-2"></i>Filter</button>
                     <a href="{{ $routeSafe('rekapsulasi.index') }}" class="btn-secondary"><i class="fa-solid fa-rotate-left mr-2"></i>Reset</a>
@@ -204,10 +324,96 @@
     document.addEventListener('DOMContentLoaded', function() {
         flatpickr("#filter-tanggal", {
             altInput: true,
-            altFormat: "d/m/Y", // Format dd/mm/yyyy (misal: 15/07/2026)
-            dateFormat: "Y-m-d", // Format Y-m-d untuk backend query
+            altFormat: "d/m/Y",
+            dateFormat: "Y-m-d",
             allowInput: true
         });
+    });
+
+    /* ── Custom Select Dropdown Functions ── */
+
+    function toggleCustomSelect(wrapperId) {
+        // Close all other custom selects first
+        document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
+            if (wrapper.id !== wrapperId) {
+                const container = wrapper.querySelector('.custom-select-options-container');
+                const trigger = wrapper.querySelector('.custom-select-trigger');
+                if (container) container.classList.remove('show');
+                if (trigger) trigger.classList.remove('active');
+            }
+        });
+
+        const wrapper = document.getElementById(wrapperId);
+        if (!wrapper) return;
+
+        const container = wrapper.querySelector('.custom-select-options-container');
+        const trigger = wrapper.querySelector('.custom-select-trigger');
+
+        if (container) {
+            container.classList.toggle('show');
+            if (container.classList.contains('show')) {
+                const searchInput = container.querySelector('.custom-select-search-box input');
+                if (searchInput) {
+                    searchInput.value = '';
+                    searchInput.focus();
+                    filterCustomSelectOptions(searchInput, wrapperId);
+                }
+            }
+        }
+        if (trigger) {
+            trigger.classList.toggle('active');
+        }
+    }
+
+    function filterCustomSelectOptions(input, wrapperId) {
+        const query = input.value.trim().toLowerCase();
+        const wrapper = document.getElementById(wrapperId);
+        if (!wrapper) return;
+
+        wrapper.querySelectorAll('.custom-select-option').forEach(opt => {
+            if (opt.classList.contains('placeholder-opt')) return;
+            const text = opt.textContent.trim().toLowerCase();
+            opt.style.display = text.includes(query) ? '' : 'none';
+        });
+    }
+
+    function selectCustomOption(optionEl, wrapperId) {
+        const wrapper = document.getElementById(wrapperId);
+        if (!wrapper) return;
+
+        const value = optionEl.dataset.value;
+        const text = optionEl.textContent.trim();
+        const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+        const selectedTextSpan = wrapper.querySelector('.selected-text');
+
+        if (hiddenInput) hiddenInput.value = value;
+
+        if (selectedTextSpan) {
+            selectedTextSpan.textContent = text;
+            if (value === '') {
+                selectedTextSpan.classList.add('placeholder');
+            } else {
+                selectedTextSpan.classList.remove('placeholder');
+            }
+        }
+
+        // Highlight selected option
+        wrapper.querySelectorAll('.custom-select-option').forEach(opt => opt.classList.remove('selected'));
+        optionEl.classList.add('selected');
+
+        // Close dropdown
+        const container = wrapper.querySelector('.custom-select-options-container');
+        const trigger = wrapper.querySelector('.custom-select-trigger');
+        if (container) container.classList.remove('show');
+        if (trigger) trigger.classList.remove('active');
+    }
+
+    // Close select dropdowns when clicking outside
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.custom-select-wrapper')) {
+            document.querySelectorAll('.custom-select-options-container').forEach(c => c.classList.remove('show'));
+            document.querySelectorAll('.custom-select-trigger').forEach(t => t.classList.remove('active'));
+        }
     });
 </script>
 @endsection

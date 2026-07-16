@@ -82,6 +82,8 @@
     .btn-primary { background: #0090F5; color: #fff; border: 0; border-radius: .875rem; padding: .75rem 1rem; font-weight: 800; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
     .btn-primary:hover { background: #007CD5; }
     .btn-danger-soft { background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; border-radius: .875rem; padding: .65rem 1rem; font-weight: 700; text-decoration: none; cursor: pointer; }
+    .danger-btn { border: 1px solid #FCA5A5; color: #DC2626; background: #FEF2F2; border-radius: .5rem; padding: .4rem .9rem; font-size: .8rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: .35rem; transition: .18s ease; }
+    .danger-btn:hover { background: #DC2626; color: #fff; border-color: #DC2626; }
     .form-control { width: 100%; border: 1px solid #D1D5DB; border-radius: .875rem; padding: .75rem 1rem; background: #fff; outline: none; }
     .form-control:focus { border-color: #0090F5; box-shadow: 0 0 0 3px rgba(0, 144, 245, .14); }
     .field-label { display: block; margin-bottom: .45rem; font-size: .75rem; color: #6B7280; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
@@ -322,20 +324,63 @@
         line-height: 1.45;
     }
 
-    .penugasan-table th:nth-child(1),
-    .penugasan-table td:nth-child(1) { width: 120px; }
+    /* Default: 7 columns, no checkbox (cb-col is hidden, but still child 1 in DOM) */
     .penugasan-table th:nth-child(2),
-    .penugasan-table td:nth-child(2) { width: 150px; }
+    .penugasan-table td:nth-child(2) { width: 120px; }
     .penugasan-table th:nth-child(3),
-    .penugasan-table td:nth-child(3) { width: 160px; }
+    .penugasan-table td:nth-child(3) { width: 150px; }
     .penugasan-table th:nth-child(4),
-    .penugasan-table td:nth-child(4) { width: 170px; }
+    .penugasan-table td:nth-child(4) { width: 160px; }
     .penugasan-table th:nth-child(5),
-    .penugasan-table td:nth-child(5) { width: 230px; }
+    .penugasan-table td:nth-child(5) { width: 170px; }
     .penugasan-table th:nth-child(6),
-    .penugasan-table td:nth-child(6) { width: 170px; }
+    .penugasan-table td:nth-child(6) { width: 230px; }
     .penugasan-table th:nth-child(7),
-    .penugasan-table td:nth-child(7) { width: 140px; }
+    .penugasan-table td:nth-child(7) { width: 170px; }
+    .penugasan-table th:nth-child(8),
+    .penugasan-table td:nth-child(8) { width: 140px; }
+
+    /* Checkbox column hidden by default */
+    .cb-col { display: none; }
+    .delete-mode .cb-col { display: table-cell; text-align: center; vertical-align: middle; }
+
+    /* When in delete-mode, shift widths for 8 columns */
+    .delete-mode .penugasan-table { min-width: 1060px; }
+    .delete-mode .penugasan-table th:nth-child(1),
+    .delete-mode .penugasan-table td:nth-child(1) { width: 44px; }
+    .delete-mode .penugasan-table th:nth-child(2),
+    .delete-mode .penugasan-table td:nth-child(2) { width: 110px; }
+    .delete-mode .penugasan-table th:nth-child(3),
+    .delete-mode .penugasan-table td:nth-child(3) { width: 140px; }
+    .delete-mode .penugasan-table th:nth-child(4),
+    .delete-mode .penugasan-table td:nth-child(4) { width: 150px; }
+    .delete-mode .penugasan-table th:nth-child(5),
+    .delete-mode .penugasan-table td:nth-child(5) { width: 150px; }
+    .delete-mode .penugasan-table th:nth-child(6),
+    .delete-mode .penugasan-table td:nth-child(6) { width: 210px; }
+    .delete-mode .penugasan-table th:nth-child(7),
+    .delete-mode .penugasan-table td:nth-child(7) { width: 160px; }
+    .delete-mode .penugasan-table th:nth-child(8),
+    .delete-mode .penugasan-table td:nth-child(8) { width: 110px; }
+
+    .penugasan-checkbox { width: 17px; height: 17px; accent-color: #0090F5; cursor: pointer; }
+
+    /* Toolbar: hidden by default */
+    .bulk-toolbar { display: none; align-items: center; justify-content: space-between; padding: .85rem 1.25rem; border-bottom: 1px solid #F1F5F9; background: #FFFBFB; border-top-left-radius: 2rem; border-top-right-radius: 2rem; }
+    .delete-mode .bulk-toolbar { display: flex; }
+    .bulk-selected-count { font-size: .85rem; font-weight: 700; color: #64748B; }
+    .bulk-actions { display: flex; align-items: center; gap: .6rem; }
+    .bulk-delete-btn { border: 1px solid #FCA5A5; color: #DC2626; background: #FEF2F2; border-radius: .75rem; padding: .55rem 1.1rem; font-size: .82rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: .4rem; transition: .18s ease; }
+    .bulk-delete-btn:hover { background: #DC2626; color: #fff; border-color: #DC2626; }
+    .bulk-delete-btn:disabled { opacity: .4; cursor: not-allowed; background: #FEF2F2; color: #DC2626; border-color: #FCA5A5; }
+    .bulk-cancel-btn { border: 1px solid #D1D5DB; color: #64748B; background: #fff; border-radius: .75rem; padding: .55rem 1.1rem; font-size: .82rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: .4rem; transition: .18s ease; }
+    .bulk-cancel-btn:hover { background: #F1F5F9; color: #374151; border-color: #9CA3AF; }
+
+    /* Toggle enter button */
+    .delete-mode-toggle { display: flex; align-items: center; justify-content: space-between; padding: .85rem 1.25rem; border-bottom: 1px solid #F1F5F9; border-top-left-radius: 2rem; border-top-right-radius: 2rem; }
+    .delete-mode .delete-mode-toggle { display: none; }
+    .enter-delete-btn { border: 1px solid #E5E7EB; color: #DC2626; background: #fff; border-radius: .75rem; padding: .55rem 1.1rem; font-size: .82rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: .4rem; transition: .18s ease; }
+    .enter-delete-btn:hover { background: #FEF2F2; border-color: #FCA5A5; }
 
     .penugasan-description {
         max-width: none;
@@ -363,15 +408,45 @@
         .penugasan-table {
             min-width: 960px;
         }
+        .delete-mode .penugasan-table {
+            min-width: 1060px;
+        }
     }
 </style>
 
-<section class="dashboard-card penugasan-page">
+<section class="dashboard-card penugasan-page" id="penugasan-section">
+
+    {{-- Enter delete-mode button (visible by default) --}}
+    <div class="delete-mode-toggle">
+        <span></span>
+        <button type="button" class="enter-delete-btn" id="enter-delete-btn">
+            <i class="fa-solid fa-trash-can" style="font-size:.75rem;"></i> Hapus Laporan
+        </button>
+    </div>
+
+    {{-- Bulk delete toolbar (hidden until delete-mode) --}}
+    <div class="bulk-toolbar" id="bulk-toolbar">
+        <span class="bulk-selected-count" id="bulk-selected-count">0 laporan dipilih</span>
+        <div class="bulk-actions">
+            <form method="POST" action="{{ route('penugasan.bulk-delete') }}" id="bulk-delete-form" data-confirm-delete data-confirm-title="Hapus laporan terpilih?" data-confirm-text="Semua laporan yang dipilih akan dihapus secara permanen.">
+                @csrf
+                @method('DELETE')
+                <div id="bulk-delete-inputs"></div>
+                <button type="submit" class="bulk-delete-btn" id="bulk-delete-btn" disabled>
+                    <i class="fa-solid fa-trash-can" style="font-size:.75rem;"></i> Hapus Terpilih
+                </button>
+            </form>
+            <button type="button" class="bulk-cancel-btn" id="cancel-delete-btn">
+                <i class="fa-solid fa-xmark" style="font-size:.8rem;"></i> Batal
+            </button>
+        </div>
+    </div>
 
     <div class="table-wrap penugasan-table-wrap">
         <table class="report-table penugasan-table">
             <thead>
                 <tr>
+                    <th class="cb-col"><input type="checkbox" class="penugasan-checkbox" id="select-all-checkbox"></th>
                     <th>Tanggal Lapor</th>
                     <th>Pelapor</th>
                     <th>Fasilitas</th>
@@ -396,6 +471,7 @@
                         $status = $statusMeta($laporan->status_pengaduan ?? null);
                     @endphp
                     <tr>
+                        <td class="cb-col"><input type="checkbox" class="penugasan-checkbox row-checkbox" value="{{ $laporan->id_pengaduan }}"></td>
                         <td>{{ $tanggal }}</td>
                         <td>{{ $pelapor }}</td>
                         <td>{{ $fasilitas }}</td>
@@ -444,7 +520,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="empty-state">Belum ada laporan pengaduan untuk ditugaskan.</td>
+                        <td colspan="7" class="empty-state" id="empty-state-cell">Belum ada laporan pengaduan untuk ditugaskan.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -672,6 +748,86 @@
             modal.hidden = true;
             select.value = originalValue;
         };
+    });
+})();
+
+// ── Delete-mode toggle & bulk select logic ──
+(function () {
+    const section = document.getElementById('penugasan-section');
+    const enterBtn = document.getElementById('enter-delete-btn');
+    const cancelBtn = document.getElementById('cancel-delete-btn');
+    const selectAll = document.getElementById('select-all-checkbox');
+    const countLabel = document.getElementById('bulk-selected-count');
+    const deleteBtn = document.getElementById('bulk-delete-btn');
+    const inputsContainer = document.getElementById('bulk-delete-inputs');
+
+    if (!section || !enterBtn || !selectAll) return;
+
+    function enterDeleteMode() {
+        section.classList.add('delete-mode');
+        syncUI();
+    }
+
+    function exitDeleteMode() {
+        section.classList.remove('delete-mode');
+        selectAll.checked = false;
+        selectAll.indeterminate = false;
+        document.querySelectorAll('.row-checkbox').forEach(function (cb) { cb.checked = false; });
+        syncUI();
+    }
+
+    enterBtn.addEventListener('click', enterDeleteMode);
+    cancelBtn.addEventListener('click', exitDeleteMode);
+
+    function getRowCheckboxes() {
+        return document.querySelectorAll('.row-checkbox');
+    }
+
+    function syncUI() {
+        const boxes = getRowCheckboxes();
+        const checked = document.querySelectorAll('.row-checkbox:checked');
+        const count = checked.length;
+
+        countLabel.textContent = count + ' laporan dipilih';
+        deleteBtn.disabled = count === 0;
+
+        if (boxes.length > 0 && count === boxes.length) {
+            selectAll.checked = true;
+            selectAll.indeterminate = false;
+        } else if (count > 0) {
+            selectAll.checked = false;
+            selectAll.indeterminate = true;
+        } else {
+            selectAll.checked = false;
+            selectAll.indeterminate = false;
+        }
+
+        inputsContainer.innerHTML = '';
+        checked.forEach(function (cb) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'ids[]';
+            input.value = cb.value;
+            inputsContainer.appendChild(input);
+        });
+
+        // Sync colspan for empty state cell if it exists
+        const emptyCell = document.getElementById('empty-state-cell');
+        if (emptyCell) {
+            emptyCell.colSpan = section.classList.contains('delete-mode') ? 8 : 7;
+        }
+    }
+
+    selectAll.addEventListener('change', function () {
+        const boxes = getRowCheckboxes();
+        boxes.forEach(function (cb) { cb.checked = selectAll.checked; });
+        syncUI();
+    });
+
+    document.addEventListener('change', function (e) {
+        if (e.target.classList.contains('row-checkbox')) {
+            syncUI();
+        }
     });
 })();
 </script>

@@ -103,8 +103,8 @@ class LaboratoriumController extends Controller
     {
         $oldKoordinatorId = $laboratorium->id_koordinator;
 
-        // Unlink related facilities (set id_laboratorium to null)
-        $laboratorium->semuaFasilitas()->update(['id_laboratorium' => null]);
+        // Delete related facilities
+        $laboratorium->semuaFasilitas()->delete();
 
         $nama = $laboratorium->nama_laboratorium;
         $laboratorium->delete();
