@@ -94,10 +94,10 @@ $menuItems = [
     <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop md:sticky md:top-0 md:h-screen rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
         <div class="p-8 flex-1 flex flex-col overflow-y-auto custom-scrollbar">
             <a href="{{ $routeSafe('dashboard') }}" class="flex items-center gap-3 px-4">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-silapor-500 to-silapor-700 flex items-center justify-center text-white shadow-md">
                     <i class="fa-solid fa-square-poll-vertical text-xl"></i>
                 </div>
-                <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-[#0090F5] to-[#1E3A8A] bg-clip-text text-transparent">SiLapor</span>
+                <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-silapor-500 to-silapor-dark bg-clip-text text-transparent">SiLapor</span>
             </a>
 
             <nav class="mt-10 space-y-7">
@@ -105,10 +105,10 @@ $menuItems = [
                     @if($activeMenu === $key)
                         <a href="{{ $url }}" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm group transition-all">
                             <div class="flex items-center gap-3.5">
-                                <i class="{{ $icon }} text-lg text-[#0090F5]"></i>
+                                <i class="{{ $icon }} text-lg text-silapor-500"></i></i>
                                 <span>{{ $label }}</span>
                             </div>
-                            <div class="w-1.5 h-6 rounded-full bg-[#0090F5]"></div>
+                            <div class="w-1.5 h-6 rounded-full bg-silapor-500"></div>
                         </a>
                     @else
                         <a href="{{ $url }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
@@ -151,7 +151,7 @@ $menuItems = [
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                     <div class="bg-white border border-gray-200 rounded-[20px] p-4 flex items-center gap-4 shadow-figma-card">
-                        <div class="w-12 h-12 rounded-xl bg-sky-50 flex items-center justify-center text-[#0090F5] shrink-0"><i class="fa-regular fa-file-lines text-xl"></i></div>
+                        <div class="w-12 h-12 rounded-xl bg-sky-50 flex items-center justify-center text-silapor-500 shrink-0"><i class="fa-regular fa-file-lines text-xl"></i></div>
                         <div><p class="text-xs font-bold text-gray-400">Total Laporan</p><p class="text-2xl font-extrabold text-[#2C3E50] leading-tight">{{ $totalLaporan ?? 0 }}</p><p class="text-[10px] text-gray-400 font-medium">Semua laporan</p></div>
                     </div>
                     <div class="bg-white border border-gray-200 rounded-[20px] p-4 flex items-center gap-4 shadow-figma-card">
@@ -200,7 +200,7 @@ $menuItems = [
                                         <td class="py-3.5 px-6 text-sm text-gray-600">{{ $row->fasilitas?->kategori?->nama_kategori ?? '-' }} ({{ $row->fasilitas?->no_fasilitas ?? '-' }})</td>
                                         <td class="py-3.5 px-6 text-center"><span class="laporan-status {{ $status['class'] }}">{{ $status['label'] }}</span></td>
                                         <td class="py-3.5 px-6 text-center">
-                                            <button type="button" class="inline-block text-xs font-bold text-[#0090F5] bg-white border border-[#0090F5] hover:bg-sky-50 px-5 py-1 rounded-md transition-all shadow-sm detail-btn" data-detail-url="{{ $detailUrl }}">Detail</button>
+                                            <button type="button" class="inline-block text-xs font-bold text-silapor-500 bg-white border border-silapor-500 hover:bg-sky-50 px-5 py-1 rounded-md transition-all shadow-sm detail-btn" data-detail-url="{{ $detailUrl }}">Detail</button>
                                         </td>
                                     </tr>
                                 @empty

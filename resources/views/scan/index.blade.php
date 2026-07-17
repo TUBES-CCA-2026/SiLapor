@@ -9,7 +9,7 @@
     .scan-card { width:min(440px, 100%); border:1px solid rgba(148,163,184,.22); border-radius:28px; background:#111827; color:#fff; box-shadow:0 30px 80px rgba(0,0,0,.28); overflow:hidden; }
     .scan-card-body { padding:1.4rem; }
     .scan-brand { display:flex; align-items:center; justify-content:center; gap:.65rem; margin-bottom:1.25rem; }
-    .scan-logo { width:44px; height:44px; border-radius:14px; display:grid; place-items:center; background:linear-gradient(135deg,#0090F5,#3B82F6); box-shadow:0 14px 32px rgba(0,144,245,.24); color:#fff; }
+    .scan-logo { width:44px; height:44px; border-radius:14px; display:grid; place-items:center; background:linear-gradient(135deg,#29ABE2,#156C99); box-shadow:0 14px 32px rgba(41,171,226,.24); color:#fff; }
     .scan-brand-text { font-size:1.35rem; font-weight:800; letter-spacing:-.02em; background:linear-gradient(90deg,#38BDF8,#93C5FD); -webkit-background-clip:text; background-clip:text; color:transparent; }
     .scan-title { margin:0; font-size:1.1rem; font-weight:800; text-align:center; }
     .scan-subtitle { margin:.4rem auto 1.15rem; max-width:340px; color:#CBD5E1; font-size:.86rem; line-height:1.55; text-align:center; }

@@ -57,7 +57,7 @@
         text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
     .pgd-select-trigger:focus, .pgd-select-trigger.active {
-        border-color: #0090F5; box-shadow: 0 0 0 3px rgba(0, 144, 245, 0.12); background: #fff;
+        border-color: #29ABE2; box-shadow: 0 0 0 3px rgba(41, 171, 226, 0.12); background: #fff;
     }
     .pgd-select-trigger.has-value { color: #1E293B; font-weight: 600; }
 
@@ -92,8 +92,8 @@
         padding: 0.5rem 0.85rem; font-size: 0.8125rem; color: #475569; cursor: pointer;
         transition: background 0.12s ease; font-weight: 500;
     }
-    .pgd-select-options li:hover { background: #F0F9FF; color: #0090F5; }
-    .pgd-select-options li.selected { background: #EFF8FF; color: #0090F5; font-weight: 700; }
+    .pgd-select-options li:hover { background: #E8F7FC; color: #29ABE2; }
+    .pgd-select-options li.selected { background: #E8F7FC; color: #1B8DC4; font-weight: 700; }
     .pgd-select-options li.empty-msg {
         color: #94A3B8; font-style: italic; cursor: default; text-align: center; padding: 0.75rem;
     }
@@ -114,7 +114,7 @@
         text-transform: uppercase; letter-spacing: 0.08em;
         margin-bottom: 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid #F1F5F9;
     }
-    .pgd-section-title i { color: #0090F5; font-size: 0.8rem; }
+    .pgd-section-title i { color: #29ABE2; font-size: 0.8rem; }
 </style>
 
 <div class="font-figma min-h-screen flex items-center justify-center p-6 bg-gray-50">
@@ -122,7 +122,7 @@
         {{-- Header --}}
         <div class="flex items-center justify-between gap-3 mb-6">
             <div class="flex items-center gap-2">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-silapor-500 to-silapor-700 flex items-center justify-center text-white shadow-md">
                     <i class="fa-solid fa-square-poll-vertical text-lg"></i>
                 </div>
                 <span class="font-bold text-lg text-gray-900">SiLapor</span>
@@ -338,17 +338,17 @@
                             rows="4"
                             required
                             placeholder="Contoh: Monitor tidak menyala sama sekali sejak pagi ini."
-                            class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0090F5] focus:border-[#0090F5] transition-all"
+                            class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-silapor-500 focus:border-silapor-500 transition-all"
                         >{{ old('deskripsi_kerusakan') }}</textarea>
                     </div>
 
                     <div>
                         <label class="pgd-field-label">Foto Kerusakan</label>
-                        <div class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center bg-[#F8FAFC] cursor-pointer hover:border-[#0090F5] transition-colors">
+                        <div class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center bg-[#F8FAFC] cursor-pointer hover:border-silapor-500 transition-colors">
                             <input type="file" name="foto_kerusakan" accept="image/*" capture="environment" class="hidden" id="fileInput">
                             <label for="fileInput" class="flex flex-col items-center cursor-pointer">
-                                <i class="fa-solid fa-cloud-arrow-up text-2xl text-[#0090F5] mb-1"></i>
-                                <span id="fileLabel" class="text-[#0090F5] font-bold text-sm">Upload foto</span>
+                                <i class="fa-solid fa-cloud-arrow-up text-2xl text-silapor-500 mb-1"></i>
+                                <span id="fileLabel" class="text-silapor-500 font-bold text-sm">Upload foto</span>
                                 <span class="text-xs text-gray-400 mt-1">JPG/PNG/WEBP, maksimal 4 MB</span>
                             </label>
                             <div id="imagePreview" class="mt-3 hidden">
@@ -362,7 +362,7 @@
             {{-- Submit --}}
             <button
                 type="submit"
-                class="w-full bg-[#0090F5] hover:bg-[#007cd5] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold rounded-xl py-3 shadow-sm transition-all text-sm"
+                class="w-full bg-silapor-500 hover:bg-silapor-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold rounded-xl py-3 shadow-sm transition-all text-sm"
             >
                 <i class="fa-solid fa-paper-plane mr-2"></i>
                 Kirim Pengaduan {{ $isQr ? 'QR' : 'Manual' }}
@@ -377,11 +377,11 @@
             @endif
 
             @if ($isQr)
-                <a href="{{ auth()->check() && auth()->user()?->isAsisten() ? route('pengaduan.index') : route('pengaduan.manual.create') }}" class="flex-1 rounded-xl bg-blue-50 px-4 py-2.5 text-[#0090F5] font-semibold transition hover:bg-blue-100">
+                <a href="{{ auth()->check() && auth()->user()?->isAsisten() ? route('pengaduan.index') : route('pengaduan.manual.create') }}" class="flex-1 rounded-xl bg-sky-50 px-4 py-2.5 text-silapor-500 font-semibold transition hover:bg-sky-100">
                     Buat pengaduan manual
                 </a>
             @else
-                <a href="{{ route('scan.index') }}" class="flex-1 rounded-xl bg-blue-50 px-4 py-2.5 text-[#0090F5] font-semibold transition hover:bg-blue-100">
+                <a href="{{ route('scan.index') }}" class="flex-1 rounded-xl bg-sky-50 px-4 py-2.5 text-silapor-500 font-semibold transition hover:bg-sky-100">
                     Gunakan scan QR
                 </a>
             @endif

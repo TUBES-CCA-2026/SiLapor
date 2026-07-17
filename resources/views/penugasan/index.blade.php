@@ -77,15 +77,15 @@
     .report-table tr:hover td { background: #F8FAFC; }
     .text-center { text-align: center !important; }
     .empty-state { padding: 2rem !important; text-align: center !important; color: #94A3B8 !important; }
-    .detail-btn, .btn-outline-blue { border: 1px solid #0090F5; color: #0090F5; background: #EEF8FF; border-radius: .5rem; padding: .4rem .9rem; font-size: .8rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
-    .detail-btn:hover, .btn-outline-blue:hover { background: #0090F5; color: #fff; }
-    .btn-primary { background: #0090F5; color: #fff; border: 0; border-radius: .875rem; padding: .75rem 1rem; font-weight: 800; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+    .detail-btn, .btn-outline-blue { border: 1px solid #29ABE2; color: #29ABE2; background: #E8F7FC; border-radius: .5rem; padding: .4rem .9rem; font-size: .8rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+    .detail-btn:hover, .btn-outline-blue:hover { background: #29ABE2; color: #fff; }
+    .btn-primary { background: #29ABE2; color: #fff; border: 0; border-radius: .875rem; padding: .75rem 1rem; font-weight: 800; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
     .btn-primary:hover { background: #007CD5; }
     .btn-danger-soft { background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; border-radius: .875rem; padding: .65rem 1rem; font-weight: 700; text-decoration: none; cursor: pointer; }
     .danger-btn { border: 1px solid #FCA5A5; color: #DC2626; background: #FEF2F2; border-radius: .5rem; padding: .4rem .9rem; font-size: .8rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: .35rem; transition: .18s ease; }
     .danger-btn:hover { background: #DC2626; color: #fff; border-color: #DC2626; }
     .form-control { width: 100%; border: 1px solid #D1D5DB; border-radius: .875rem; padding: .75rem 1rem; background: #fff; outline: none; }
-    .form-control:focus { border-color: #0090F5; box-shadow: 0 0 0 3px rgba(0, 144, 245, .14); }
+    .form-control:focus { border-color: #29ABE2; box-shadow: 0 0 0 3px rgba(41, 171, 226, .14); }
     .field-label { display: block; margin-bottom: .45rem; font-size: .75rem; color: #6B7280; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
     .info-box { padding: 1rem; background: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 1rem; font-weight: 700; color: #374151; }
     .status-chip { display: inline-flex; align-items: center; gap: .35rem; padding: .35rem .7rem; border-radius: .5rem; font-size: .75rem; font-weight: 800; }
@@ -363,7 +363,7 @@
     .delete-mode .penugasan-table th:nth-child(8),
     .delete-mode .penugasan-table td:nth-child(8) { width: 110px; }
 
-    .penugasan-checkbox { width: 17px; height: 17px; accent-color: #0090F5; cursor: pointer; }
+    .penugasan-checkbox { width: 17px; height: 17px; accent-color: #29ABE2; cursor: pointer; }
 
     /* Toolbar: hidden by default */
     .bulk-toolbar { display: none; align-items: center; justify-content: space-between; padding: .85rem 1.25rem; border-bottom: 1px solid #F1F5F9; background: #FFFBFB; border-top-left-radius: 2rem; border-top-right-radius: 2rem; }
@@ -485,7 +485,7 @@
                                 <span class="teknisi-select-wrap w-full block">
                                     <div class="relative custom-searchable-select w-full">
                                         <input type="text" readonly placeholder="{{ $allowedTeknisi->isEmpty() ? 'Belum ada asisten' : 'Pilih Teknisi' }}" 
-                                               class="form-control searchable-select-trigger cursor-pointer bg-white text-xs font-semibold px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0090F5]" 
+                                               class="form-control searchable-select-trigger cursor-pointer bg-white text-xs font-semibold px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:border-silapor-500" 
                                                style="padding-right: 2rem; height: 34px;"
                                                {{ $allowedTeknisi->isEmpty() ? 'disabled' : '' }}>
                                         <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
@@ -494,13 +494,13 @@
                                         @if(!$allowedTeknisi->isEmpty())
                                         <div class="absolute left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl hidden searchable-select-dropdown p-2" style="min-width: 180px;">
                                             <input type="text" placeholder="Cari..." 
-                                                   class="w-full p-2 mb-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-[#0090F5] searchable-select-search">
+                                                   class="w-full p-2 mb-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-silapor-500 searchable-select-search">
                                             <ul class="max-h-40 overflow-y-auto searchable-select-options custom-scrollbar space-y-0.5 text-left">
-                                                <li data-value="" class="px-2.5 py-1.5 hover:bg-[#EEF8FF] hover:text-[#0090F5] rounded-md cursor-pointer text-xs transition-colors">
+                                                <li data-value="" class="px-2.5 py-1.5 hover:bg-[#E8F7FC] hover:text-silapor-500 rounded-md cursor-pointer text-xs transition-colors">
                                                     Pilih Teknisi
                                                 </li>
                                                 @foreach($allowedTeknisi as $teknisi)
-                                                    <li data-value="{{ $teknisi->id_user }}" class="px-2.5 py-1.5 hover:bg-[#EEF8FF] hover:text-[#0090F5] rounded-md cursor-pointer text-xs transition-colors">
+                                                    <li data-value="{{ $teknisi->id_user }}" class="px-2.5 py-1.5 hover:bg-[#E8F7FC] hover:text-silapor-500 rounded-md cursor-pointer text-xs transition-colors">
                                                         {{ $teknisi->nama }}
                                                     </li>
                                                 @endforeach
@@ -538,7 +538,7 @@
             <button type="button" class="modal-close" onclick="document.getElementById('assign-confirm-no')?.click()">&times;</button>
         </div>
         <div class="modal-body" style="text-align:center;">
-            <div style="width:64px;height:64px;border-radius:999px;margin:0 auto 1rem;display:grid;place-items:center;background:#DBEAFE;color:#0090F5;font-size:1.75rem;">
+            <div style="width:64px;height:64px;border-radius:999px;margin:0 auto 1rem;display:grid;place-items:center;background:#DBEAFE;color:#29ABE2;font-size:1.75rem;">
                 <i class="fa-solid fa-user-check"></i>
             </div>
             <p id="assign-confirm-message" style="margin:0;color:#374151;font-weight:800;line-height:1.6;">

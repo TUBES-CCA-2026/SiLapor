@@ -77,13 +77,13 @@
     .report-table tr:hover td { background: #F8FAFC; }
     .text-center { text-align: center !important; }
     .empty-state { padding: 2rem !important; text-align: center !important; color: #94A3B8 !important; }
-    .detail-btn, .btn-outline-blue { border: 1px solid #0090F5; color: #0090F5; background: #EEF8FF; border-radius: .5rem; padding: .4rem .9rem; font-size: .8rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
-    .detail-btn:hover, .btn-outline-blue:hover { background: #0090F5; color: #fff; }
-    .btn-primary { background: #0090F5; color: #fff; border: 0; border-radius: .875rem; padding: .75rem 1rem; font-weight: 800; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
-    .btn-primary:hover { background: #007CD5; }
+    .detail-btn, .btn-outline-blue { border: 1px solid #29ABE2; color: #29ABE2; background: #E8F7FC; border-radius: .5rem; padding: .4rem .9rem; font-size: .8rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+    .detail-btn:hover, .btn-outline-blue:hover { background: #29ABE2; color: #fff; }
+    .btn-primary { background: #29ABE2; color: #fff; border: 0; border-radius: .875rem; padding: .75rem 1rem; font-weight: 800; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+    .btn-primary:hover { background: #1B8DC4; }
     .btn-danger-soft { background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; border-radius: .875rem; padding: .65rem 1rem; font-weight: 700; text-decoration: none; cursor: pointer; }
     .form-control { width: 100%; border: 1px solid #D1D5DB; border-radius: .875rem; padding: .75rem 1rem; background: #fff; outline: none; }
-    .form-control:focus { border-color: #0090F5; box-shadow: 0 0 0 3px rgba(0, 144, 245, .14); }
+    .form-control:focus { border-color: #29ABE2; box-shadow: 0 0 0 3px rgba(41, 171, 226, .14); }
     .field-label { display: block; margin-bottom: .45rem; font-size: .75rem; color: #6B7280; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
     .info-box { padding: 1rem; background: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 1rem; font-weight: 700; color: #374151; }
     .status-chip { display: inline-flex; align-items: center; gap: .35rem; padding: .35rem .7rem; border-radius: .5rem; font-size: .75rem; font-weight: 800; }
@@ -132,7 +132,7 @@
     .user-management-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
     .user-action-group { display: flex; align-items: center; gap: .65rem; flex-wrap: wrap; }
     .btn-secondary-light { border: 1px solid #D8E1EC; color: #334155; background: #F8FAFC; border-radius: .875rem; padding: .75rem 1rem; font-weight: 800; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: .45rem; }
-    .btn-secondary-light:hover { border-color: #0090F5; color: #0090F5; background: #EEF8FF; }
+    .btn-secondary-light:hover { border-color: #29ABE2; color: #29ABE2; background: #E8F7FC; }
     .import-user-card { margin-bottom: 1.25rem; padding: 1rem; border: 1px solid #E5E7EB; border-radius: 1.15rem; background: #F8FAFC; display: grid; grid-template-columns: minmax(260px, 1fr) minmax(220px, .8fr) 180px auto auto; gap: .75rem; align-items: end; }
     .import-user-title { margin: 0; color: #1F2937; font-size: .95rem; font-weight: 800; }
     .import-user-help { margin: .25rem 0 0; color: #64748B; font-size: .78rem; line-height: 1.5; }

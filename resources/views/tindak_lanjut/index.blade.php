@@ -43,8 +43,8 @@
     .tindak-status-cancel:hover { background: #DC2626; box-shadow: 0 0 0 3px rgba(220, 38, 38, .18); }
     .tindak-status-no-sparepart { background: #E5E7EB; color: #374151; transition: .18s ease; }
     .tindak-status-no-sparepart:hover { background: #CBD5E1; box-shadow: 0 0 0 3px rgba(100, 116, 139, .16); }
-    .tindak-action-btn { border: 1px solid #CDE5FC; color: #0090F5; background: #fff; border-radius: .5rem; padding: .35rem .75rem; font-size: .75rem; font-weight: 800; transition: .18s ease; }
-    .tindak-action-btn:hover { background: #EFF8FF; border-color: #0090F5; }
+    .tindak-action-btn { border: 1px solid #B8E2F5; color: #29ABE2; background: #fff; border-radius: .5rem; padding: .35rem .75rem; font-size: .75rem; font-weight: 800; transition: .18s ease; }
+    .tindak-action-btn:hover { background: #E8F7FC; border-color: #29ABE2; }
     .tindak-popup-backdrop { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 1rem; background: rgba(15, 23, 42, .35); }
     .tindak-popup-card { width: min(420px, 94vw); overflow: hidden; border-radius: 1.5rem; background: #fff; box-shadow: 0 20px 45px rgba(15, 23, 42, .20); }
     .tindak-popup-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid #E5E7EB; }
@@ -122,7 +122,7 @@
                                     TDL-{{ str_pad($t->id_tindak_lanjut, 3, '0', STR_PAD_LEFT) }}
                                 </td>
                                 <!-- ID PGD -->
-                                <td class="py-5 px-6 font-semibold text-[#0090F5]">
+                                <td class="py-5 px-6 font-semibold text-silapor-500">
                                     PGD-{{ str_pad($t->id_pengaduan, 3, '0', STR_PAD_LEFT) }}
                                 </td>
                                 <!-- Pelapor -->
@@ -157,7 +157,7 @@
                                             };
                                         @endphp
                                         <select name="status_penanganan" onchange="document.getElementById('form-status-{{ $t->id_tindak_lanjut }}').submit()" 
-                                            class="inline-block text-xs font-bold px-3 py-1.5 rounded-md text-center appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0090F5]/30 {{ $statusSelectClass }}">
+                                            class="inline-block text-xs font-bold px-3 py-1.5 rounded-md text-center appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-silapor-500/30 {{ $statusSelectClass }}">
                                             <option value="ON PROGRES" {{ $t->status_penanganan === 'ON PROGRES' ? 'selected' : '' }} style="background-color: #FBBF24; color: #fff;">On Progress</option>
                                             <option value="DONE" {{ $t->status_penanganan === 'DONE' ? 'selected' : '' }} style="background-color: #4ADE80; color: #fff;">Done</option>
                                             <option value="CANCEL" {{ $t->status_penanganan === 'CANCEL' ? 'selected' : '' }} style="background-color: #EF4444; color: #fff;">Cancel</option>
@@ -209,7 +209,7 @@
                                                 @endphp
                                                 @if($fotoKerusakanUrl)
                                                     <div class="mt-2">
-                                                        <span class="text-xs font-extrabold text-[#0090F5]">Foto Bukti:</span>
+                                                        <span class="text-xs font-extrabold text-silapor-500">Foto Bukti:</span>
                                                         <img src="{{ $fotoKerusakanUrl }}" alt="Foto Kerusakan" class="mt-1 rounded-xl max-h-40 object-cover shadow-sm">
                                                     </div>
                                                 @else
@@ -220,18 +220,18 @@
 
                                         <!-- Update Catatan & Progres oleh Asisten -->
                                         <div>
-                                            <h4 class="font-extrabold text-sm text-[#0090F5] uppercase tracking-wide mb-3">Tindak Lanjut Perbaikan</h4>
+                                            <h4 class="font-extrabold text-sm text-silapor-500 uppercase tracking-wide mb-3">Tindak Lanjut Perbaikan</h4>
                                             <form method="POST" action="{{ route('tindak-lanjut.update', $t->id_tindak_lanjut) }}" class="space-y-4">
                                                 @csrf
                                                 @method('PATCH')
                                                 
                                                 <textarea name="catatan_perbaikan" rows="3" placeholder="Tuliskan tindakan/perkembangan perbaikan disini..." required
-                                                          class="w-full text-sm rounded-xl border border-gray-200 p-4 focus:outline-none focus:ring-2 focus:ring-[#0090F5]/30 focus:border-[#0090F5] transition-all bg-white shadow-sm"
+                                                          class="w-full text-sm rounded-xl border border-gray-200 p-4 focus:outline-none focus:ring-2 focus:ring-silapor-500/30 focus:border-silapor-500 transition-all bg-white shadow-sm"
                                                 >{{ $t->catatan_perbaikan }}</textarea>
 
                                                 <div class="flex gap-3 justify-end">
                                                     <button type="submit"
-                                                            class="text-xs font-bold px-5 py-2.5 rounded-full bg-[#0090F5] text-white hover:bg-[#007cd5] shadow-sm transition-colors">
+                                                            class="text-xs font-bold px-5 py-2.5 rounded-full bg-silapor-500 text-white hover:bg-silapor-600 shadow-sm transition-colors">
                                                         Simpan
                                                     </button>
                                                 </div>

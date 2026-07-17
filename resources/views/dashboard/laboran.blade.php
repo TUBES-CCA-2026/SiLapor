@@ -21,7 +21,7 @@
 
     .nav-press-effect:active { transform: scale(.985); }
     .nav-active-effect { background: #F3F4F6; color: #111827; font-weight: 800; border-radius: 1.35rem; box-shadow: inset 0 0 0 1px rgba(15, 23, 42, .02); }
-    .nav-active-effect .nav-active-icon { color: #0090F5; }
+    .nav-active-effect .nav-active-icon { color: #29ABE2; }
 </style>
 
 <div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
@@ -42,7 +42,7 @@
         @php
             $stats = [
                 ['Total Laporan', $totalLaporan ?? 0, 'fa-triangle-exclamation', 'text-[#FF4D4D]', 'bg-[#FFEAEB]'],
-                ['Total Laboratorium', $totalLaboratorium ?? 0, 'fa-building', 'text-[#0090F5]', 'bg-[#EAF5FE]'],
+                ['Total Laboratorium', $totalLaboratorium ?? 0, 'fa-building', 'text-silapor-500', 'bg-[#E8F7FC]'],
                 ['Total Fasilitas', $totalFasilitas ?? 0, 'fa-computer', 'text-[#22C55E]', 'bg-[#E6F9EE]'],
             ];
         @endphp
@@ -67,13 +67,13 @@
                     <h2 class="font-bold text-xl text-gray-800">Akses Cepat Laboran</h2>
                 </div>
                 <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <a href="{{ route('admin.users.index') }}" class="rounded-3xl border border-gray-200 p-5 hover:border-[#0090F5] hover:bg-sky-50/40 transition-all">
-                        <div class="w-12 h-12 rounded-2xl bg-[#EAF5FE] text-[#0090F5] flex items-center justify-center text-lg mb-4"><i class="fa-solid fa-users"></i></div>
+                    <a href="{{ route('admin.users.index') }}" class="rounded-3xl border border-gray-200 p-5 hover:border-silapor-500 hover:bg-sky-50/40 transition-all">
+                        <div class="w-12 h-12 rounded-2xl bg-[#E8F7FC] text-silapor-500 flex items-center justify-center text-lg mb-4"><i class="fa-solid fa-users"></i></div>
                         <h3 class="font-bold text-[#2C3E50]">Kelola User</h3>
                         <p class="text-sm text-gray-500 mt-1">Tambah akun, ubah data, reset password pengguna.</p>
                     </a>
 
-                    <a href="{{ route('laboratorium.index') }}" class="rounded-3xl border border-gray-200 p-5 hover:border-[#0090F5] hover:bg-sky-50/40 transition-all">
+                    <a href="{{ route('laboratorium.index') }}" class="rounded-3xl border border-gray-200 p-5 hover:border-silapor-500 hover:bg-sky-50/40 transition-all">
                         <div class="w-12 h-12 rounded-2xl bg-[#E6F9EE] text-[#22C55E] flex items-center justify-center text-lg mb-4"><i class="fa-solid fa-building"></i></div>
                         <h3 class="font-bold text-[#2C3E50]">Data Laboratorium</h3>
                         <p class="text-sm text-gray-500 mt-1">Kelola laboratorium, koordinator, dan data ruangan.</p>
@@ -122,7 +122,7 @@
         <section class="bg-white border rounded-[32px] overflow-hidden shadow-figma-container">
             <div class="px-8 py-6 border-b flex flex-col sm:flex-row justify-between items-center gap-4">
                 <h2 class="font-bold text-xl text-gray-800">Laporan Terbaru</h2>
-                <a href="{{ route('laporan.index') }}" class="bg-[#0090F5] hover:bg-blue-600 transition-colors text-white px-6 py-3 rounded-xl font-bold text-sm w-full sm:w-auto text-center">
+                <a href="{{ route('laporan.index') }}" class="bg-silapor-500 hover:bg-silapor-600 transition-colors text-white px-6 py-3 rounded-xl font-bold text-sm w-full sm:w-auto text-center">
                     Lihat Semua Laporan
                 </a>
             </div>
@@ -146,7 +146,7 @@
                                 $statusStyle = match($statusKode) {
                                     'DONE' => 'bg-[#E6F9EE] text-[#22C55E]',
                                     'HANDLED' => 'bg-[#FFF9E6] text-[#FBBF24]',
-                                    default => 'bg-[#EAF5FE] text-[#0090F5]',
+                                    default => 'bg-[#E8F7FC] text-silapor-500',
                                 };
                                 $statusLabel = match($statusKode) {
                                     'DONE' => 'Done',

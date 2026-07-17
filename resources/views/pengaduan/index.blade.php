@@ -78,8 +78,8 @@
 
     .pgd-select-trigger:focus,
     .pgd-select-trigger.active {
-        border-color: #0090F5;
-        box-shadow: 0 0 0 3px rgba(0, 144, 245, 0.12);
+        border-color: #29ABE2;
+        box-shadow: 0 0 0 3px rgba(41, 171, 226, 0.12);
         background: #fff;
     }
 
@@ -169,13 +169,13 @@
     }
 
     .pgd-select-options li:hover {
-        background: #F0F9FF;
-        color: #0090F5;
+        background: #E8F7FC;
+        color: #29ABE2;
     }
 
     .pgd-select-options li.selected {
-        background: #EFF8FF;
-        color: #0090F5;
+        background: #E8F7FC;
+        color: #1B8DC4;
         font-weight: 700;
     }
 
@@ -232,7 +232,7 @@
     }
 
     .pgd-form-section-title i {
-        color: #0090F5;
+        color: #29ABE2;
         font-size: 0.875rem;
     }
 </style>
@@ -414,7 +414,7 @@
                                 name="deskripsi_kerusakan"
                                 rows="5"
                                 required
-                                class="w-full border border-gray-200 rounded-2xl px-5 py-4 focus:ring-2 focus:ring-[#0090F5] focus:border-[#0090F5] bg-[#F8FAFC] text-sm transition-all outline-none"
+                                class="w-full border border-gray-200 rounded-2xl px-5 py-4 focus:ring-2 focus:ring-silapor-500 focus:border-silapor-500 bg-[#F8FAFC] text-sm transition-all outline-none"
                                 placeholder="Jelaskan kerusakan fasilitas secara singkat dan jelas."
                             >{{ old('deskripsi_kerusakan') }}</textarea>
                         </div>
@@ -424,7 +424,7 @@
                                 Upload Foto Kerusakan
                             </label>
 
-                            <div class="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center bg-[#F8FAFC] cursor-pointer hover:border-[#0090F5] transition-colors" id="dropZone">
+                            <div class="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center bg-[#F8FAFC] cursor-pointer hover:border-silapor-500 transition-colors" id="dropZone">
                                 <input
                                     type="file"
                                     name="foto_kerusakan"
@@ -434,8 +434,8 @@
                                 >
 
                                 <label for="fileInput" class="flex flex-col items-center cursor-pointer">
-                                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-[#0090F5] mb-2"></i>
-                                    <span id="fileLabel" class="text-[#0090F5] font-bold">
+                                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-silapor-500 mb-2"></i>
+                                    <span id="fileLabel" class="text-silapor-500 font-bold">
                                         Upload foto
                                     </span>
                                     <span class="text-xs text-gray-400 mt-1">
@@ -456,13 +456,13 @@
                     <button
                         type="submit"
                         id="submitBtn"
-                        class="w-full bg-[#0090F5] hover:bg-[#007cd5] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-extrabold py-4 rounded-2xl shadow-md transition-all"
+                        class="w-full bg-silapor-500 hover:bg-silapor-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-extrabold py-4 rounded-2xl shadow-md transition-all"
                     >
                         <i class="fa-solid fa-paper-plane mr-2"></i>
                         Kirim Pengaduan
                     </button>
 
-                    <a href="{{ $routeSafe('scan.index') }}" class="flex items-center justify-center gap-2 text-gray-500 hover:text-[#0090F5] transition-colors font-medium text-sm">
+                    <a href="{{ $routeSafe('scan.index') }}" class="flex items-center justify-center gap-2 text-gray-500 hover:text-silapor-500 transition-colors font-medium text-sm">
                         <i class="fa-solid fa-qrcode"></i>
                         Gunakan QR Code untuk pelaporan instan
                     </a>

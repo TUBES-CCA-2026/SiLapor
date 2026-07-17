@@ -92,12 +92,12 @@
             border: 0;
             border-radius: .95rem;
             padding: .8rem 1rem;
-            background: #0090F5;
+            background: #29ABE2;
             color: #fff;
             font-weight: 800;
             cursor: pointer;
         }
-        .global-notification-button:hover { background: #007CD5; }
+        .global-notification-button:hover { background: #1B8DC4; }
 
         .logout-confirm-actions {
             display: flex;
@@ -116,6 +116,29 @@
         .logout-confirm-cancel { background: #E5E7EB; color: #374151; }
         .logout-confirm-yes { background: #DC2626; color: #fff; }
         .logout-confirm-yes:hover { background: #B91C1C; }
+
+        /* Custom File Input Styling */
+        input[type="file"].form-control {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.75rem;
+        }
+        input[type="file"].form-control::file-selector-button {
+            border: none;
+            background: #E8F7FC;
+            color: #29ABE2;
+            padding: 0.4rem 0.85rem;
+            border-radius: 0.6rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            margin-right: 0.75rem;
+            font-size: 0.8125rem;
+        }
+        input[type="file"].form-control::file-selector-button:hover {
+            background: #29ABE2;
+            color: #fff;
+        }
     </style>
     @stack('head')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">

@@ -21,7 +21,7 @@
 
     .nav-press-effect:active { transform: scale(.985); }
     .nav-active-effect { background: #F3F4F6; color: #111827; font-weight: 800; border-radius: 1.35rem; box-shadow: inset 0 0 0 1px rgba(15, 23, 42, .02); }
-    .nav-active-effect .nav-active-icon { color: #0090F5; }
+    .nav-active-effect .nav-active-icon { color: #29ABE2; }
 </style>
 
 <div class="font-figma min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
@@ -29,10 +29,10 @@
     <aside id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full sidebar-desktop md:sticky md:top-0 md:h-screen rounded-r-[36px] md:rounded-r-none shadow-lg md:shadow-none shrink-0">
         <div class="p-8 flex-1 flex flex-col overflow-y-auto">
             <div class="flex items-center gap-3 px-4">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-silapor-500 to-silapor-700 flex items-center justify-center text-white shadow-md">
                     <i class="fa-solid fa-square-poll-vertical text-xl"></i>
                 </div>
-                <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-[#0090F5] to-[#1E3A8A] bg-clip-text text-transparent">SiLapor</span>
+                <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-silapor-500 to-silapor-dark bg-clip-text text-transparent">SiLapor</span>
             </div>
 
             @php
@@ -44,10 +44,10 @@
                     @if($activeMenu === $key)
                         <a href="{{ $url }}" class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm group transition-all">
                             <div class="flex items-center gap-3.5">
-                                <i class="{{ $icon }} text-lg text-[#0090F5]"></i>
+                                <i class="{{ $icon }} text-lg text-silapor-500"></i>
                                 <span>{{ $label }}</span>
                             </div>
-                            <div class="w-1.5 h-6 rounded-full bg-[#0090F5]"></div>
+                            <div class="w-1.5 h-6 rounded-full bg-silapor-500"></div>
                         </a>
                     @else
                         <a href="{{ $url }}" class="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-semibold text-sm transition-all">
@@ -84,7 +84,7 @@
 
         @php
             $stats = [
-                ['Total Pengguna', $totalPengguna ?? 0, 'fa-users', 'text-[#0090F5]', 'bg-[#EAF5FE]'],
+                ['Total Pengguna', $totalPengguna ?? 0, 'fa-users', 'text-silapor-500', 'bg-[#E8F7FC]'],
                 ['Total Fasilitas', $totalFasilitas ?? 0, 'fa-computer', 'text-[#22C55E]', 'bg-[#E6F9EE]'],
                 ['Total Laboratorium', $totalLaboratorium ?? 0, 'fa-building', 'text-[#F59E0B]', 'bg-[#FFF9E6]'],
             ];
@@ -110,16 +110,16 @@
                     <h2 class="font-bold text-xl text-gray-800">Akses Cepat Admin</h2>
                 </div>
                 <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <a href="{{ route('admin.users.index') }}" class="rounded-3xl border border-gray-200 p-6 hover:border-[#0090F5] hover:bg-sky-50/40 transition-all flex flex-col justify-between">
+                    <a href="{{ route('admin.users.index') }}" class="rounded-3xl border border-gray-200 p-6 hover:border-silapor-500 hover:bg-sky-50/40 transition-all flex flex-col justify-between">
                         <div>
-                            <div class="w-14 h-14 rounded-2xl bg-[#EAF5FE] text-[#0090F5] flex items-center justify-center text-2xl mb-4"><i class="fa-solid fa-users-gear"></i></div>
+                            <div class="w-14 h-14 rounded-2xl bg-[#E8F7FC] text-silapor-500 flex items-center justify-center text-2xl mb-4"><i class="fa-solid fa-users-gear"></i></div>
                             <h3 class="font-bold text-lg text-[#2C3E50]">Kelola User</h3>
                             <p class="text-sm text-gray-500 mt-2">Tambah akun, ubah profil, reset password, dan import data pengguna.</p>
                         </div>
-                        <span class="text-xs font-bold text-[#0090F5] mt-6 inline-flex items-center gap-1">Kelola Akun <i class="fa-solid fa-arrow-right"></i></span>
+                        <span class="text-xs font-bold text-silapor-500 mt-6 inline-flex items-center gap-1">Kelola Akun <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
 
-                    <a href="{{ route('fasilitas.index') }}" class="rounded-3xl border border-gray-200 p-6 hover:border-[#0090F5] hover:bg-sky-50/40 transition-all flex flex-col justify-between">
+                    <a href="{{ route('fasilitas.index') }}" class="rounded-3xl border border-gray-200 p-6 hover:border-silapor-500 hover:bg-sky-50/40 transition-all flex flex-col justify-between">
                         <div>
                             <div class="w-14 h-14 rounded-2xl bg-[#E6F9EE] text-[#22C55E] flex items-center justify-center text-2xl mb-4"><i class="fa-solid fa-qrcode"></i></div>
                             <h3 class="font-bold text-lg text-[#2C3E50]">Fasilitas & Pembuatan QR</h3>

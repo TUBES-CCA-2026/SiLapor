@@ -34,7 +34,7 @@
         min-height: 68px;
         padding: 0 24px;
         border-bottom: 0;
-        background: linear-gradient(135deg, #0090F5, #2563EB);
+        background: linear-gradient(135deg, #29ABE2, #156C99);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -207,7 +207,7 @@
                     <input type="hidden" name="_token" value="${csrfToken}">
                     <input type="hidden" name="_method" value="PATCH">
                     <textarea name="deskripsi_kerusakan" class="form-control" style="min-height: 80px; resize: vertical; font-family: inherit; font-size: 13px; border: 1px solid #DCE6F1; border-radius: 12px; padding: 10px; outline: none; background: #fff;" required>${esc(data.deskripsi)}</textarea>
-                    <button type="submit" class="btn-primary" style="align-self: flex-start; font-size: 12px; padding: 6px 14px; border-radius: 8px; font-weight: 700; height: auto; cursor: pointer; border: 0; background: #0090F5; color: #fff;">
+                    <button type="submit" class="btn-primary" style="align-self: flex-start; font-size: 12px; padding: 6px 14px; border-radius: 8px; font-weight: 700; height: auto; cursor: pointer; border: 0; background: #29ABE2; color: #fff;">
                         <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Deskripsi
                     </button>
                 </form>

@@ -56,7 +56,7 @@
         }
 
         .nav-active-effect .nav-active-icon {
-            color: #0090F5;
+            color: #29ABE2;
         }
     </style>
 
@@ -66,11 +66,11 @@
             <div class="p-8 flex-1 flex flex-col overflow-y-auto">
                 <div class="flex items-center gap-3 px-4">
                     <div
-                        class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] flex items-center justify-center text-white shadow-md">
+                        class="w-10 h-10 rounded-xl bg-gradient-to-tr from-silapor-500 to-silapor-700 flex items-center justify-center text-white shadow-md">
                         <i class="fa-solid fa-square-poll-vertical text-xl"></i>
                     </div>
                     <span
-                        class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-[#0090F5] to-[#1E3A8A] bg-clip-text text-transparent">SiLapor</span>
+                        class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-silapor-500 to-silapor-dark bg-clip-text text-transparent">SiLapor</span>
                 </div>
 
                 @php
@@ -135,10 +135,10 @@
                             <a href="{{ $url }}"
                                 class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gray-100 text-gray-800 font-bold text-sm group transition-all">
                                 <div class="flex items-center gap-3.5">
-                                    <i class="{{ $icon }} text-lg text-[#0090F5]"></i>
+                                    <i class="{{ $icon }} text-lg text-silapor-500"></i></i>
                                     <span>{{ $label }}</span>
                                 </div>
-                                <div class="w-1.5 h-6 rounded-full bg-[#0090F5]"></div>
+                                <div class="w-1.5 h-6 rounded-full bg-silapor-500"></div>
                             </a>
                         @else
                             <a href="{{ $url }}"
@@ -183,7 +183,7 @@
             @php
                 $stats = [
                     ['Total Laporan', $totalLaporan ?? 0, 'fa-triangle-exclamation', 'text-[#FF4D4D]', 'bg-[#FFEAEB]'],
-                    ['Sedang Diproses', $proses ?? 0, 'fa-screwdriver-wrench', 'text-[#0090F5]', 'bg-[#EAF5FE]'],
+                    ['Sedang Diproses', $proses ?? 0, 'fa-screwdriver-wrench', 'text-silapor-500', 'bg-[#E8F7FC]'],
                     ['Done', $selesai ?? 0, 'fa-circle-check', 'text-[#22C55E]', 'bg-[#E6F9EE]'],
                 ];
             @endphp
@@ -229,7 +229,7 @@
                                     $statusStyle = match ($statusKode) {
                                         'DONE' => 'bg-[#E6F9EE] text-[#22C55E]',
                                         'HANDLED' => 'bg-[#FFF9E6] text-[#FBBF24]',
-                                        default => 'bg-[#EAF5FE] text-[#0090F5]',
+                                        default => 'bg-[#E8F7FC] text-silapor-500',
                                     };
                                     $statusLabel = match ($statusKode) {
                                         'DONE' => 'Done',

@@ -90,7 +90,7 @@
 
                 $stats = [
                     ['Total Pengaduan', $formatStatistik($totalPengaduan ?? null), 'fa-triangle-exclamation', 'text-[#FF4D4D]', 'bg-[#FFEAEB]'],
-                    ['Sedang Diperbaiki', $formatStatistik($sedangDiperbaiki ?? null), 'fa-screwdriver-wrench', 'text-[#0090F5]', 'bg-[#EAF5FE]'],
+                    ['Sedang Diperbaiki', $formatStatistik($sedangDiperbaiki ?? null), 'fa-screwdriver-wrench', 'text-silapor-500', 'bg-[#E8F7FC]'],
                     ['Done', $formatStatistik($selesai ?? null), 'fa-circle-check', 'text-[#22C55E]', 'bg-[#E6F9EE]'],
                 ];
             @endphp
@@ -124,7 +124,7 @@
                 </h2>
 
                 @if($buatPengaduanRoute !== '#')
-                    <a href="{{ $buatPengaduanRoute }}" class="bg-[#0090F5] hover:bg-blue-600 transition-colors text-white px-6 py-3 rounded-xl font-bold text-sm w-full sm:w-auto text-center">
+                    <a href="{{ $buatPengaduanRoute }}" class="bg-silapor-500 hover:bg-silapor-600 transition-colors text-white px-6 py-3 rounded-xl font-bold text-sm w-full sm:w-auto text-center">
                         + Buat Pengaduan
                     </a>
                 @endif
@@ -221,7 +221,7 @@
                                 </td>
 
                                 <td class="py-5 px-6 text-center" onclick="event.stopPropagation()">
-                                    <button type="button" onclick="toggleDetails('row-{{ $idTugas }}')" class="text-xs font-bold text-[#0090F5] bg-sky-50 px-4 py-2 rounded-lg">
+                                    <button type="button" onclick="toggleDetails('row-{{ $idTugas }}')" class="text-xs font-bold text-silapor-500 bg-sky-50 px-4 py-2 rounded-lg">
                                         Detail
                                     </button>
                                 </td>
@@ -256,7 +256,7 @@
                                                 Catatan Perbaikan
                                             </p>
 
-                                            <textarea name="catatan_perbaikan" class="w-full border border-gray-200 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#0090F5]/20" rows="3">{{ $t->catatan_perbaikan }}</textarea>
+                                            <textarea name="catatan_perbaikan" class="w-full border border-gray-200 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-silapor-500/20" rows="3">{{ $t->catatan_perbaikan }}</textarea>
                                         </div>
 
                                         <div class="flex flex-col gap-3">
@@ -264,7 +264,7 @@
                                                 Update Status
                                             </p>
 
-                                            <select name="status_penanganan" class="w-full border border-gray-200 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#0090F5]/20 bg-white">
+                                            <select name="status_penanganan" class="w-full border border-gray-200 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-silapor-500/20 bg-white">
                                                 <option value="ON PROGRES" {{ $statusPenanganan === 'ON PROGRES' ? 'selected' : '' }} style="background-color: #FBBF24; color: #fff;">
                                                     On Progress
                                                 </option>
@@ -279,7 +279,7 @@
                                                 </option>
                                             </select>
 
-                                            <button type="submit" class="bg-[#0090F5] hover:bg-blue-600 transition-colors text-white px-6 py-3 rounded-2xl font-bold text-sm w-full">
+                                            <button type="submit" class="bg-silapor-500 hover:bg-silapor-600 transition-colors text-white px-6 py-3 rounded-2xl font-bold text-sm w-full">
                                                 Simpan Perubahan
                                             </button>
                                         </div>

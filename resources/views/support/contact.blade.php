@@ -7,7 +7,7 @@
     <div class="w-full max-w-3xl bg-white border border-gray-100 rounded-3xl shadow-sm p-8">
         <div class="flex items-center justify-between gap-4 mb-6">
             <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-[#0090F5] to-[#3B82F6] text-white grid place-items-center shadow-md">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-silapor-500 to-silapor-700 text-white grid place-items-center shadow-md">
                     <i class="fa-solid fa-headset text-xl"></i>
                 </div>
                 <div>

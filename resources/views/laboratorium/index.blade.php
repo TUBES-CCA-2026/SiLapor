@@ -20,12 +20,12 @@
     .lab-card { background:#fff; border:1px solid #E5E7EB; border-radius:2rem; box-shadow:0 15px 50px rgba(0,0,0,.05); overflow:hidden; }
     .lab-body { padding:1.5rem; }
     .form-control { width:100%; border:1px solid #D1D5DB; border-radius:.75rem; padding:.65rem .85rem; background:#fff; outline:none; font-size:.86rem; }
-    .form-control:focus { border-color:#0090F5; box-shadow:0 0 0 3px rgba(0,144,245,.12); }
-    .btn-mini { min-height:36px; border-radius:.7rem; padding:.5rem .85rem; font-size:.78rem; font-weight:800; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:.4rem; cursor:pointer; border:0; transition:.18s ease; white-space:nowrap; }
-    .btn-primary-mini { background:#0090F5; color:#fff; }
-    .btn-primary-mini:hover { background:#007CD5; }
-    .btn-outline-mini { background:#EEF8FF; color:#0090F5; border:1px solid #0090F5; }
-    .btn-outline-mini:hover { background:#0090F5; color:#fff; }
+    .form-control:focus { border-color:#29ABE2; box-shadow:0 0 0 3px rgba(41,171,226,.12); }
+    .btn-mini { border-radius:.65rem; padding:.45rem .85rem; font-size:.78rem; font-weight:800; cursor:pointer; transition:.18s ease; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:.3rem; }
+    .btn-primary-mini { background:#29ABE2; color:#fff; }
+    .btn-primary-mini:hover { background:#1B8DC4; }
+    .btn-outline-mini { background:#E8F7FC; color:#29ABE2; border:1px solid #29ABE2; }
+    .btn-outline-mini:hover { background:#29ABE2; color:#fff; }
     .btn-danger-mini { background:#FEE2E2; color:#DC2626; border:1px solid #FCA5A5; }
     .btn-danger-mini:hover { background:#DC2626; color:#fff; }
     .btn-danger-mini:disabled { opacity:.45; cursor:not-allowed; }
@@ -87,13 +87,13 @@
                                 <i class="fa-solid fa-chevron-down text-xs"></i>
                             </div>
                             <div class="absolute left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg hidden searchable-select-dropdown p-2" style="min-width: 200px;">
-                                <input type="text" placeholder="Cari Koordinator..." class="w-full p-2 mb-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-[#0090F5] searchable-select-search">
+                                <input type="text" placeholder="Cari Koordinator..." class="w-full p-2 mb-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-silapor-500 searchable-select-search">
                                 <ul class="max-h-40 overflow-y-auto searchable-select-options custom-scrollbar space-y-0.5 text-left">
-                                    <li data-value="" class="px-2.5 py-1.5 hover:bg-[#EEF8FF] hover:text-[#0090F5] rounded-md cursor-pointer text-xs transition-colors">
+                                    <li data-value="" class="px-2.5 py-1.5 hover:bg-[#E8F7FC] hover:text-silapor-500 rounded-md cursor-pointer text-xs transition-colors">
                                         — Pilih Koordinator —
                                     </li>
                                     @foreach($asistenList as $asisten)
-                                        <li data-value="{{ $asisten->id_user }}" class="px-2.5 py-1.5 hover:bg-[#EEF8FF] hover:text-[#0090F5] rounded-md cursor-pointer text-xs transition-colors">
+                                        <li data-value="{{ $asisten->id_user }}" class="px-2.5 py-1.5 hover:bg-[#E8F7FC] hover:text-silapor-500 rounded-md cursor-pointer text-xs transition-colors">
                                             {{ $asisten->nama }}
                                         </li>
                                     @endforeach
@@ -114,7 +114,7 @@
                             <div class="lab-row">
                                 <div>
                                     <p class="lab-title">
-                                        <span @if($isLaboran) onclick="toggleEditForm('{{ $lab->id_laboratorium }}')" style="cursor: pointer;" class="hover:underline hover:text-[#0090F5] transition-colors" @endif>
+                                        <span @if($isLaboran) onclick="toggleEditForm('{{ $lab->id_laboratorium }}')" style="cursor: pointer;" class="hover:underline hover:text-silapor-500 transition-colors" @endif>
                                             {{ $lab->nama_laboratorium }}
                                         </span>
                                         @if($lab->kode_laboratorium)
@@ -161,13 +161,13 @@
                                                 <i class="fa-solid fa-chevron-down text-xs"></i>
                                             </div>
                                             <div class="absolute left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg hidden searchable-select-dropdown p-2" style="min-width: 200px;">
-                                                <input type="text" placeholder="Cari Koordinator..." class="w-full p-2 mb-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-[#0090F5] searchable-select-search">
+                                                <input type="text" placeholder="Cari Koordinator..." class="w-full p-2 mb-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-silapor-500 searchable-select-search">
                                                 <ul class="max-h-40 overflow-y-auto searchable-select-options custom-scrollbar space-y-0.5 text-left">
-                                                    <li data-value="" class="px-2.5 py-1.5 hover:bg-[#EEF8FF] hover:text-[#0090F5] rounded-md cursor-pointer text-xs transition-colors">
+                                                    <li data-value="" class="px-2.5 py-1.5 hover:bg-[#E8F7FC] hover:text-silapor-500 rounded-md cursor-pointer text-xs transition-colors">
                                                         — Pilih Koordinator —
                                                     </li>
                                                     @foreach($asistenList as $asisten)
-                                                        <li data-value="{{ $asisten->id_user }}" class="px-2.5 py-1.5 hover:bg-[#EEF8FF] hover:text-[#0090F5] rounded-md cursor-pointer text-xs transition-colors">
+                                                        <li data-value="{{ $asisten->id_user }}" class="px-2.5 py-1.5 hover:bg-[#E8F7FC] hover:text-silapor-500 rounded-md cursor-pointer text-xs transition-colors">
                                                             {{ $asisten->nama }}
                                                         </li>
                                                     @endforeach

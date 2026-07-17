@@ -79,10 +79,10 @@
     .report-table tr:hover td { background: #F8FAFC; }
     .text-center { text-align: center !important; }
     .empty-state { padding: 2rem !important; text-align: center !important; color: #94A3B8 !important; }
-    .detail-btn, .btn-outline-blue { border: 1px solid #0090F5; color: #0090F5; background: #EEF8FF; border-radius: .5rem; padding: .4rem .9rem; font-size: .8rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
-    .detail-btn:hover, .btn-outline-blue:hover { background: #0090F5; color: #fff; }
-    .btn-primary { background: #0090F5; color: #fff; border: 0; border-radius: .875rem; padding: .75rem 1rem; font-weight: 800; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
-    .btn-primary:hover { background: #007CD5; }
+    .detail-btn, .btn-outline-blue { border: 1px solid #29ABE2; color: #29ABE2; background: #E8F7FC; border-radius: .5rem; padding: .4rem .9rem; font-size: .8rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+    .detail-btn:hover, .btn-outline-blue:hover { background: #29ABE2; color: #fff; }
+    .btn-primary { background: #29ABE2; color: #fff; border: 0; border-radius: .875rem; padding: .75rem 1rem; font-weight: 800; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+    .btn-primary:hover { background: #1B8DC4; }
     .btn-danger-soft { background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; border-radius: .875rem; padding: .65rem 1rem; font-weight: 700; text-decoration: none; cursor: pointer; }
     .btn-cetak-qr {
         background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
@@ -113,11 +113,11 @@
     }
     .qr-actions { display:flex; gap:.4rem; justify-content:center; flex-wrap:wrap; }
     .qr-action-btn { min-width:0; border-radius:.55rem; padding:.42rem .62rem; font-size:.72rem; font-weight:800; line-height:1; display:inline-flex; align-items:center; gap:.3rem; border:1px solid #CBD5E1; background:#fff; color:#334155; cursor:pointer; text-decoration:none; }
-    .qr-action-btn:hover { border-color:#0090F5; color:#0090F5; background:#F0F9FF; }
+    .qr-action-btn:hover { border-color:#29ABE2; color:#29ABE2; background:#E8F7FC; }
     .qr-action-btn.danger { border-color:#FCA5A5; color:#DC2626; background:#FEF2F2; }
     .qr-action-btn.danger:hover { background:#DC2626; color:#fff; border-color:#DC2626; }
     .form-control { width: 100%; border: 1px solid #D1D5DB; border-radius: .875rem; padding: .75rem 1rem; background: #fff; outline: none; }
-    .form-control:focus { border-color: #0090F5; box-shadow: 0 0 0 3px rgba(0, 144, 245, .14); }
+    .form-control:focus { border-color: #29ABE2; box-shadow: 0 0 0 3px rgba(41, 171, 226, .14); }
     .field-label { display: block; margin-bottom: .45rem; font-size: .75rem; color: #6B7280; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
     .inline-form-grid { display: grid; grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr auto; gap: 0.75rem; align-items: end; padding: 1.25rem; border: 1px solid #E5E7EB; border-radius: 1.25rem; background: #F8FAFC; }
     @media (max-width: 1024px) {
@@ -171,7 +171,7 @@
     .loading-line.short { width: 60%; }
 
     .btn-secondary-light { border: 1px solid #D8E1EC; color: #334155; background: #F8FAFC; border-radius: .875rem; padding: .75rem 1rem; font-weight: 800; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: .45rem; }
-    .btn-secondary-light:hover { border-color: #0090F5; color: #0090F5; background: #EEF8FF; }
+    .btn-secondary-light:hover { border-color: #29ABE2; color: #29ABE2; background: #E8F7FC; }
     .import-fasilitas-card { margin-bottom: 1.5rem; padding: 1.25rem; border: 1px solid #E5E7EB; border-radius: 1.5rem; background: #F8FAFC; display: grid; grid-template-columns: 1.2fr 1fr auto; gap: 1rem; align-items: end; }
     .import-fasilitas-title { margin: 0; color: #1F2937; font-size: .95rem; font-weight: 800; }
     .import-fasilitas-help { margin: .25rem 0 0; color: #64748B; font-size: .78rem; line-height: 1.5; }
@@ -210,8 +210,8 @@
         border-color: #CBD5E1;
     }
     .custom-select-trigger.active {
-        border-color: #0090F5;
-        box-shadow: 0 0 0 3px rgba(0, 144, 245, 0.14);
+        border-color: #29ABE2;
+        box-shadow: 0 0 0 3px rgba(41, 171, 226, 0.14);
     }
     .custom-select-options-container {
         position: absolute;
@@ -254,7 +254,7 @@
         transition: border-color 0.2s;
     }
     .custom-select-search-box input:focus {
-        border-color: #0090F5;
+        border-color: #29ABE2;
     }
     .custom-select-options {
         max-height: 180px;
@@ -268,13 +268,13 @@
         transition: all 0.15s;
     }
     .custom-select-option:hover {
-        background: #F0F9FF;
-        color: #0090F5;
+        background: #E8F7FC;
+        color: #29ABE2;
         padding-left: 18px;
     }
     .custom-select-option.selected {
-        background: #EEF8FF;
-        color: #0090F5;
+        background: #E8F7FC;
+        color: #1B8DC4;
         font-weight: 700;
     }
     .custom-select-option.placeholder-opt {
@@ -296,11 +296,11 @@
         gap: 0.5rem;
     }
     .tab-btn:hover {
-        color: #0090F5;
+        color: #29ABE2;
     }
     .tab-btn.active {
-        color: #0090F5;
-        border-bottom-color: #0090F5;
+        color: #29ABE2;
+        border-bottom-color: #29ABE2;
     }
     .tab-content {
         display: none;
@@ -330,8 +330,8 @@
         border-color: #CBD5E1;
     }
     .facility-card.highlight {
-        border-color: #0090F5 !important;
-        box-shadow: 0 0 0 3px rgba(0, 144, 245, 0.1) !important;
+        border-color: #29ABE2 !important;
+        box-shadow: 0 0 0 3px rgba(41, 171, 226, 0.1) !important;
     }
 
     /* Reorganizing forms in grid */
@@ -445,7 +445,7 @@
                     <!-- Tab Headers -->
                     <div class="flex border-b border-gray-150 bg-gray-50/50">
                         <div class="tab-btn active" onclick="switchControlTab('add-facility-tab')" style="flex: 1; justify-content: center;">
-                            <i class="fa-solid fa-plus-minus text-sm text-[#0090F5]"></i>Fasilitas
+                            <i class="fa-solid fa-plus-minus text-sm text-silapor-500"></i>Fasilitas
                         </div>
                         <div class="tab-btn" onclick="switchControlTab('add-category-tab')" style="flex: 1; justify-content: center;">
                             <i class="fa-solid fa-tags text-sm text-[#F59E0B]"></i>Kategori
@@ -687,7 +687,7 @@
             <style>
                 body { font-family: Arial, sans-serif; margin: 20px; display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
                 .card { width: 220px; border: 1px solid #E5E7EB; border-radius: 14px; padding: 16px; text-align: center; page-break-inside: avoid; }
-                .brand { color:#0090F5; font-weight:800; font-size:18px; margin-bottom: 8px; }
+                .brand { color:#29ABE2; font-weight:800; font-size:18px; margin-bottom: 8px; }
                 .name { font-weight:800; color:#111827; margin: 8px 0 4px; font-size: 14px; }
                 .lab { color:#64748B; font-size: 11px; margin-bottom: 8px; }
                 .qr { display:flex; justify-content:center; margin: 8px 0; }
@@ -723,7 +723,7 @@
             <style>
                 body { font-family: Arial, sans-serif; display: grid; place-items: center; min-height: 100vh; margin: 0; }
                 .card { width: 320px; border: 1px solid #E5E7EB; border-radius: 18px; padding: 24px; text-align: center; }
-                .brand { color:#0090F5; font-weight:800; font-size:22px; margin-bottom: 12px; }
+                .brand { color:#29ABE2; font-weight:800; font-size:22px; margin-bottom: 12px; }
                 .code { font-weight:800; color:#111827; margin: 12px 0 2px; font-size: 18px; }
                 .category { color:#4B5563; font-weight:600; font-size: 14px; margin-bottom: 6px; }
                 .lab { color:#64748B; font-size: 13px; margin-bottom: 12px; }
@@ -783,7 +783,7 @@
                 html += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">';
 
                 items.forEach(f => {
-                    const borderStyle = f.is_new ? '2px solid #0090F5' : '1px solid #E5E7EB';
+                    const borderStyle = f.is_new ? '2px solid #29ABE2' : '1px solid #E5E7EB';
                     const kodeAset = f.kode_aset || 'Tanpa Kode Aset';
                     const kodeDisplay = f.kode_aset || '-';
 

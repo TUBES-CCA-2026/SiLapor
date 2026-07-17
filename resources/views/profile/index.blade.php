@@ -101,7 +101,7 @@
                     <div class="w-32 h-32 bg-white rounded-[32px] overflow-hidden flex items-center justify-center text-gray-400 mb-4 border-2 border-gray-100 shadow-inner">
                         <img src="{{ $avatarUrl }}" alt="Foto Profil" class="w-full h-full object-cover rounded-[24px]">
                     </div>
-                    <span class="px-4 py-1.5 bg-[#0090F5] text-white text-xs font-bold rounded-full uppercase tracking-wider">
+                    <span class="px-4 py-1.5 bg-silapor-500 text-white text-xs font-bold rounded-full uppercase tracking-wider">
                         {{ $roleLabel }}
                     </span>
                 </div>
@@ -186,15 +186,15 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="sm:col-span-2">
                         <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">{{ $nameFieldLabel }}</label>
-                        <input type="text" name="name" value="{{ old('name', $user->nama) }}" required class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800">
+                        <input type="text" name="name" value="{{ old('name', $user->nama) }}" required class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-silapor-500 font-medium text-sm text-gray-800">
                     </div>
                     <div class="sm:col-span-2">
                         <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email</label>
-                        <input type="email" name="email" value="{{ old('email', $user->email) }}" required class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800">
+                        <input type="email" name="email" value="{{ old('email', $user->email) }}" required class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-silapor-500 font-medium text-sm text-gray-800">
                     </div>
                     <div class="sm:col-span-1">
                         <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">No Hp</label>
-                        <input type="text" inputmode="numeric" pattern="[0-9]*" name="no_hp" value="{{ old('no_hp', $user->phone) }}" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800" maxlength="13" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        <input type="text" inputmode="numeric" pattern="[0-9]*" name="no_hp" value="{{ old('no_hp', $user->phone) }}" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-silapor-500 font-medium text-sm text-gray-800" maxlength="13" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
                     <div class="sm:col-span-1">
                         <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Role</label>
@@ -204,11 +204,11 @@
                     @if($user->role === 'asisten')
                         <div class="sm:col-span-1">
                             <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">NIM</label>
-                            <input type="text" inputmode="numeric" pattern="[0-9]*" name="nim" value="{{ old('nim', $user->profile?->nim) }}" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            <input type="text" inputmode="numeric" pattern="[0-9]*" name="nim" value="{{ old('nim', $user->profile?->nim) }}" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-silapor-500 font-medium text-sm text-gray-800" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                         </div>
                         <div class="sm:col-span-1">
                             <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Jurusan</label>
-                            <select name="jurusan" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#0090F5] font-medium text-sm text-gray-800" style="appearance: none; -webkit-appearance: none; background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M6 8.825a.7.7 0 0 1-.5-.206L1.205 4.324a.71.71 0 0 1 0-1.001.71.71 0 0 1 1.001 0L6 7.118l3.794-3.795a.71.71 0 0 1 1.001 0 .71.71 0 0 1 0 1.001L6.5 8.619a.7.7 0 0 1-.5.206Z'/%3E%3C/svg%3E&quot;); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; cursor: pointer;">
+                            <select name="jurusan" class="w-full mt-1.5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:border-silapor-500 font-medium text-sm text-gray-800" style="appearance: none; -webkit-appearance: none; background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M6 8.825a.7.7 0 0 1-.5-.206L1.205 4.324a.71.71 0 0 1 0-1.001.71.71 0 0 1 1.001 0L6 7.118l3.794-3.795a.71.71 0 0 1 1.001 0 .71.71 0 0 1 0 1.001L6.5 8.619a.7.7 0 0 1-.5.206Z'/%3E%3C/svg%3E&quot;); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; cursor: pointer;">
                                 <option value="" disabled {{ old('jurusan', $user->profile?->jurusan) ? '' : 'selected' }}>Pilih Jurusan</option>
                                 <option value="Sistem Informasi" {{ old('jurusan', $user->profile?->jurusan) === 'Sistem Informasi' ? 'selected' : '' }}>Sistem Informasi</option>
                                 <option value="Teknik Informatika" {{ old('jurusan', $user->profile?->jurusan) === 'Teknik Informatika' ? 'selected' : '' }}>Teknik Informatika</option>
@@ -263,15 +263,15 @@
 
                 <div>
                     <label class="text-[11px] font-semibold text-gray-700 block mb-1.5">Password Lama</label>
-                    <input type="password" name="current_password" required class="w-full p-2.5 bg-white border border-gray-400 rounded-xl focus:outline-none focus:border-[#0090F5] text-sm text-gray-800">
+                    <input type="password" name="current_password" required class="w-full p-2.5 bg-white border border-gray-400 rounded-xl focus:outline-none focus:border-silapor-500 text-sm text-gray-800">
                 </div>
                 <div>
                     <label class="text-[11px] font-semibold text-gray-700 block mb-1.5">Password Baru</label>
-                    <input type="password" name="password" required class="w-full p-2.5 bg-white border border-gray-400 rounded-xl focus:outline-none focus:border-[#0090F5] text-sm text-gray-800">
+                    <input type="password" name="password" required class="w-full p-2.5 bg-white border border-gray-400 rounded-xl focus:outline-none focus:border-silapor-500 text-sm text-gray-800">
                 </div>
                 <div>
                     <label class="text-[11px] font-semibold text-gray-700 block mb-1.5">Konfirmasi Password Baru</label>
-                    <input type="password" name="password_confirmation" required class="w-full p-2.5 bg-white border border-gray-400 rounded-xl focus:outline-none focus:border-[#0090F5] text-sm text-gray-800">
+                    <input type="password" name="password_confirmation" required class="w-full p-2.5 bg-white border border-gray-400 rounded-xl focus:outline-none focus:border-silapor-500 text-sm text-gray-800">
                 </div>
 
                 <div class="pt-4 flex justify-start">

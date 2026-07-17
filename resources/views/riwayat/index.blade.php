@@ -45,8 +45,8 @@
     .laporan-status.no-sparepart { color:#374151; background:#E5E7EB; }
     .action-row { display:inline-flex; align-items:center; justify-content:center; gap:.45rem; flex-wrap:wrap; }
     .detail-btn, .edit-btn, .danger-btn { border-radius:.55rem; padding:.45rem .85rem; font-size:.78rem; font-weight:800; cursor:pointer; transition:.18s ease; }
-    .detail-btn { border:1px solid #0090F5; color:#0090F5; background:#EEF8FF; }
-    .detail-btn:hover { background:#0090F5; color:#fff; }
+    .detail-btn { border:1px solid #29ABE2; color:#29ABE2; background:#E8F7FC; }
+    .detail-btn:hover { background:#29ABE2; color:#fff; }
     .edit-btn { border:1px solid #CBD5E1; color:#334155; background:#fff; }
     .edit-btn:hover { background:#F1F5F9; border-color:#94A3B8; }
     .danger-btn { border:1px solid #DC2626; color:#DC2626; background:#FEE2E2; }

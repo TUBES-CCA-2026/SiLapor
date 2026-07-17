@@ -14,7 +14,7 @@
             : 'https://ui-avatars.com/api/?name=' . urlencode($displayName) . '&background=FFFFFF&color=0090F5');
 @endphp
 
-<div class="bg-[#0090F5] text-white px-5 py-2.5 rounded-2xl flex items-center gap-4 shadow-lg border border-white/5 transition-all hover:shadow-xl w-full sm:w-auto min-w-[260px]">
+<div class="bg-silapor-500 text-white px-5 py-2.5 rounded-2xl flex items-center gap-4 shadow-lg border border-white/5 transition-all hover:shadow-xl w-full sm:w-auto min-w-[260px]">
     <img
         src="{{ $avatarUrl }}"
         alt="Foto Profil {{ $displayName }}"
