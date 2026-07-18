@@ -18,7 +18,7 @@ class UserController extends Controller
     protected array $roleLimits = [
         'laboran' => 1,
         'koordinator_lab' => 7,
-        'kepala_lab' => 2,
+        'kepala_lab' => 3,
     ];
 
     public function index()

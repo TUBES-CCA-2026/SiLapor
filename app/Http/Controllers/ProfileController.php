@@ -131,6 +131,19 @@ class ProfileController extends Controller
         return redirect()->away($fallback);
     }
 
+    public function destroyFoto(): RedirectResponse
+    {
+        $user = Auth::user();
+        if ($user->foto) {
+            Storage::disk('public')->delete($user->foto);
+            $user->update(['foto' => null]);
+        }
+
+        return back()
+            ->with('success', 'Foto profil berhasil dihapus.')
+            ->with('profile_form', 'profile');
+    }
+
     private function passwordLooksSimilar(string $currentPassword, string $newPassword): bool
     {
         $current = strtolower(trim($currentPassword));

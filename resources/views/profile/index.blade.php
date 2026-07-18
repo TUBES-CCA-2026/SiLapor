@@ -23,7 +23,7 @@
         'koordinator_lab' => 'Koordinator Lab',
         'laboran' => 'Laboran',
         'asisten' => 'Asisten Lab',
-        default => 'User',
+        'admin' => 'Super Admin',
     };
 
     $nameFieldLabel = match($user?->role) {
@@ -177,10 +177,17 @@
                     <div class="w-24 h-24 bg-gray-50 rounded-[24px] overflow-hidden border-2 border-gray-100 mb-3 flex items-center justify-center text-gray-400 shadow-inner">
                         <img id="preview-foto" src="{{ $avatarUrl }}" alt="Preview Foto" class="w-full h-full object-cover rounded-[24px]">
                     </div>
-                    <label class="cursor-pointer bg-white border border-gray-200 px-4 py-1.5 rounded-xl text-[11px] font-bold text-gray-600 hover:bg-gray-50 transition-all shadow-sm">
-                        Ganti Profil
-                        <input type="file" name="foto" accept="image/*" class="hidden" onchange="previewImage(this)">
-                    </label>
+                    <div class="flex items-center gap-2">
+                        <label class="cursor-pointer bg-white border border-gray-200 px-4 py-1.5 rounded-xl text-[11px] font-bold text-gray-600 hover:bg-gray-50 transition-all shadow-sm">
+                            Ganti Profil
+                            <input type="file" name="foto" accept="image/*" class="hidden" onchange="previewImage(this)">
+                        </label>
+                        @if($user->foto)
+                            <button type="submit" form="delete-foto-form" class="p-1.5 bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 hover:text-red-700 rounded-xl transition-all shadow-sm flex items-center justify-center cursor-pointer" title="Hapus Foto Profil">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        @endif
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -236,6 +243,12 @@
                     </button>
                 </div>
             </form>
+            @if($user->foto)
+            <form id="delete-foto-form" action="{{ route('profile.foto.destroy') }}" method="POST" class="hidden" data-confirm-delete data-confirm-title="Hapus foto profil?" data-confirm-text="Apakah Anda yakin ingin menghapus foto profil ini?" data-confirm-yes="Ya" data-confirm-no="Tidak">
+                @csrf
+                @method('DELETE')
+            </form>
+            @endif
         </div>
     </div>
 

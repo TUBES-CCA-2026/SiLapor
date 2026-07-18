@@ -125,29 +125,6 @@
             </div>
             <form action="{{ $routeSafe('rekapsulasi.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                 <input type="text" id="filter-tanggal" name="tanggal" value="{{ request('tanggal') }}" class="form-control" placeholder="dd/mm/yyyy">
-                {{-- Dropdown Koordinator (searchable) --}}
-                @php
-                    $selPj = ($penanggungJawabs ?? collect())->firstWhere('id_user', request('id_penanggung_jawab'));
-                @endphp
-                <div class="custom-select-wrapper" id="cs-koordinator">
-                    <input type="hidden" name="id_penanggung_jawab" value="{{ request('id_penanggung_jawab') }}">
-                    <div class="custom-select-trigger" onclick="toggleCustomSelect('cs-koordinator')">
-                        <span class="selected-text {{ $selPj ? '' : 'placeholder' }}">{{ $selPj ? $selPj->nama : 'Semua Koordinator' }}</span>
-                        <i class="fa-solid fa-chevron-down cs-chevron"></i>
-                    </div>
-                    <div class="custom-select-options-container">
-                        <div class="custom-select-search-box">
-                            <i class="fa-solid fa-magnifying-glass text-xs text-gray-400"></i>
-                            <input type="text" placeholder="Cari koordinator..." oninput="filterCustomSelectOptions(this, 'cs-koordinator')">
-                        </div>
-                        <div class="custom-select-options custom-scrollbar">
-                            <div class="custom-select-option placeholder-opt {{ !request('id_penanggung_jawab') ? 'selected' : '' }}" data-value="" onclick="selectCustomOption(this, 'cs-koordinator')">Semua Koordinator</div>
-                            @foreach(($penanggungJawabs ?? collect()) as $pj)
-                                <div class="custom-select-option {{ (string) request('id_penanggung_jawab') === (string) $pj->id_user ? 'selected' : '' }}" data-value="{{ $pj->id_user }}" onclick="selectCustomOption(this, 'cs-koordinator')">{{ $pj->nama }}</div>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
 
                 {{-- Dropdown Lokasi (searchable) --}}
                 @php
@@ -172,8 +149,6 @@
                         </div>
                     </div>
                 </div>
-
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari laporan..." class="form-control">
 
                 {{-- Dropdown Urutan --}}
                 @php $selSort = request('sort', 'terbaru'); @endphp
@@ -230,11 +205,13 @@
                         <div class="custom-select-options custom-scrollbar">
                             <div class="custom-select-option placeholder-opt {{ !request('id_fasilitas') ? 'selected' : '' }}" data-value="" onclick="selectCustomOption(this, 'cs-fasilitas')">Semua Fasilitas</div>
                             @foreach(($fasilitasList ?? collect()) as $fasilitas)
-                                <div class="custom-select-option {{ (string) request('id_fasilitas') === (string) $fasilitas->id_fasilitas ? 'selected' : '' }}" data-value="{{ $fasilitas->id_fasilitas }}" onclick="selectCustomOption(this, 'cs-fasilitas')">{{ $fasilitas->kategori?->nama_kategori ?? 'Tanpa Kategori' }} ({{ $fasilitas->no_fasilitas ?? '-' }})</div>
+                                <div class="custom-select-option {{ (string) request('id_fasilitas') === (string) $fasilitas->id_fasilitas ? 'selected' : '' }}" data-value="{{ $fasilitas->id_fasilitas }}" data-lab-id="{{ $fasilitas->id_laboratorium }}" onclick="selectCustomOption(this, 'cs-fasilitas')">{{ $fasilitas->kategori?->nama_kategori ?? 'Tanpa Kategori' }} ({{ $fasilitas->no_fasilitas ?? '-' }})</div>
                             @endforeach
                         </div>
                     </div>
                 </div>
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari laporan..." class="form-control">
+
                 <div class="flex gap-2">
                     <button type="submit" class="btn-primary flex-1"><i class="fa-solid fa-filter mr-2"></i>Filter</button>
                     <a href="{{ $routeSafe('rekapsulasi.index') }}" class="btn-secondary"><i class="fa-solid fa-rotate-left mr-2"></i>Reset</a>
@@ -328,6 +305,22 @@
             dateFormat: "Y-m-d",
             allowInput: true
         });
+
+        // Initial filtering based on selected lab location (if any)
+        const initialLabVal = document.querySelector('#cs-lokasi input[type="hidden"]')?.value;
+        if (initialLabVal && initialLabVal !== '') {
+            const fasilitasWrapper = document.getElementById('cs-fasilitas');
+            if (fasilitasWrapper) {
+                const options = fasilitasWrapper.querySelectorAll('.custom-select-option');
+                options.forEach(opt => {
+                    if (opt.classList.contains('placeholder-opt')) return;
+                    const labId = opt.dataset.labId;
+                    if (String(labId) !== String(initialLabVal)) {
+                        opt.style.display = 'none';
+                    }
+                });
+            }
+        }
     });
 
     /* ── Custom Select Dropdown Functions ── */
@@ -370,8 +363,25 @@
         const wrapper = document.getElementById(wrapperId);
         if (!wrapper) return;
 
+        // If filtering facilities, respect the currently selected lab
+        let activeLabId = '';
+        if (wrapperId === 'cs-fasilitas') {
+            const labInput = document.querySelector('#cs-lokasi input[type="hidden"]');
+            if (labInput) activeLabId = labInput.value;
+        }
+
         wrapper.querySelectorAll('.custom-select-option').forEach(opt => {
             if (opt.classList.contains('placeholder-opt')) return;
+
+            // If filtering facilities, check the lab id first
+            if (wrapperId === 'cs-fasilitas' && activeLabId !== '') {
+                const labId = opt.dataset.labId;
+                if (String(labId) !== String(activeLabId)) {
+                    opt.style.display = 'none';
+                    return;
+                }
+            }
+
             const text = opt.textContent.trim().toLowerCase();
             opt.style.display = text.includes(query) ? '' : 'none';
         });
@@ -406,6 +416,38 @@
         const trigger = wrapper.querySelector('.custom-select-trigger');
         if (container) container.classList.remove('show');
         if (trigger) trigger.classList.remove('active');
+
+        // Cascading filter logic: if lab location changes, filter facilities accordingly
+        if (wrapperId === 'cs-lokasi') {
+            const selectedLabId = value;
+            const fasilitasWrapper = document.getElementById('cs-fasilitas');
+            if (fasilitasWrapper) {
+                const options = fasilitasWrapper.querySelectorAll('.custom-select-option');
+                let matchesCurrent = false;
+                options.forEach(opt => {
+                    if (opt.classList.contains('placeholder-opt')) return;
+
+                    const labId = opt.dataset.labId;
+                    if (selectedLabId === '' || String(labId) === String(selectedLabId)) {
+                        opt.style.display = '';
+                        if (opt.classList.contains('selected')) {
+                            matchesCurrent = true;
+                        }
+                    } else {
+                        opt.style.display = 'none';
+                        opt.classList.remove('selected');
+                    }
+                });
+
+                // If currently selected facility is now hidden, reset to 'Semua Fasilitas'
+                if (!matchesCurrent) {
+                    const placeholderOpt = fasilitasWrapper.querySelector('.placeholder-opt');
+                    if (placeholderOpt) {
+                        selectCustomOption(placeholderOpt, 'cs-fasilitas');
+                    }
+                }
+            }
+        }
     }
 
     // Close select dropdowns when clicking outside

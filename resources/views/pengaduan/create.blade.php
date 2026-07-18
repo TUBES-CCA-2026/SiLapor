@@ -261,7 +261,7 @@
                                 <div class="pgd-select-dropdown">
                                     <input type="text" class="pgd-select-search" placeholder="Cari laboratorium...">
                                     <ul class="pgd-select-options">
-                                        <li data-value="all">📍 Semua Lab</li>
+                                        <li data-value="all">Semua Lab</li>
                                         @foreach ($labs as $lab)
                                             <li data-value="{{ $lab->id_laboratorium }}">{{ $lab->nama_laboratorium }}</li>
                                         @endforeach

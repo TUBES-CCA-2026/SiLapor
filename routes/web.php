@@ -64,6 +64,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
         Route::put('/', [ProfileController::class, 'update'])->name('update');
         Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
+        Route::delete('/foto', [ProfileController::class, 'destroyFoto'])->name('foto.destroy');
     });
 
     Route::middleware('role:asisten')->group(function () {
