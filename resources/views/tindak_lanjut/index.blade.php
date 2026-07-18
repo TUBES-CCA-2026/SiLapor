@@ -52,12 +52,9 @@
     .tindak-popup-close { border: 0; background: transparent; color: #64748B; font-size: 1.8rem; line-height: 1; cursor: pointer; }
     .tindak-popup-body { padding: 1.5rem; text-align: center; }
 
-    @media (min-width: 850px) {
+    @media (min-width: 768px) {
         .sidebar-desktop {
             transform: translateX(0) !important;
-            position: sticky !important;
-            top: 0;
-            height: 100vh;
         }
         .hide-on-desktop {
             display: none !important;
@@ -82,7 +79,7 @@
         <!-- HEADER NAVBAR -->
         <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-8">
             <div class="flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 focus:outline-none hide-on-desktop">
+                <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 focus:outline-none hide-on-desktop md:hidden">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
@@ -266,7 +263,7 @@
         const sidebar = document.getElementById('sidebar-menu');
         const overlay = document.getElementById('sidebar-overlay');
         
-        if (window.innerWidth < 850) {
+        if (window.innerWidth < 768) {
             sidebar.classList.add('-translate-x-full');
             sidebar.classList.remove('translate-x-0');
             overlay.classList.add('hidden');

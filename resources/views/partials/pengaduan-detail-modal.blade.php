@@ -13,7 +13,7 @@
         const sidebar = document.getElementById('sidebar-menu');
         const overlay = document.getElementById('sidebar-overlay');
         if (!sidebar || !overlay) return;
-        if (window.innerWidth < 850) {
+        if (window.innerWidth < 768) {
             sidebar.classList.add('-translate-x-full');
             overlay.classList.add('hidden');
         } else {

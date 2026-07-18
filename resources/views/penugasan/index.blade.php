@@ -130,7 +130,7 @@
     .loading-line { height: 13px; margin: 13px 0; border-radius: 30px; background: linear-gradient(90deg, #edf2f7, #f8fbff, #edf2f7); }
     .loading-line.short { width: 60%; }
 
-    @media (min-width: 850px) {
+    @media (min-width: 768px) {
         .sidebar-desktop { transform: translateX(0) !important; }
         .hide-on-desktop { display: none !important; }
     }
@@ -146,7 +146,7 @@
 <main class="w-full min-w-0 px-4 py-6 md:px-8 md:py-8 space-y-6">
     <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2">
         <div class="flex items-center gap-3">
-            <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 focus:outline-none hide-on-desktop">
+            <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 focus:outline-none hide-on-desktop md:hidden">
                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
@@ -562,7 +562,7 @@
 
         if (!sidebar || !overlay) return;
 
-        if (window.innerWidth < 850) {
+        if (window.innerWidth < 768) {
             sidebar.classList.add('-translate-x-full');
             overlay.classList.add('hidden');
         } else {
