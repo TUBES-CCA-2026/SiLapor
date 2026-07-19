@@ -9,8 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('laboratorium', function (Blueprint $table) {
-            // Drop foreign key constraint
+            // Drop foreign key constraint and index
             $table->dropForeign(['id_pendamping']);
+            $table->dropIndex('laboratorium_id_pendamping_foreign');
         });
 
         Schema::table('laboratorium', function (Blueprint $table) {
